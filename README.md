@@ -9,4 +9,5 @@
 sudo pip2 install pybullet numpy
 ```
 ## Effect
-![img](http://github.com/FanmingL/navigation-learning/blob/master/image/effect.gif)
+
+![image](https://github.com/FanmingL/navigation-learning/blob/master/image/effect.gif)
