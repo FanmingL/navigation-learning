@@ -9,5 +9,5 @@
 sudo pip2 install pybullet numpy
 ```
 ## Effect
-
+### Simple PID Controller
 ![image](https://github.com/FanmingL/navigation-learning/blob/master/image/effect.gif)
