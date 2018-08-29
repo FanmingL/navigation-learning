@@ -1,3 +1,4 @@
+#! /usr/bin/python
 import pybullet as p
 import pybullet_data
 import rospy
@@ -7,10 +8,10 @@ import numpy as np
 import time
 
 
-class InvertedPendulum:
+class CarServer:
 
     def __init__(self, mode=p.VELOCITY_CONTROL):
-        rospy.init_node('inverted_pendulum')
+        rospy.init_node('car_server')
         self.start_position = [0., 0., 1]
         self.start_orientation = p.getQuaternionFromEuler([0, 0, 0])
         p.connect(p.GUI)
@@ -112,10 +113,9 @@ class InvertedPendulum:
 
 
 if __name__ == '__main__':
-    t = InvertedPendulum()
+    t = CarServer()
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         t.dog()
         t.pub_msg()
         rate.sleep()
-

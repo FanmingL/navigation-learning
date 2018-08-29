@@ -1,0 +1,11 @@
+# Define the goal
+int32 command
+geometry_msgs/PoseStamped goal  
+---
+# Define the result
+int32 error_code
+---
+# Define a feedback message 
+nav_msgs/Path position
+int32 error_code
+string error_msg

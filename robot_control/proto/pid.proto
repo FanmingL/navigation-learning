@@ -1,0 +1,11 @@
+syntax="proto2";
+package ros_pid;
+
+message Pid{
+    required float kp = 1;
+    required float ki = 2;
+    required float kd = 3;
+    required float inte_lim = 4;
+    required float out_lim = 5;
+    required float lp_hz = 6;
+}
