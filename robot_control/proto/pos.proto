@@ -1,0 +1,17 @@
+syntax="proto2";
+package ros_pos;
+
+message path{
+    repeated pose point = 1;
+    
+}
+message pose{
+    required float x = 2;
+    required float y = 3;
+    optional float z = 4 [default = 0];
+    optional float pitch = 5[default = 0];
+    optional float roll = 6[default = 0];
+    optional float yaw = 7[default = 0];
+}
+
+

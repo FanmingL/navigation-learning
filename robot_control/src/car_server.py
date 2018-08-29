@@ -72,7 +72,7 @@ class CarServer:
         self.pos_msg.pose.position.z = robot_state[0][2]
         self.pos_msg.header.seq = self.pos_msg.header.seq + 1
         self.pos_msg.header.stamp = rospy.Time.now()
-        self.pos_msg.header.frame_id = 'robot position'
+        self.pos_msg.header.frame_id = 'robot'
         self.pub_pos.publish(self.pos_msg)
 
     def get_joint(self):

@@ -4,9 +4,12 @@
 
 #include "server.h"
 
-CarControl::CarControl() : map_got(false),
-    yaw_config_path("/home/erdou/workspace/src/cpp_map/config/yaw_pid.config"),
-    pos_config_path("/home/erdou/workspace/src/cpp_map/config/pos_pid.config")
+robot_server::robot_server() :
+    yaw_config_path("/home/erdou/workspace/src/robot_control/config/yaw_pid.config"),
+    pos_config_path("/home/erdou/workspace/src/robot_control/config/pos_pid.config"),
+    ac(nh_, "robot_action", boost::bind(&robot_server::ActionCB, this, _1), false),
+    target_set(false)/*,
+    tr_ls(ros::Duration(50))*/
 {
     control_pub = nh_.advertise<geometry_msgs::Twist>("robot_control", 1);
     if (read_from_file(yaw_config_path))ROS_INFO("yaw config ok");
@@ -15,74 +18,97 @@ CarControl::CarControl() : map_got(false),
     if (read_from_file(pos_config_path))ROS_INFO("position config ok");
     dis_pid = new PID(pid_config.kp(), pid_config.ki(), pid_config.kd(),
                   pid_config.inte_lim(), pid_config.out_lim(), pid_config.lp_hz());
-
-    map_sub = nh_.subscribe<nav_msgs::OccupancyGrid>
-            ("/map", 1, boost::bind(&CarControl::map_cb, this, _1));
     robot_pos_sub = nh_.subscribe<geometry_msgs::PoseStamped>
-            ("robot_pos", 1, boost::bind(&CarControl::robot_pos_cb, this, _1));
-    while (ros::ok())
-    {
-        ros::spinOnce();
-        if (map_got)
-            break;
-    }
+            ("robot_pos", 1, boost::bind(&robot_server::robot_pos_cb, this, _1));
 }
 
-void CarControl::run() {
+void robot_server::run() {
+    ac.start();
     ros::spin();
 }
 
-void CarControl::map_cb(const nav_msgs::OccupancyGridConstPtr &msg) {
-    map = *msg;
-    map_got = true;
-    ROS_INFO("get map!");
+void robot_server::send_br(const geometry_msgs::PoseStamped &msg, const char *name, const char * child_name) {
+    trans.setOrigin(tf::Vector3(msg.pose.position.x, msg.pose.position.y, msg.pose.position.z));
+    q.setValue(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+    trans.setRotation(q);
+    br.sendTransform(tf::StampedTransform(trans, ros::Time::now(), name, child_name));
 }
 
-void CarControl::robot_pos_cb(const geometry_msgs::PoseStampedConstPtr &msg) {
+void robot_server::robot_pos_cb(const geometry_msgs::PoseStampedConstPtr &msg) {
     robot_pose = *msg;
-    float x_t = -1.5f, y_t = -1.5f;
+    send_br(robot_pose, "world", "robot");
+    if (!target_set)
+    {
+        robot_control_msg.angular.z = 0.0;
+        robot_control_msg.linear.x = 0.0;
+        control_pub.publish(robot_control_msg);
+        return;
+    }
+    robot_target.header.stamp = msg->header.stamp;
+    robot_target.header.frame_id = "world";
+    send_br(robot_target, "world", "target");
+
+    try {
+        tr_ls.lookupTransform("robot", "target", ros::Time(0), target_to_robot);
+        //tr_ls.transformPose("robot", robot_target, ros::Time(0), target_to_robot);
+    }
+    catch(tf::TransformException &ex){
+        ROS_WARN(" exception received :%s ", ex.what());
+        robot_control_msg.angular.z = 0.0;
+        robot_control_msg.linear.x = 0.0;
+        control_pub.publish(robot_control_msg);
+        return;
+    }
+    float x_t = (float)robot_target.pose.position.x, y_t = (float)robot_target.pose.position.y;
     static auto t0 = msg->header.stamp;
     auto period = (float)(msg->header.stamp.toSec() - t0.toSec());
     auto yaw_feedback = (float)tf::getYaw(msg->pose.orientation);
     t0 = msg->header.stamp;
-    auto yaw = (float)atan2(msg->pose.position.y - y_t, msg->pose.position.x - x_t);
-    robot_control.angular.z = yaw_pid->step(yaw_feedback, yaw, period);
-    auto dist = (float)sqrt((pow(msg->pose.position.x-x_t, 2)));
-    robot_control.linear.x = dis_pid->step(0, dist, period);
-    if (dist < 0.1)
+    //auto yaw = (float)atan2(msg->pose.position.y - y_t, msg->pose.position.x - x_t);
+    auto yaw = (float)atan2(target_to_robot.getOrigin().y(), target_to_robot.getOrigin().x());
+    robot_control_msg.angular.z = yaw_pid->step(0, yaw, period);
+    //auto dist = (float)sqrt(pow(msg->pose.position.x-x_t, 2));
+    auto dist = -(float)target_to_robot.getOrigin().x();
+    robot_control_msg.linear.x = dis_pid->step(0, dist, period);
+    //if (dist < 0.03 && (float)sqrt(pow(msg->pose.position.x-x_t, 2) + pow(msg->pose.position.y-y_t, 2)) < 0.3)
+    if (fabsf(dist) < 0.03 && (float)sqrt(pow(target_to_robot.getOrigin().x(), 2) + pow(target_to_robot.getOrigin().y(), 2)) < 0.3)
     {
-        robot_control.angular.z = 0.0f;
+        target_set = false;
+        yaw_pid->reset();
+        dis_pid->reset();
     }
-    control_pub.publish(robot_control);
+    //if ((float)sqrt(pow(msg->pose.position.x-x_t, 2) + pow(msg->pose.position.y-y_t, 2)) < 0.3)
+    if ((float)sqrt(pow(target_to_robot.getOrigin().x(), 2) + pow(target_to_robot.getOrigin().y(), 2)) < 0.3)
+    {
+        robot_control_msg.angular.z = 0.0f;
+    }
+    control_pub.publish(robot_control_msg);
 }
 
 
-bool CarControl::read_from_file(const char *path) {
-    using google::protobuf::io::FileInputStream;
-    using google::protobuf::io::FileOutputStream;
-    using google::protobuf::io::ZeroCopyInputStream;
-    using google::protobuf::io::CodedInputStream;
-    using google::protobuf::io::ZeroCopyOutputStream;
-    using google::protobuf::io::CodedOutputStream;
-    using google::protobuf::Message;
-
-    int fd = open(path, O_RDONLY);
-    if (fd == -1){
-        ROS_WARN("No Such File");
-        return false;
-    }
-    FileInputStream *input = new FileInputStream(fd);
-    bool success = google::protobuf::TextFormat::Parse(input, &pid_config);
-    delete input;
-    close(fd);
-    return success;
+bool robot_server::read_from_file(const char *path) {
+    return robot_io::read_proto_from_text(path, &pid_config);
 }
 
+void robot_server::ActionCB(const robot_control::SetTargetGoalConstPtr &msg) {
+    robot_target = msg->goal;
+    target_set = true;
+    robot_control::SetTargetFeedback fb;
+    auto rate = ros::Rate(20);
+    while (target_set && ros::ok())
+    {
+        fb.error_code = 0;
+        fb.position = robot_pose;
+        ac.publishFeedback(fb);
+        rate.sleep();
+    }
+    ac.setSucceeded();
+}
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "robot_server");
-    CarControl client;
+    robot_server client;
     client.run();
     return 0;
 }

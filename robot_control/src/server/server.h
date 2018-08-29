@@ -13,36 +13,40 @@
 #include <string>
 #include "geometry_msgs/Twist.h"
 #include "tf/transform_broadcaster.h"
+#include "tf/transform_listener.h"
 #include <cmath>
-#include <fcntl.h>
 #include "pid.pb.h"
 #include "PID.h"
+#include "common_io.h"
+#include "actionlib/server/simple_action_server.h"
+#include "robot_control/SetTargetAction.h"
 
-#include <google/protobuf/message.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/text_format.h>
 
-class CarControl {
+class robot_server {
 public:
-    CarControl();
+    robot_server();
     void run();
-    void map_cb(const nav_msgs::OccupancyGridConstPtr &msg);
     void robot_pos_cb(const geometry_msgs::PoseStampedConstPtr &msg);
     bool read_from_file(const char *path);
-    void target_pos_cb(const geometry_msgs::TwistConstPtr &msg);
+    void ActionCB(const robot_control::SetTargetGoalConstPtr &msg);
+    void send_br(const geometry_msgs::PoseStamped &msg, const char *name, const char *child_name);
 private:
     ros::NodeHandle nh_;
     ros::Publisher control_pub;
     ros::Subscriber map_sub, robot_pos_sub, target_pos_sub;
-    nav_msgs::OccupancyGrid map;
-    geometry_msgs::Twist robot_control;
-    geometry_msgs::PoseStamped robot_pose;
+    geometry_msgs::Twist robot_control_msg;
+    geometry_msgs::PoseStamped robot_pose, robot_target;
+    tf::StampedTransform target_to_robot;
+    bool target_set;
     ros_pid::Pid pid_config;
+    tf::Transform trans;
+    tf::Quaternion q;
     PID* yaw_pid, *dis_pid;
     const char *yaw_config_path, *pos_config_path;
+    actionlib::SimpleActionServer<robot_control::SetTargetAction> ac;
+    tf::TransformBroadcaster br;
+    tf::TransformListener tr_ls;
     /* /home/erdou/workspace/src/cpp_map/config/yaw_pid.config */
-    bool map_got;
 
 };
 

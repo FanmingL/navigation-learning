@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 find_package(Boost REQUIRED)
-find_package(OpenCV REQUIRED)
+#find_package(OpenCV REQUIRED)
 find_package(Protobuf REQUIRED)
 add_action_files(
   FILES
@@ -43,8 +43,9 @@ include_directories(
 )
 
 protobuf_generate_cpp(PROTO_PID_SRC PROTO_PID_HDR proto/pid.proto)
+protobuf_generate_cpp(PROTO_POS_SRC PROTO_POS_HDR proto/pos.proto)
 
-add_executable(${client} src/client/client.cpp src/util/PID.cpp)
+add_executable(${client} src/client/client.cpp src/util/PID.cpp ${PROTO_POS_SRC})
 
 add_executable(${server} src/server/server.cpp src/util/PID.cpp ${PROTO_PID_SRC})
 
@@ -70,6 +71,15 @@ target_link_libraries(${server}
   ${PROTOBUF_LIBRARIES}
 )
 
+target_link_libraries(${global}
+  ${catkin_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
+)
+
+target_link_libraries(${local}
+  ${catkin_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
+)
 
 
 

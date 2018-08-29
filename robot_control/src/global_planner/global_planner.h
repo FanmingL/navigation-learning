@@ -11,4 +11,19 @@
 
 #ifndef _GLOBAL_PLANNER_H
 #define _GLOBAL_PLANNER_H
+
+#include "ros/ros.h"
+#include "nav_msgs/OccupancyGrid.h"
+
+class global_planner{
+public:
+    global_planner();
+    void run();
+    void mapCB(const nav_msgs::OccupancyGridConstPtr &msg);
+private:
+    ros::NodeHandle nh_;
+    ros::Subscriber map_sub;
+    nav_msgs::OccupancyGrid map;
+    bool map_got;
+};
 #endif //GLOBAL_PLANNER_H
