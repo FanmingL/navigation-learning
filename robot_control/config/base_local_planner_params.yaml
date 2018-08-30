@@ -1,0 +1,28 @@
+controller_frequency: 10.0 #控制器更新频率，建议3-5HZ
+TrajectoryPlannerROS:
+  max_vel_x: 0.90 #最大速度，这个速度稳定
+  min_vel_x: 0.10 #最小速度
+  max_vel_y: 0.0
+  min_vel_y: 0.0
+  max_rotational_vel: 0.8 #最大旋转速度（这里是转弯的最大的速度）
+  min_rotational_val: -0.8
+  min_in_place_rotational_vel: 0.8#这里就上上面所有说的，先锋最时候的圆度旋转饿速度
+  acc_lim_theta: 0.85#旋转角加速度
+  acc_lim_x: 0.0#最大的旋转加速度x方向
+  acc_lim_y: 0.4#最大旋转加速度y方向
+  meter_scoring: true#单位是不是米
+
+  holonomic_robot: false
+  yaw_goal_tolerance: 0.18#朝向上面的允许的误差
+  xy_goal_tolerance: 0.1#距离上面允许的误差
+  pdist_scale: 0.8 #全局的比例
+  gdist_scale: 0.1 #全局和局部的比例，我觉得还是应该全局为重，这个值越大，那么越有那个起步的大圈
+  goal_distance_bias: 0.8
+  path_distance_bias: 0.2
+  sim_time: 1.5#模拟时间
+  heading_lookahead: 0.325机器人原地旋转是，向前看多少米的距离
+  oscillation_reset_dist: 0.05
+
+  vx_samples: 6
+  vtheta_samples: 20
+  dwa: true

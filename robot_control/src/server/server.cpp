@@ -20,6 +20,10 @@ robot_server::robot_server() :
                   pid_config.inte_lim(), pid_config.out_lim(), pid_config.lp_hz());
     robot_pos_sub = nh_.subscribe<geometry_msgs::PoseStamped>
             ("robot_pos", 1, boost::bind(&robot_server::robot_pos_cb, this, _1));
+    goal_pub = nh_.advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal", 1);
+    map_pose.header.stamp = ros::Time::now();
+    map_pose.header.frame_id = "map";
+    map_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
 }
 
 void robot_server::run() {
@@ -36,7 +40,8 @@ void robot_server::send_br(const geometry_msgs::PoseStamped &msg, const char *na
 
 void robot_server::robot_pos_cb(const geometry_msgs::PoseStampedConstPtr &msg) {
     robot_pose = *msg;
-    send_br(robot_pose, "world", "robot");
+    send_br(robot_pose, "world", "base_link");
+    send_br(map_pose, "world", "map");
     if (!target_set)
     {
         robot_control_msg.angular.z = 0.0;
@@ -45,12 +50,11 @@ void robot_server::robot_pos_cb(const geometry_msgs::PoseStampedConstPtr &msg) {
         return;
     }
     robot_target.header.stamp = msg->header.stamp;
-    robot_target.header.frame_id = "world";
+    //robot_target.header.frame_id = "world";
     send_br(robot_target, "world", "target");
 
     try {
-        tr_ls.lookupTransform("robot", "target", ros::Time(0), target_to_robot);
-        //tr_ls.transformPose("robot", robot_target, ros::Time(0), target_to_robot);
+        tr_ls.lookupTransform("base_link", "target", ros::Time(0), target_to_robot);
     }
     catch(tf::TransformException &ex){
         ROS_WARN(" exception received :%s ", ex.what());
@@ -62,22 +66,17 @@ void robot_server::robot_pos_cb(const geometry_msgs::PoseStampedConstPtr &msg) {
     float x_t = (float)robot_target.pose.position.x, y_t = (float)robot_target.pose.position.y;
     static auto t0 = msg->header.stamp;
     auto period = (float)(msg->header.stamp.toSec() - t0.toSec());
-    auto yaw_feedback = (float)tf::getYaw(msg->pose.orientation);
     t0 = msg->header.stamp;
-    //auto yaw = (float)atan2(msg->pose.position.y - y_t, msg->pose.position.x - x_t);
     auto yaw = (float)atan2(target_to_robot.getOrigin().y(), target_to_robot.getOrigin().x());
     robot_control_msg.angular.z = yaw_pid->step(0, yaw, period);
-    //auto dist = (float)sqrt(pow(msg->pose.position.x-x_t, 2));
     auto dist = -(float)target_to_robot.getOrigin().x();
     robot_control_msg.linear.x = dis_pid->step(0, dist, period);
-    //if (dist < 0.03 && (float)sqrt(pow(msg->pose.position.x-x_t, 2) + pow(msg->pose.position.y-y_t, 2)) < 0.3)
-    if (fabsf(dist) < 0.03 && (float)sqrt(pow(target_to_robot.getOrigin().x(), 2) + pow(target_to_robot.getOrigin().y(), 2)) < 0.3)
+    if (fabsf(dist) < 0.03 && (float)sqrt(pow(msg->pose.position.x - x_t, 2) + pow(msg->pose.position.y - y_t, 2)) < 0.3)
     {
         target_set = false;
         yaw_pid->reset();
         dis_pid->reset();
     }
-    //if ((float)sqrt(pow(msg->pose.position.x-x_t, 2) + pow(msg->pose.position.y-y_t, 2)) < 0.3)
     if ((float)sqrt(pow(target_to_robot.getOrigin().x(), 2) + pow(target_to_robot.getOrigin().y(), 2)) < 0.3)
     {
         robot_control_msg.angular.z = 0.0f;
@@ -92,14 +91,16 @@ bool robot_server::read_from_file(const char *path) {
 
 void robot_server::ActionCB(const robot_control::SetTargetGoalConstPtr &msg) {
     robot_target = msg->goal;
+    //robot_target.header.frame_id = "map";
     target_set = true;
     robot_control::SetTargetFeedback fb;
-    auto rate = ros::Rate(20);
+    auto rate = ros::Rate(3);
     while (target_set && ros::ok())
     {
         fb.error_code = 0;
         fb.position = robot_pose;
         ac.publishFeedback(fb);
+        goal_pub.publish(robot_target);
         rate.sleep();
     }
     ac.setSucceeded();

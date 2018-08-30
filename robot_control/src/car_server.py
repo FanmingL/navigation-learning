@@ -12,14 +12,14 @@ class CarServer:
 
     def __init__(self, mode=p.VELOCITY_CONTROL):
         rospy.init_node('car_server')
-        self.start_position = [0., 0., 1]
+        self.start_position = [0.87, 1.15, 1]
         self.start_orientation = p.getQuaternionFromEuler([0, 0, 0])
         p.connect(p.GUI)
         p.setRealTimeSimulation(1)
         p.setGravity(0, 0, -10)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         # p.setTimeStep(1./480.)
-        self.plane_id = p.loadURDF('plane.urdf')
+        self.plane_id = p.loadURDF('plane100.urdf')
         self.robot_id = p.loadURDF('husky/husky.urdf', self.start_position, self.start_orientation)
         p.addUserDebugText('Car Position', [0, 0, 0.5], textColorRGB=[1, 0, 0],
                            parentObjectUniqueId=self.robot_id, parentLinkIndex=0)
@@ -54,11 +54,12 @@ class CarServer:
         self.velocity_rotate = 0
         self.motor_const_velocity = 30
         # self.text_handler = p.addUserDebugText(' ', [0, 0, 0], textColorRGB=[1, 0, 1])
-        self.sub = rospy.Subscriber('robot_control', Twist, self.cb,  queue_size=1)
+        # self.sub = rospy.Subscriber('robot_control', Twist, self.cb,  queue_size=1)
+        self.sub = rospy.Subscriber('/cmd_vel', Twist, self.cb,  queue_size=1)
 
     def cb(self, msg):
-        self.velocity_rotate = msg.angular.z
-        self.velocity_x = msg.linear.x
+        self.velocity_rotate = -msg.angular.z * 8
+        self.velocity_x = msg.linear.x * 20
         self.set_motor()
 
     def pub_msg(self):
@@ -72,7 +73,7 @@ class CarServer:
         self.pos_msg.pose.position.z = robot_state[0][2]
         self.pos_msg.header.seq = self.pos_msg.header.seq + 1
         self.pos_msg.header.stamp = rospy.Time.now()
-        self.pos_msg.header.frame_id = 'robot'
+        self.pos_msg.header.frame_id = 'world'
         self.pub_pos.publish(self.pos_msg)
 
     def get_joint(self):

@@ -6,14 +6,22 @@
   <!-- Run the map server -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find robot_control)/maps/$(arg map).yaml" respawn="false" />
   
+
+   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" clear_params="true">
+    <rosparam file="$(find robot_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find robot_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find robot_control)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_control)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_control)/config/base_local_planner_params.yaml" command="load" />
+  </node>
+
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_control)/rviz/robot.rviz" />
 
   <node pkg="robot_control" type="robot_control_client" name="robot_client" respawn="false" output="screen" />
 
   <node pkg="robot_control" type="robot_control_server" name="robot_server" respawn="false" output="screen"/>
   
-  <node pkg="robot_control" type="car_server.py" name="car_server" respawn="false" />
-  
+  <node pkg="robot_control" type="car_server.py" name="car_server" respawn="false"/>
 
 
 

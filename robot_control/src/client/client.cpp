@@ -28,10 +28,10 @@ file_path("/home/erdou/workspace/src/robot_control/config/path.config")
 }
 
 void robot_client::run() {
-    for (int i = 0; i < path.size(); i++){
+    for (int i = 0; i < path.size() && ros::ok(); i++){
         ROS_INFO("The %dth point, (%.2f, %.2f)", i+1, path[i][0], path[i][1]);
         goal.goal.header.stamp = ros::Time::now();
-        goal.goal.header.frame_id = "target";
+        goal.goal.header.frame_id = "map";
         goal.goal.header.seq ++;
         goal.command = 0;
         goal.goal.pose.position.x = path[i][0];
@@ -42,6 +42,8 @@ void robot_client::run() {
                 boost::bind(&robot_client::ac_active, this),
                 boost::bind(&robot_client::ac_fb, this, _1));
         ac.waitForResult();
+        if (i == path.size()-1)
+            i = -1;
     }
 }
 
@@ -68,6 +70,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "robot_client");
     robot_client rc;
+    //ros::Rate(1).sleep();
     rc.run();
     return 0;
 }

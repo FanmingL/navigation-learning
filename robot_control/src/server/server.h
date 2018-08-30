@@ -32,10 +32,10 @@ public:
     void send_br(const geometry_msgs::PoseStamped &msg, const char *name, const char *child_name);
 private:
     ros::NodeHandle nh_;
-    ros::Publisher control_pub;
+    ros::Publisher control_pub, goal_pub;
     ros::Subscriber map_sub, robot_pos_sub, target_pos_sub;
     geometry_msgs::Twist robot_control_msg;
-    geometry_msgs::PoseStamped robot_pose, robot_target;
+    geometry_msgs::PoseStamped robot_pose, robot_target, map_pose;
     tf::StampedTransform target_to_robot;
     bool target_set;
     ros_pid::Pid pid_config;
