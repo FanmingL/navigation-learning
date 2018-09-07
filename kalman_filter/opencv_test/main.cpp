@@ -25,6 +25,9 @@ int main(int argc, char **argv)
     float lineVelocity = omega * radius;
     float radius_mini = 10;
     cv::RNG rng(time(NULL));
+    VECTOR_TYPE v_start;
+    v_start(0, 0) = radius, v_start(1, 0) = 0;
+    kf.setStart(v_start);
     for (;;)
     {
         cv::Mat img_draw;
@@ -42,6 +45,7 @@ int main(int argc, char **argv)
         control(0, 0) = control_rand[0] + vx;
         control(1, 0) = control_rand[1] + vy;
         control = control * period / 1000;
+
         kf.correct(measure, control, res);
         cv::circle(img_draw, cv::Point(measure_rand[0] + x + img.cols/2, measure_rand[1] + y + img.rows/2),\
                    radius_mini+10, cv::Scalar(255, 255, 0), 2);

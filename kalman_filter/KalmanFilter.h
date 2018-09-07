@@ -36,11 +36,12 @@ public:
 
     /*                A                 B               H          */
     MATRIX_TYPE transferMatrix, controlMatrix, measureMatrix, measureCov, controlCov, preCov, postCov, kalmanGain;
-    VECTOR_TYPE xPost, xPre, xEstimate;
+    VECTOR_TYPE xPost, xPre;
     void correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &control, VECTOR_TYPE &output);
-    void init();
+    void setStart(const VECTOR_TYPE &start_measure);
 private:
     MATRIX_TYPE temp1, temp2;
+    void init();
 
 };
 
