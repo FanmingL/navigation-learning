@@ -14,8 +14,8 @@ sudo pip2 install pybullet numpy
 ## Effect
 ### Simple PID Controller
 
-![image](https://github.com/FanmingL/navigation-learning/blob/master/image/effect.gif)
+![image](./image/effect.gif)
 
 ### Move Base
 
-![image](https://github.com/FanmingL/navigation-learning/blob/master/image/effect_movebase.gif)
+![image](./image/effect_movebase.gif)
