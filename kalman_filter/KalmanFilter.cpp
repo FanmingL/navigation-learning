@@ -8,17 +8,12 @@ void KalmanFilter::correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &contro
     xPre = transferMatrix * xPost + controlMatrix * control;
     preCov = transferMatrix * postCov * transferMatrix.transpose() + controlCov;
     temp1 = measureMatrix * preCov * measureMatrix.transpose() + measureCov;
+    temp2 = preCov * measureMatrix.transpose();
     // TODO: simplify below
-    kalmanGain = preCov * measureMatrix.transpose() * temp1.inverse();
+    kalmanGain = temp2 * temp1.inverse();
     xPost = xPre + kalmanGain * (measure - measureMatrix * xPre);
     postCov = (MATRIX_I - kalmanGain * measureMatrix) * preCov;
     output = xPost;
-}
-
-KalmanFilter::KalmanFilter(const MATRIX_TYPE &_measureCov, const MATRIX_TYPE &_controlCov) : measureCov(_measureCov),
-controlCov(_controlCov)
-{
-    measureMatrix = transferMatrix = controlMatrix = MATRIX_I;
 }
 
 KalmanFilter::KalmanFilter(const MATRIX_TYPE &_measureCov, const MATRIX_TYPE &_controlCov,

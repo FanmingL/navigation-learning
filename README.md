@@ -19,3 +19,7 @@ sudo pip2 install pybullet numpy
 ### Move Base
 
 ![image](./image/effect_movebase.gif)
+
+### Kalman Filter
+
+![image](./image/effect_kalman_filter.gif)
