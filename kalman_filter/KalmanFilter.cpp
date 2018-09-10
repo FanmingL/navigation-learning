@@ -10,7 +10,6 @@ void KalmanFilter::correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &contro
     temp1 = measureMatrix * preCov * measureMatrix.transpose() + measureCov;
     temp2 = preCov * measureMatrix.transpose();
     // TODO: simplify below
-    std::cout<<temp1<<std::endl;
     kalmanGain = temp2 * temp1.inverse();
     xPost = xPre + kalmanGain * (measure - measureMatrix * xPre);
     postCov = (MATRIX_I - kalmanGain * measureMatrix) * preCov;

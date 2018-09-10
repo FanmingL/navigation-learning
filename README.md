@@ -5,7 +5,9 @@
 * Pybullet
 * Python2.7
 * Google Protobuf
-* ROS [move_base](http://wiki.ros.org/move_base) package
+* ROS [move_base](http://wiki.ros.org/move_base) package ([GitHub](https://github.com/ros-planning/navigation))
+* OpenCV 3.4
+* Eigen3
 
 ```bash
 sudo apt-get install protobuf-compiler libprotobuf-dev cmake libeigen3-dev

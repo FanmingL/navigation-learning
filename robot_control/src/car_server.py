@@ -11,7 +11,6 @@ import time
 class CarServer:
 
     def __init__(self, mode=p.VELOCITY_CONTROL):
-        rospy.init_node('car_server')
         self.start_position = [0.87, 1.15, 1]
         self.start_orientation = p.getQuaternionFromEuler([0, 0, 0])
         p.connect(p.GUI)
@@ -114,6 +113,7 @@ class CarServer:
 
 
 if __name__ == '__main__':
+	rospy.init_node('car_server')
     t = CarServer()
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
