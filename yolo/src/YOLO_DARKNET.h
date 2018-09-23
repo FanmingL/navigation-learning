@@ -8,6 +8,8 @@
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
+#include "opencv2/video.hpp"
+#include "opencv2/imgcodecs.hpp"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,6 +28,7 @@ extern "C" {
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 
 class YOLO_DARKNET {
 
@@ -35,15 +38,17 @@ public:
     public:
         float prob;
         std::string name;
+        unsigned int frame_index;
         box bbox;
-        YOLO_OUT(const char *_name, box &_bbox, float _prob):
-        name(_name), bbox(_bbox), prob(_prob){}
+        YOLO_OUT(const char *_name, box &_bbox, float _prob, unsigned int _frame_index):
+        name(_name), bbox(_bbox), prob(_prob), frame_index(_frame_index){}
 
     };
     YOLO_DARKNET();
     ~YOLO_DARKNET() = default;
     void yoloProcess(cv::Mat &in, cv::Mat &res, std::vector<YOLO_OUT> &anchor, float threshold, float hier, float nms);
     void printDetection(std::vector<YOLO_OUT> &detection_ins);
+    void videoProcess(const char *in_path, const char *out_path);
     std::string basePath, configPath, weightPath, imagePath,
             namesPath, windowName, alphabetPath;
     unsigned int counter;

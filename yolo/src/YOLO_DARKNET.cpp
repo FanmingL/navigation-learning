@@ -27,6 +27,7 @@ basePath(PATH), configPath(basePath+"/config/yolov3.cfg"), weightPath(basePath+"
     names = get_labels((char*)namesPath.c_str());
     net = load_network((char*)configPath.c_str(), (char*)weightPath.c_str(), 0);
     set_batch_network(net, 1);
+    // resize_network(net, 960, 960);
     load_alphabet_new();
 }
 
@@ -77,7 +78,7 @@ void YOLO_DARKNET::draw_detections_new(image im, detection *dets, int num,
                     strcat(labelstr, names[j]);
                 }
                 printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
-                YOLO_OUT y(names[j], dets[i].bbox, dets[i].prob[j]*100);
+                YOLO_OUT y(names[j], dets[i].bbox, dets[i].prob[j]*100, counter);
                 res_name.push_back(y);
                 break;
             }
@@ -138,10 +139,41 @@ void YOLO_DARKNET::draw_detections_new(image im, detection *dets, int num,
 
 std::ostream & operator << (std::ostream &out,
         YOLO_DARKNET::YOLO_OUT &item) {
-        out<<"name is "<<item.name
-        <<"\nbox is ("<<item.bbox.x<<", "<<item.bbox.y<<", "
-        <<item.bbox.w<<", "<<item.bbox.h<<") "
-        <<"\n probility is "<<item.prob;
+        out<<item.frame_index<<", "<<item.name
+        <<", "<<item.bbox.x<<", "<<item.bbox.y<<", "
+        <<item.bbox.w<<", "<<item.bbox.h<<", "
+        <<item.prob;
     return out;
     }
+
+
+void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
+    std::string in_path(basePath+_in_path), out_path(basePath+_out_path);
+
+    cv::VideoWriter videoWriter(out_path, -1, 30, cv::Size(960, 960));
+    cv::VideoCapture cap(in_path);
+    cv::Mat m;
+    cv::Rect rect(1280-960, 0, 960, 960);
+    std::vector<YOLO_OUT> res;
+
+    std::ofstream outfile;
+    outfile.open(basePath+"/data/res-video.txt");
+    if (!outfile)std::cout<<"Error"<<std::endl;
+    double t = what_time_is_it_now();
+    for (;;)
+    {
+
+        cap >> m;
+        if (m.empty())break;
+        cv::Mat resized(m, rect);
+        yoloProcess(resized, resized, res, 0.5, 0.5, 0.4);
+        videoWriter << resized;
+        for (auto &item : res)
+            outfile << item <<std::endl << std::endl;
+        std::cout<<counter<<", "<<1./(what_time_is_it_now()-t)<<std::endl;
+        t = what_time_is_it_now();
+
+    }
+    outfile.close();
+}
 
