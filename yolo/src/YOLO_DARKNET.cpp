@@ -150,7 +150,7 @@ std::ostream & operator << (std::ostream &out,
 void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
     std::string in_path(basePath+_in_path), out_path(basePath+_out_path);
 
-    cv::VideoWriter videoWriter(out_path, -1, 30, cv::Size(960, 960));
+    cv::VideoWriter videoWriter(out_path, CV_FOURCC('D','I','V','X'), 30, cv::Size(960, 960));
     cv::VideoCapture cap(in_path);
     cv::Mat m;
     cv::Rect rect(1280-960, 0, 960, 960);
