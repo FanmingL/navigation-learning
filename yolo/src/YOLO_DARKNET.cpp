@@ -77,7 +77,7 @@ void YOLO_DARKNET::draw_detections_new(image im, detection *dets, int num,
                     strcat(labelstr, ", ");
                     strcat(labelstr, names[j]);
                 }
-                printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
+                //printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
                 YOLO_OUT y(names[j], dets[i].bbox, dets[i].prob[j]*100, counter);
                 res_name.push_back(y);
                 break;
@@ -150,7 +150,7 @@ std::ostream & operator << (std::ostream &out,
 void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
     std::string in_path(basePath+_in_path), out_path(basePath+_out_path);
 
-    cv::VideoWriter videoWriter(out_path, CV_FOURCC('D','I','V','X'), 30, cv::Size(960, 960));
+    cv::VideoWriter videoWriter(out_path, CV_FOURCC('D', 'I', 'V', 'X'), 30, cv::Size(960, 960));
     cv::VideoCapture cap(in_path);
     cv::Mat m;
     cv::Rect rect(1280-960, 0, 960, 960);
@@ -160,9 +160,9 @@ void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
     outfile.open(basePath+"/data/res-video.txt");
     if (!outfile)std::cout<<"Error"<<std::endl;
     double t = what_time_is_it_now();
+    float all_frame = (float)cap.get(CV_CAP_PROP_FRAME_COUNT);
     for (;;)
     {
-
         cap >> m;
         if (m.empty())break;
         cv::Mat resized(m, rect);
@@ -170,9 +170,8 @@ void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
         videoWriter << resized;
         for (auto &item : res)
             outfile << item <<std::endl << std::endl;
-        std::cout<<counter<<", "<<1./(what_time_is_it_now()-t)<<std::endl;
+        std::cout<<counter / all_frame *100.0f<<", "<<1./(what_time_is_it_now()-t)<<std::endl;
         t = what_time_is_it_now();
-
     }
     outfile.close();
 }

@@ -10,4 +10,5 @@
 #
 #================================================================
 
-g++ -o main *.cpp -L/root/darknet -ldarknet  `pkg-config --cflags --libs opencv` -std=c++11 -DPATH=\"/root/yolo\" -lpthread
+g++ -o main *.cpp /usr/local/lib/libdarknet.so  `pkg-config --cflags --libs opencv` -lpthread -std=c++14 -DPATH=\"/root/yolo\" -DGPU -DCUDNN -DOPENCV -I/usr/local/cuda/include
+

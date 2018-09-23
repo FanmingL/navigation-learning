@@ -10,10 +10,10 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/video.hpp"
 #include "opencv2/imgcodecs.hpp"
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include "darknet.h"
+#ifdef __cplusplus
+extern "C"{
+#endif
     image ipl_to_image(IplImage *src);
     IplImage* image_to_ipl(image im);
     cv::Mat image_to_mat(image im);
@@ -23,7 +23,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
 #include <iostream>
 #include <string>
 #include <vector>
