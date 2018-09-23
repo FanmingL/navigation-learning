@@ -26,3 +26,6 @@ sudo pip2 install pybullet numpy
 ### Kalman Filter
 
 ![image](./image/effect_kalman_filter.gif)
+
+### YOLO
+[![YOLO Video](image/shot.png)](https://box.nju.edu.cn/seafhttp/files/ae8bbe4d-53f5-4b50-a8d1-ba46e64adaa7/RSD-005-13min-res-darknet.mp4 "Click to watch the YOLO video")
