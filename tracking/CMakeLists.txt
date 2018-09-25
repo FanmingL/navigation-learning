@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.0)
+project(tracking)
+set(CMAKE_CXX_STANDARD 14)
+set(SRC src/main.cpp src/tracking.cpp src/tracking.h)
+add_definitions(-DPATH="${CMAKE_CURRENT_SOURCE_DIR}")
+find_package(OpenCV REQUIRED)
+add_executable(main ${SRC})
+target_link_libraries(main ${OpenCV_LIBS})
