@@ -1,0 +1,5 @@
+add_definitions(-DDIMENSION=2)
+find_package(Eigen3 REQUIRED)
+message(STATUS "eigen is ${EIGEN3_INCLUDE_DIR}")
+include_directories(${EIGEN3_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(kf SHARED KalmanFilter.cpp)
