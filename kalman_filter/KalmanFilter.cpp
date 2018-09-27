@@ -27,6 +27,7 @@ KalmanFilter::KalmanFilter(const MATRIX_TYPE &_measureCov, const MATRIX_TYPE &_c
 void KalmanFilter::init() {
     xPost = VECTOR_ZERO;
     xPre = VECTOR_ZERO;
+    postCov = MATRIX_I;
 }
 
 void KalmanFilter::setStart(const VECTOR_TYPE &start_measure) {

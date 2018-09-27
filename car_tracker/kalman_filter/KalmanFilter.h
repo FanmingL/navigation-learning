@@ -39,8 +39,8 @@ public:
     VECTOR_TYPE xPost, xPre;
     void correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &control, VECTOR_TYPE &output, bool is_velocity_in=true);
     void setStart(const VECTOR_TYPE &start_measure);
-private:
     MATRIX_TYPE temp1, temp2;
+private:
     void init();
 
 };
