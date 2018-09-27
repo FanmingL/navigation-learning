@@ -207,7 +207,7 @@ bool car_tracker::read_one_car(std::ifstream &_ff, car_tracker::yolo_car &one_ca
     return false;
 }
 
-bool car_tracker::run(cv::Mat &dst, std::vector<cv::Rect2d> &res) {
+bool car_tracker::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res) {
     if (!read_one_frame(ff, objects_current_frame, image_current_frame))
         return false;
     image_current_frame.copyTo(dst);
@@ -226,7 +226,7 @@ bool car_tracker::run(cv::Mat &dst, std::vector<cv::Rect2d> &res) {
             cv::putText(dst, std::to_string(iter->index_it),
                     cv::Point(tmp_res.x, tmp_res.y),cv::FONT_HERSHEY_DUPLEX,0.5,
                     cv::Scalar(0, 0, 128));
-            res.push_back(tmp_res);
+            res.push_back(std::pair<int, cv::Rect2d>(iter->index_it, tmp_res));
             iter++;
         }
         else

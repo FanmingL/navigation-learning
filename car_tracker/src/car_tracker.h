@@ -92,7 +92,7 @@ public:
     bool read_one_frame(std::ifstream &_ff, std::vector<car_tracker::yolo_car> &one_frame_car,
             cv::Mat &img);
     bool read_one_frame();
-    bool run(cv::Mat &dst, std::vector<cv::Rect2d> &res);
+    bool run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res);
     std::string base_path;
     int frame_width, frame_height, frame_count;
     int current_frame;
