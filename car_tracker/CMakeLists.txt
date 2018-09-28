@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(car_tracker)
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_BUILD_TYPE Release)
 add_definitions(-DPATH="${CMAKE_CURRENT_SOURCE_DIR}")
 add_definitions(-DDIMENSION=2)
 find_package(Eigen3 REQUIRED)
