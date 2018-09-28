@@ -38,16 +38,21 @@
 #include <mutex>
 #include <algorithm>
 
-class car_tracker{
+class car_tracker {
 public:
-    class yolo_car{
-        friend std::ostream & operator<<(std::ostream &out, yolo_car &object);
+    class yolo_car {
+        friend std::ostream &operator<<(std::ostream &out, yolo_car &object);
+
     public:
         yolo_car();
+
         ~yolo_car() = default;
+
         bool check_constraints();
+
         static void set_parameter(double &_min_area,
-                std::unordered_set<std::string> &_potential_name, double _probility_threshold);
+                                  std::unordered_set<std::string> &_potential_name, double _probility_threshold);
+
         cv::Rect2d bbox;
         std::string name;
         double probility;
@@ -58,21 +63,33 @@ public:
         static double min_area, probility_threshold;
         static int frame_index;
     };
-    class single_tracker{
+
+    class single_tracker {
     public:
         /*    method   */
         single_tracker(cv::Mat &image, cv::Rect2d &rect);
+
         ~single_tracker() = default;
+
         void init(cv::Mat &image, cv::Rect2d &rect);
+
         bool run(cv::Mat &image, std::vector<car_tracker::yolo_car> &car_current_frame, cv::Rect2d &res);
+
         bool check_dog();
+
         void feed_dog_yolo();
+
         void feed_dog_tracker();
+
         void init_kf(cv::Rect2d &measure);
+
         cv::Rect2d run_kf(cv::Rect2d &measurement, cv::Rect2d &post_estimate);
+
         static double calculate_overlap(cv::Rect2d &rect1, cv::Rect2d &rect2);
+
         static void set_parameter(float _position_cov, float _control_cov, double _min_overlap,
-                int _max_count_yolo, int _max_count_tracker);
+                                  int _max_count_yolo, int _max_count_tracker);
+
         /*   variable */
         int count_now_yolo, count_now_traker, index_it;
         /* LF RF RB LB */
@@ -84,15 +101,21 @@ public:
     };
 
 
-
     car_tracker(float _position_cov = 1.0f, float _control_cov = 1.0f,
-            int _max_count_yolo=30, int _max_count_tracker=3, double _min_area=500., double _min_over_lap = 0.4, double _probility_threshold=0.4);
-    ~car_tracker()= default;
+                int _max_count_yolo = 30, int _max_count_tracker = 3, double _min_area = 500.,
+                double _min_over_lap = 0.4, double _probility_threshold = 0.4);
+
+    ~car_tracker() = default;
+
     bool read_one_car(std::ifstream &_ff, car_tracker::yolo_car &one_car);
+
     bool read_one_frame(std::ifstream &_ff, std::vector<car_tracker::yolo_car> &one_frame_car,
-            cv::Mat &img);
+                        cv::Mat &img);
+
     bool read_one_frame();
+
     bool run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res);
+
     std::string base_path;
     int frame_width, frame_height, frame_count;
     int current_frame;

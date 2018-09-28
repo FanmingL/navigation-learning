@@ -6,13 +6,10 @@
 
 
 void KalmanFilter::correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &control, VECTOR_TYPE &output,
-        bool is_velocity_in){
-    if (is_velocity_in)
-    {
+                           bool is_velocity_in) {
+    if (is_velocity_in) {
         xPre = transferMatrix * xPost + controlMatrix * control;
-    }
-    else
-    {
+    } else {
         xPre = control;
     }
     preCov = transferMatrix * postCov * transferMatrix.transpose() + controlCov;
@@ -29,10 +26,10 @@ void KalmanFilter::correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &contro
 }
 
 KalmanFilter::KalmanFilter(const MATRIX_TYPE &_measureCov, const MATRIX_TYPE &_controlCov,
-        const MATRIX_TYPE &_transferMatrix, const MATRIX_TYPE &_controlMatrix, const MATRIX_TYPE &_measureMatrix) :
+                           const MATRIX_TYPE &_transferMatrix, const MATRIX_TYPE &_controlMatrix,
+                           const MATRIX_TYPE &_measureMatrix) :
         measureCov(_measureCov), controlCov(_controlCov), transferMatrix(_transferMatrix),
-        controlMatrix(_controlMatrix), measureMatrix(_measureMatrix)
-        {
+        controlMatrix(_controlMatrix), measureMatrix(_measureMatrix) {
     init();
 }
 
