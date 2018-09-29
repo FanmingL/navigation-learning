@@ -1,0 +1,5 @@
+project(car_filter)
+include_directories(include)
+set(SRC src/main.cpp src/car_filter.cpp src/filter_algorithm.cpp)
+add_executable(${PROJECT_NAME} ${SRC})
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})

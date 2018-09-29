@@ -5,9 +5,4 @@ build
 *.weights
 out.jpg
 res.txt
-*.mov
-*.mp4
-*stabling.txt
-*data.txt
-*data2.txt
-
+data/
