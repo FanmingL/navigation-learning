@@ -4,7 +4,7 @@
 *   File name   : car_filter.h
 *   Author      : FanmingL
 *   Created date: 2018-09-28 15:39:51
-*   Description : 
+*   Description : 1,
 *
 *===============================================================*/
 
@@ -30,29 +30,71 @@
 #include <mutex>
 #include <algorithm>
 #include <thread>
+#include <unordered_map>
+#include "filter_algorithm.h"
 
 class car_filter {
 public:
     class car_data {
+        friend std::ostream &operator<<(std::ostream &out, car_data &object);
+
+    public:
         car_data();
 
         ~car_data() = default;
 
-        int index;
+        int car_index;
         cv::Rect2d bbox;
-        int it_frame;
-        static int frame_now;
+        int it_frame_index;
+        static int frame_index;
+        bool found_flag;
     };
 
-    car_filter();
+    class single_car_filter {
+    public:
+        single_car_filter();
+
+        ~single_car_filter() = default;
+
+        int start_frame, end_frame;
+
+    };
+
+    car_filter(double overlap_threshold = 0.7);
 
     ~car_filter() = default;
 
+    bool read_one_car(std::ifstream &_ff, car_data &_one_car);
+
+    bool read_one_car();
+
+    /*only txt*/
+    bool read_one_frame_data();
+
+    bool read_next_frame(std::vector<car_data> &_frame_data, cv::Mat &img);
+
+    bool read_next_frame();
+
+    bool run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res);
+
+    void sort_car_by_index(std::vector<car_data> &_car_vector);
+
+    void sort_car_by_index();
 
     const std::string base_path = std::string(PATH);
+
+    static double calculate_overlap(cv::Rect2d &rect1, cv::Rect2d &rect2);
+
 private:
     std::ifstream ff;
-
+    cv::VideoCapture videoCapture;
+    car_data one_car;
+    std::vector<car_data> one_frame_car;
+    cv::Mat one_frame_image;
+    std::unordered_map<int, std::vector<cv::Rect2d> > car_buffer;
+    std::unordered_map<int, std::shared_ptr<filter_algorithm_base> > car_filter_buffer;
+    int index_max_now;
+    double overlap_threshold;
 };
 
 #endif //CAR_FILTER_H

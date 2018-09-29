@@ -14,10 +14,15 @@
 int main(int argc, char **argv)
 {
     car_filter car_filter1;
-    cv::VideoCapture cap(car_filter1.base_path + "/data/in_video.mp4");
-    assert(cap.isOpened());
     std::remove((char*)(car_filter1.base_path + "/data/out_video.mp4").c_str());
-    
+    cv::Mat dst;
+    std::vector<std::pair<int, cv::Rect2d> > res;
+    while (car_filter1.run(dst, res))
+    {
+        cv::imshow("11", dst);
+        auto key = cv::waitKey(1);
+        if (key == 'q')break;
+    }
 
     return 0;
 }
