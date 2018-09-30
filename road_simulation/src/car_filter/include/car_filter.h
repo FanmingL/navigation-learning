@@ -62,7 +62,9 @@ public:
 
     car_filter(double overlap_threshold = 0.7);
 
-    ~car_filter() = default;
+    car_filter(const std::string &_out_data_path, double overlap_threshold = 0.7);
+
+    ~car_filter();
 
     bool read_one_car(std::ifstream &_ff, car_data &_one_car);
 
@@ -85,8 +87,10 @@ public:
 
     static double calculate_overlap(cv::Rect2d &rect1, cv::Rect2d &rect2);
 
+    int frame_width, frame_height;
 private:
     std::ifstream ff;
+    std::ofstream of;
     cv::VideoCapture videoCapture;
     car_data one_car;
     std::vector<car_data> one_frame_car;
@@ -94,6 +98,7 @@ private:
     std::unordered_map<int, std::vector<cv::Rect2d> > car_buffer;
     std::unordered_map<int, std::shared_ptr<filter_algorithm_base> > car_filter_buffer;
     int index_max_now;
+    bool if_write_data;
     double overlap_threshold;
 };
 

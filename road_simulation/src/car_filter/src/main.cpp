@@ -12,8 +12,13 @@
 #include "car_filter.h"
 
 int main(int argc, char **argv) {
-    car_filter car_filter1;
-    //std::remove((char*)(car_filter1.base_path + "/data/out_video.mp4").c_str());
+    car_filter car_filter1(std::string("/data/filter_out_data.txt"));
+#ifdef WRITE_VIDEO
+    std::string video_out_path = car_filter1.base_path +"/data/filter_out_video.mp4";
+    std::remove((char*)video_out_path.c_str());
+    cv::VideoWriter videoWriter(video_out_path,CV_FOURCC('D', 'I', 'V', 'X'),\
+           30, cv::Size(car_filter1.frame_width, car_filter1.frame_height));
+#endif
     cv::Mat dst;
     std::vector<std::pair<int, cv::Rect2d> > res;
     int count = 0;
@@ -22,6 +27,10 @@ int main(int argc, char **argv) {
         cv::imshow("11", dst);
         auto key = cv::waitKey(1);
         if (key == 'q')break;
+#endif
+#ifdef WRITE_VIDEO
+        if (count%3==0)
+        videoWriter << dst;
 #endif
         std::cout << count++ << std::endl;
     }

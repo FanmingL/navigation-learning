@@ -5,7 +5,7 @@ set(CMAKE_BUILD_TYPE Release)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 add_definitions(-DPATH="${CMAKE_CURRENT_SOURCE_DIR}")
 add_definitions(-DDIMENSION=2)
-# add_definitions(-DSHOW_VIDEO)
+add_definitions(-DSHOW_VIDEO)
 # add_definitions(-DWRITE_VIDEO)
 
 find_package(Eigen3 REQUIRED)
@@ -13,6 +13,7 @@ find_package(OpenCV REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR} 
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${OpenCV_INCLUDE_DIRS}
-        /usr/include)
+        /usr/include
+        /usr/lcoal/include)
 add_subdirectory(src)
 
