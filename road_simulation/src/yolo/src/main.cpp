@@ -10,8 +10,7 @@
 *===============================================================*/
 #include "YOLO_DARKNET.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     YOLO_DARKNET net;
 #if 0
     std::ofstream outfile;
@@ -29,7 +28,7 @@ int main(int argc, char **argv)
     cv::waitKey(0);
     cv::destroyAllWindows();*/
 #else
-    
+
     net.videoProcess("/data/in_video.mp4", "/data/yolo_out_video.mp4");
     //net.videoProcess("/data/DJI00004.MP4", "/data/RSD-004-13min-res.mp4");
 #endif

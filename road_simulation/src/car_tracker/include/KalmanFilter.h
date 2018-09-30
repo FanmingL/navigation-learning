@@ -22,7 +22,6 @@
 #else
 #define NUM_TYPE double
 #endif
-
 #define MATRIX_TYPE Eigen::Matrix<NUM_TYPE, DIMENSION, DIMENSION>
 #define VECTOR_TYPE Eigen::Matrix<NUM_TYPE, DIMENSION, 1>
 #define MATRIX_I Eigen::Matrix<NUM_TYPE, DIMENSION, DIMENSION>::Identity()

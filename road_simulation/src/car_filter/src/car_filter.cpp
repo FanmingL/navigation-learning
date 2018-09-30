@@ -1,4 +1,4 @@
- /*================================================================
+/*================================================================
 *   Copyright (C) 2018 * Ltd. All rights reserved.
 *   
 *   File name   : car_filter.cpp
@@ -83,7 +83,7 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
         }
     }
 
-    for (auto &item:car_buffer){
+    for (auto &item:car_buffer) {
         if (!index_accepted_this_frame.count(item.first)) {
             index_to_delete.push_back(item.first);
         }

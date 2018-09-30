@@ -4,7 +4,6 @@
 
 #include "KalmanFilter.h"
 
-
 void KalmanFilter::correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &control, VECTOR_TYPE &output,
                            bool is_velocity_in) {
     if (is_velocity_in) {
