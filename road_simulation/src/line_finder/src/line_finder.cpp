@@ -40,21 +40,43 @@ bool line_finder::run(cv::Mat &dst) {
 
 }
 
+
 void line_finder::find_line(cv::Mat &src, cv::Mat &dst, std::vector<std::pair<cv::Point2d, cv::Point2d> > &res) {
     res.clear();
-    cv::Mat gray, gray_mask, color_mask;
-    std::vector<cv::Mat> bgr_channel;
-    cv::split(src, bgr_channel);
-    std::pair<int, int> b_range(230,255),
-                        g_range(230,255),
-                        r_range(230,255);
-    color_mask = ((bgr_channel[0] >= b_range.first) & bgr_channel[0] <= b_range.second)
-                &((bgr_channel[1] >= g_range.first) & bgr_channel[1] <= g_range.second)
-                & ((bgr_channel[2] >= r_range.first) & bgr_channel[2] <= r_range.second);
 
-    cv::Canny(color_mask,color_mask,150, 200);
-    auto element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3,3));
-    //cv::dilate(color_mask, color_mask, element);
-    src.copyTo(dst, color_mask);
+    std::vector<cv::Rect> roi_buffer;
+    roi_buffer.push_back(make_rect_from_point(cv::Point(418, 364), cv::Point(603, 618)));
 
+    cv::Mat gray, corner_image, corner_norm_image, corner_scaled_image;
+    cv::Mat roi_image = src(roi_buffer.front());
+    cv::cvtColor(roi_image, gray, CV_BGR2GRAY);
+    cv::cornerHarris(gray, corner_image, 2, 3, 0.04);
+    //std::cout<<corner_image<<std::endl;
+    cv::normalize(corner_image, corner_norm_image, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
+
+    cv::convertScaleAbs(corner_norm_image, corner_scaled_image);
+    dst = src.clone();
+
+    for( int i = 0; i < corner_norm_image.rows ; i++ )
+    {
+        for( int j = 0; j < corner_norm_image.cols; j++ )
+        {
+            if(  corner_image.at<float>(i,j) > 0.001 )
+            {
+                circle( dst, cv::Point(j + roi_buffer.front().tl().x, i + roi_buffer.front().tl().y), 5,  cv::Scalar(0, 0, 255), 2, 8, 0 );
+            }
+        }
+    }
+
+
+
+}
+
+cv::Rect line_finder::make_rect_from_point(const cv::Point &tl, const cv::Point &br) {
+    cv::Rect res;
+    res.x = tl.x;
+    res.y = tl.y;
+    res.width = br.x - tl.x;
+    res.height = br.y - tl.y;
+    return res;
 }

@@ -31,6 +31,7 @@ public:
     const std::string base_path = std::string(PATH);
     cv::Mat canvas, image_now, canvas_src, canvas_dst;
     cv::Rect roi_src, roi_processed;
+    static cv::Rect make_rect_from_point(const cv::Point &tl, const cv::Point &br);
 private:
 
 };
