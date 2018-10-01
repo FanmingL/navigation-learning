@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 project(road_simulation)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE Release)
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH  ${PROJECT_BINARY_DIR}/lib)
+
 add_definitions(-DPATH="${CMAKE_CURRENT_SOURCE_DIR}")
 add_definitions(-DDIMENSION=2)
 add_definitions(-DSHOW_VIDEO)
@@ -16,4 +18,5 @@ include_directories(${EIGEN3_INCLUDE_DIR}
         /usr/include
         /usr/lcoal/include)
 add_subdirectory(src)
+
 

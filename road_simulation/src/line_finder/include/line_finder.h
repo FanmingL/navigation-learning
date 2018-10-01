@@ -19,6 +19,8 @@
 #include "opencv2/video.hpp"
 #include "opencv2/videoio.hpp"
 #include "opencv2/tracking.hpp"
+#include "car_filter.h"
+#include <queue>
 
 class line_finder{
 public:
@@ -32,8 +34,23 @@ public:
     cv::Mat canvas, image_now, canvas_src, canvas_dst;
     cv::Rect roi_src, roi_processed;
     static cv::Rect make_rect_from_point(const cv::Point &tl, const cv::Point &br);
-private:
+    car_filter car_filter1;
+    std::vector<car_filter::car_data> car_data;
+    bool bfs(const cv::Point &p1, cv::Point &dst, const cv::Mat &img_roi, const std::unordered_set<int> &p_set, cv::Mat &label);
+    void filter_line(const std::vector<std::pair<cv::Point, cv::Point> > &src,
+            std::vector<std::pair<cv::Point, cv::Point> > &dst,
+            std::vector<int> &_index_res);
 
+    class line_descipt{
+    public:
+        cv::Point point;
+        int count;
+        int index_it;
+        static int index;
+    };
+private:
+    std::vector<cv::Point> four_direction;
+    std::list<line_finder::line_descipt> line_list;
 };
 
 #endif //LINE_FINDER_H

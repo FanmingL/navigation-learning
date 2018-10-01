@@ -6,4 +6,7 @@ include_directories(${EIGEN3_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
         include )
 set(SRC src/main.cpp src/car_tracker.cpp src/KalmanFilter.cpp)
 add_executable(${PROJECT_NAME} ${SRC})
+add_library(${PROJECT_NAME}_lib SHARED ${SRC})
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME}_lib ${OpenCV_LIBS})
+

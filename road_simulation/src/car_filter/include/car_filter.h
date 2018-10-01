@@ -88,12 +88,12 @@ public:
     static double calculate_overlap(cv::Rect2d &rect1, cv::Rect2d &rect2);
 
     int frame_width, frame_height;
+    std::vector<car_data> one_frame_car;
 private:
     std::ifstream ff;
     std::ofstream of;
     cv::VideoCapture videoCapture;
     car_data one_car;
-    std::vector<car_data> one_frame_car;
     cv::Mat one_frame_image;
     std::unordered_map<int, std::vector<cv::Rect2d> > car_buffer;
     std::unordered_map<int, std::shared_ptr<filter_algorithm_base> > car_filter_buffer;
