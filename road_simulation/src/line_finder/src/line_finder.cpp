@@ -19,7 +19,12 @@ roi_src(0, 0, 960, 960),
 roi_processed(960, 0, 960, 960)
 {
     // videoCapture.open(base_path + "/data/in_video.mp4");
-    assert(videoCapture.isOpened());
+    // assert(videoCapture.isOpened());
+    std::string data_out_path = base_path + "/data/line_out_data.txt";
+    std::remove((char*)data_out_path.c_str());
+
+    of.open(data_out_path);
+
     canvas_src = cv::Mat(canvas, roi_src);
     canvas_dst = cv::Mat(canvas, roi_processed);
     four_direction.emplace_back(cv::Point(-1, 0));
@@ -28,6 +33,33 @@ roi_processed(960, 0, 960, 960)
     four_direction.emplace_back((cv::Point(0, -1)));
     line_list.emplace_back(line_finder::classifier(cv::Rect(1428 - 960, 480, 1585-1428, 603-480), 0));
     line_list.emplace_back(line_finder::classifier(cv::Rect(1436 - 960, 397, 1575-1436, 487-397), 1));
+    /*
+     *                350cm
+     *      400cm   |       |
+     *             2|      3|
+     *
+     *      600cm
+     *
+     *     ?cm      |       |
+     *             0|      1|
+     *
+     */
+    /*
+     *
+     *
+     *
+     */
+    world_position.emplace_back(cv::Point2f(0, -355));
+    world_position.emplace_back(cv::Point2f(350, -320));
+    world_position.emplace_back(cv::Point2f(0, 0));
+    world_position.emplace_back(cv::Point2f(350, 0));
+    world_position.emplace_back(cv::Point2f(0, 600));
+    world_position.emplace_back(cv::Point2f(350, 600));
+    world_position.emplace_back(cv::Point2f(0, 1000));
+    world_position.emplace_back(cv::Point2f(350, 1000));
+    for (auto &item : world_position)
+    {
+    }
 }
 
 int line_finder::classifier::index = 0;
@@ -64,7 +96,9 @@ void line_finder::find_line(cv::Mat &src, cv::Mat &dst, std::vector<std::pair<cv
     auto element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
     cv::dilate(mask,mask, element);
     src.copyTo(dst);
-    cv::goodFeaturesToTrack(gray(ROI), interest_points, 50, 0.05, 5, cv::Mat(),3,true,0.04);
+
+    cv::goodFeaturesToTrack(gray(ROI), interest_points, 50, 0.05, 5, cv::Mat(),3,false,0.04);
+
     std::unordered_set<int> point_may_be, pair_buffer;
     std::list<cv::Point> point_may_be_v;
     for (auto &item : interest_points)
@@ -73,8 +107,8 @@ void line_finder::find_line(cv::Mat &src, cv::Mat &dst, std::vector<std::pair<cv
         for (auto &item2 : car_data)
         {
             auto bbox_tmp = item2.bbox;
-            bbox_tmp.width += 5;
-            bbox_tmp.height += 5;
+            bbox_tmp.width += 4;
+            bbox_tmp.height += 4;
             bbox_tmp.x -= 2;
             bbox_tmp.y -= 2;
             if (bbox_tmp.contains(cv::Point2d(item.x +ROI.tl().x, item.y + ROI.tl().y)))
@@ -129,40 +163,118 @@ void line_finder::find_line(cv::Mat &src, cv::Mat &dst, std::vector<std::pair<cv
     std::sort(line_may_be.begin(), line_may_be.end(), line_compare);
     std::vector<int> index_res;
     filter_line(line_may_be, line_may_be, index_res);
-
+    std::vector<std::pair<cv::Point2f, cv::Point2f> > line_may_be_f;
+    std::vector<cv::Point2f> interest_point_float;
+    for (auto &item : line_may_be)
+    {
+        interest_point_float.emplace_back(cv::Point2f(item.first.x, item.first.y));
+        interest_point_float.emplace_back(cv::Point2f(item.second.x, item.second.y));
+    }
+    cv::Size winSize(3,3), zeroZone(-1,-1);
+    cv::TermCriteria criteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 200, 0.001);
+    if (!interest_point_float.empty())
+        cv::cornerSubPix(gray, interest_point_float, winSize, zeroZone, criteria);
+    for (int i = 0; i < interest_point_float.size(); i+=2)
+    {
+        line_may_be_f.emplace_back(std::pair<cv::Point2f, cv::Point2f>\
+                (interest_point_float[i], interest_point_float[i+1]));
+    }
     for (auto &item : car_data)
     {
-        cv::rectangle(dst, item.bbox, cv::Scalar(128, 0, 0), 2);
+        cv::rectangle(dst, item.bbox, cv::Scalar(0, 128, 128), 2);
+        cv::putText(dst,std::to_string(item.car_index), item.bbox.tl(), cv::FONT_ITALIC, 0.5, cv::Scalar(128, 0, 0), 2);
     }
 
-    for (int i =0 ;i < line_may_be.size(); i++)
+    of << car_filter::car_data::frame_index - 1 << " " << line_may_be_f.size() << " ";
+    for (int i =0 ;i < line_may_be_f.size(); i++)
     {
-        auto item = line_may_be[i];
+        auto item = line_may_be_f[i];
         auto p_tmp = (item.first +item.second)/2;
-        int center_index_tmp = p_tmp.x + p_tmp.y * car_filter1.frame_width;
+        float center_index_tmp = p_tmp.x + p_tmp.y * car_filter1.frame_width;
         cv::line(dst, item.first, item.second, cv::Scalar(255,0,255), 3);
         cv::putText(dst,std::to_string(index_res[i]), item.first, cv::FONT_ITALIC, 0.5, cv::Scalar(0, 0, 0), 2);
+        of <<index_res[i] <<" " << line_may_be_f[i].first.x << " "<<line_may_be_f[i].first.y
+        <<" "<<line_may_be_f[i].second.x<<" "<<line_may_be_f[i].second.y<<" ";
     }
     std::unordered_set<int> index_res_set;
     for(auto &item:index_res)
         index_res_set.insert(item);
-    if (index_res_set.empty() || index_res_set.size() == 1 ||
-            (
-                    index_res_set.size() == 2&&
-                            (
-                                    (
-                                            index_res_set.count(0)&&index_res_set.count(2)
-                                            )||
-                                            (
-                                             index_res_set.count(1)&&index_res_set.count(3)
-                                                    )
-                                    )
-            )
-                    )
-
-        std::cout<<"0"<<std::endl;
+    bool valid_flag ;
+    if(index_res_set.size() >= 3 ||
+    (index_res_set.size()==2 && index_res_set.count(2) && index_res_set.count(3))||
+    (index_res_set.size()==2 && index_res_set.count(0) && index_res_set.count(1))
+    )
+    {
+        valid_flag = true;
+        of<<1<<std::endl;
+    }
     else
-        std::cout<<"1"<<std::endl;
+    {
+        valid_flag = false;
+        of<<0<<std::endl;
+
+    }
+    //std::cout<<valid_flag<<std::endl;
+    if (valid_flag)
+    {
+        std::vector<cv::Point2f> position_image, position_world;
+        for (int i = 0; i < line_may_be_f.size(); i++)
+        {
+            int index_tmp = index_res[i];
+            if (index_tmp == 0 || index_tmp == 1) {
+                position_image.push_back((line_may_be_f[i].first));
+                position_world.push_back(world_position[index_tmp]);
+                position_image.push_back((line_may_be_f[i].second));
+                position_world.push_back((world_position[index_tmp+2]));
+            }
+            if (index_tmp == 2 || index_tmp == 3)
+            {
+                position_image.push_back((line_may_be_f[i].first));
+                position_world.push_back(world_position[index_tmp+2]);
+                position_image.push_back((line_may_be_f[i].second));
+                position_world.push_back((world_position[index_tmp+4]));
+            }
+        }
+        homography_matrix = cv::findHomography(position_image, position_world);
+        for (int i = 0; i < line_may_be_f.size(); i++)
+        {
+            int index_tmp = index_res[i];
+#if 0
+            if (index_tmp == 0 || index_tmp == 1)
+            {
+                cv::Mat point_image_mat(3, 1, homography_matrix.type(), cv::Scalar(1.0));
+                point_image_mat.at<double>(0,0) = line_may_be_f[i].first.x;
+                point_image_mat.at<double>(1,0) = line_may_be_f[i].first.y;
+                point_image_mat.at<double>(2,0) = 1;
+                //std::cout<<homography_matrix.inv()<<std::endl;
+                cv::Mat point_world_mat = homography_matrix * point_image_mat;
+                point_world_mat.at<double>(0,0)/=point_world_mat.at<double>(2,0);
+                point_world_mat.at<double>(1,0)/=point_world_mat.at<double>(2,0);
+                point_world_mat.at<double>(2,0)/=point_world_mat.at<double>(2,0);
+
+                std::cout<<index_tmp<<",first: "<<std::endl<<point_world_mat<<std::endl<<std::endl;
+
+                point_image_mat.at<double>(0,0) = line_may_be_f[i].second.x;
+                point_image_mat.at<double>(1,0) = line_may_be_f[i].second.y;
+                point_image_mat.at<double>(2,0) = 1;
+                //std::cout<<point_image_mat<<std::endl;
+                point_world_mat = homography_matrix * point_image_mat;
+                point_world_mat.at<double>(0,0)/=point_world_mat.at<double>(2,0);
+                point_world_mat.at<double>(1,0)/=point_world_mat.at<double>(2,0);
+                point_world_mat.at<double>(2,0)/=point_world_mat.at<double>(2,0);
+
+                std::cout<<index_tmp<<",second: "<<std::endl<<point_world_mat<<std::endl<<std::endl;
+
+            }
+#endif
+        }
+    }
+    if (!homography_matrix.empty())
+    {
+        //std::cout<<homography_matrix<<std::endl;
+        cv::warpPerspective(dst, dst, homography_matrix, dst.size());
+    }
+    std::cout<<car_filter::car_data::frame_index<<std::endl;
     //std::cout<<line_list.size()<<std::endl;
 }
 

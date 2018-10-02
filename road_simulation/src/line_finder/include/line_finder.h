@@ -19,6 +19,7 @@
 #include "opencv2/video.hpp"
 #include "opencv2/videoio.hpp"
 #include "opencv2/tracking.hpp"
+#include "opencv2/calib3d.hpp"
 #include "car_filter.h"
 #include <queue>
 
@@ -51,7 +52,10 @@ public:
         static int index;
     };
 private:
+    cv::Mat homography_matrix;
+    std::vector<cv::Point2f> world_position;
     std::vector<cv::Point> four_direction;
+    std::ofstream of;
     std::vector<line_finder::classifier> line_list;
     std::unordered_set<int> center_point_set;
     std::vector<cv::Point> center_point_vector;
