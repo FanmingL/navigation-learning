@@ -26,9 +26,17 @@ roi_processed(960, 0, 960, 960)
     four_direction.emplace_back(cv::Point(1, 0));
     four_direction.emplace_back((cv::Point(0, 1)));
     four_direction.emplace_back((cv::Point(0, -1)));
+    line_list.emplace_back(line_finder::classifier(cv::Rect(1428 - 960, 480, 1585-1428, 603-480), 0));
+    line_list.emplace_back(line_finder::classifier(cv::Rect(1436 - 960, 397, 1575-1436, 487-397), 1));
 }
 
-int line_finder::line_descipt::index = 0;
+int line_finder::classifier::index = 0;
+
+line_finder::classifier::classifier(const cv::Rect &_bbox, int _index_it) {
+    init_flag = false;
+    bbox = _bbox;
+    index_it = _index_it;
+}
 
 bool line_finder::run(cv::Mat &dst) {
     cv::Mat image_res;
@@ -130,9 +138,31 @@ void line_finder::find_line(cv::Mat &src, cv::Mat &dst, std::vector<std::pair<cv
     for (int i =0 ;i < line_may_be.size(); i++)
     {
         auto item = line_may_be[i];
+        auto p_tmp = (item.first +item.second)/2;
+        int center_index_tmp = p_tmp.x + p_tmp.y * car_filter1.frame_width;
         cv::line(dst, item.first, item.second, cv::Scalar(255,0,255), 3);
         cv::putText(dst,std::to_string(index_res[i]), item.first, cv::FONT_ITALIC, 0.5, cv::Scalar(0, 0, 0), 2);
     }
+    std::unordered_set<int> index_res_set;
+    for(auto &item:index_res)
+        index_res_set.insert(item);
+    if (index_res_set.empty() || index_res_set.size() == 1 ||
+            (
+                    index_res_set.size() == 2&&
+                            (
+                                    (
+                                            index_res_set.count(0)&&index_res_set.count(2)
+                                            )||
+                                            (
+                                             index_res_set.count(1)&&index_res_set.count(3)
+                                                    )
+                                    )
+            )
+                    )
+
+        std::cout<<"0"<<std::endl;
+    else
+        std::cout<<"1"<<std::endl;
     //std::cout<<line_list.size()<<std::endl;
 }
 
@@ -184,79 +214,74 @@ bool line_finder::bfs(const cv::Point &p1, cv::Point &dst, const cv::Mat &img_ro
 void line_finder::filter_line(const std::vector<std::pair<cv::Point, cv::Point> > &src,
                               std::vector<std::pair<cv::Point, cv::Point> > &dst,
                               std::vector<int> &_index_res) {
-    //angle.clear();
-    int dis_threshold = 40;
-    int start_count = 110;
-    std::vector<std::pair<cv::Point, cv::Point> > src_tmp = src;
-    std::vector<bool> coupled_it(src.size(), false);
-    std::vector<int> coupled_index(src.size(), 0);
-    /*for (auto const  &item : src)
+    std::vector<std::vector<int> > index_buffer(line_list.size());
+    _index_res.clear();
+    std::vector<std::pair<cv::Point, cv::Point> > dst_tmp;
+    double length_threshold = 1.14;
+    double bias_max = 30;
+    for(int i = 0 ; i < line_list.size(); i++)
     {
-        auto p_tmp = item.first - item.second;
-        double angle_this = atan2((double)p_tmp.y, (double)p_tmp.x);
-        //angle.push_back(angle_this / CV_PI * 180);
-    }*/
-    std::cout<<std::endl;
-    for (auto iter = line_list.begin(); iter != line_list.end(); )
-    {
-        std::cout<<iter->index_it<<std::endl;
-        bool flag = false;
-        int min_val = INT_MAX, min_index = -1;
-        for (int i = 0; i <src.size();i++)
+        for (int j = 0 ; j <src.size(); j++)
         {
-            if (coupled_it[i])continue;
-            auto p_tmp = (src[i].first + src[i].second)/2;
-            if (cv::norm(p_tmp - iter->point) < dis_threshold )
+            auto p = (src[j].first + src[j].second) / 2;
+            if (line_list[i].bbox.contains(p))
             {
-                iter->point = p_tmp;
-                coupled_it[i] = true;
-                coupled_index[i] = iter->index_it;
-                flag = true;
-                break;
+                index_buffer[i].push_back(j);
             }
         }
-
-        if (flag)
-        {
-            iter->count++;
-            if (iter->count < start_count)iter->count = start_count;
-        }
-        else
-        {
-            iter->count--;
-        }
-
-        if (iter->count <= 0)
-            iter = line_list.erase(iter);
-        else
-            iter++;
     }
-
-    for (int i =0; i < src.size(); i++)
+    for (int i = 0; i < line_list.size();i ++)
     {
-        if (!coupled_it[i])
+        if ((!line_list[i].init_flag) && index_buffer[i].size() == 2)
         {
-            auto p_tmp = (src[i].first + src[i].second)/2;
-            line_descipt l_tmp;
-            l_tmp.index_it = (line_descipt::index++);
-            l_tmp.count = start_count;
-            l_tmp.point = p_tmp;
-            line_list.emplace_back(l_tmp);
+            auto p1 = (src[index_buffer[i][0]].first + src[index_buffer[i][0]].second)/2;
+            auto p2 = (src[index_buffer[i][1]].first + src[index_buffer[i][1]].second)/2;
+            double l1 = cv::norm(src[index_buffer[i][0]].first - src[index_buffer[i][0]].second);
+            double l2 = cv::norm(src[index_buffer[i][1]].first - src[index_buffer[i][1]].second);
+            if ((l1 / l2) < length_threshold && (l2 / l1) < length_threshold) {
+                line_list[i].init_flag = true;
+                line_list[i].length = (l1 + l2) / 2;
+                if (p1.x < p2.x) {
+                    line_list[i].p1_last = p1;
+                    line_list[i].p2_last = p2;
+                    dst_tmp.push_back(src[index_buffer[i][0]]);
+                    dst_tmp.push_back(src[index_buffer[i][1]]);
+                } else {
+                    line_list[i].p1_last = p2;
+                    line_list[i].p2_last = p1;
+                    dst_tmp.push_back(src[index_buffer[i][1]]);
+                    dst_tmp.push_back(src[index_buffer[i][0]]);
+                }
+                _index_res.push_back(i * 2);
+                _index_res.push_back(i * 2 + 1);
+            }
         }
-    }
-    std::vector<std::pair<cv::Point, cv::Point> > dst_tmp;
-    std::vector<int> index_res;
-    for (int i = 0; i < src.size(); i++)
-    {
-        if (coupled_it[i])
+        if (line_list[i].init_flag)
         {
-            dst_tmp.push_back(src[i]);
-            index_res.push_back(coupled_index[i]);
+            for (int j = 0; j < index_buffer[i].size();j++)
+            {
+                auto p = (src[index_buffer[i][j]].first + src[index_buffer[i][j]].second) / 2;
+
+                double length = cv::norm(src[index_buffer[i][j]].first - src[index_buffer[i][j]].second);
+                double length_left = cv::norm(p - line_list[i].p1_last),
+                        length_right = cv::norm(p - line_list[i].p2_last);
+                if (length / line_list[i].length < length_threshold &&
+                    line_list[i].length / length < length_threshold &&
+                    std::min(length_left, length_right) < bias_max) {
+                    dst_tmp.push_back(src[index_buffer[i][j]]);
+                    line_list[i].length = length;
+                    if (length_left < length_right) {
+                        _index_res.push_back(i * 2);
+                        line_list[i].p1_last = p;
+                    } else {
+                        _index_res.push_back(i * 2 + 1);
+                        line_list[i].p2_last = p;
+                    }
+                }
+            }
         }
     }
     dst = dst_tmp;
-    _index_res = index_res;
-
 }
 
 

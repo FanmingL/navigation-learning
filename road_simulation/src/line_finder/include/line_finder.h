@@ -40,17 +40,21 @@ public:
     void filter_line(const std::vector<std::pair<cv::Point, cv::Point> > &src,
             std::vector<std::pair<cv::Point, cv::Point> > &dst,
             std::vector<int> &_index_res);
-
-    class line_descipt{
+    class classifier{
     public:
-        cv::Point point;
-        int count;
+        classifier(const cv::Rect &_bbox, int _index_it);
         int index_it;
+        cv::Point p1_last, p2_last;
+        double length, angel;
+        bool init_flag;
+        cv::Rect bbox;
         static int index;
     };
 private:
     std::vector<cv::Point> four_direction;
-    std::list<line_finder::line_descipt> line_list;
+    std::vector<line_finder::classifier> line_list;
+    std::unordered_set<int> center_point_set;
+    std::vector<cv::Point> center_point_vector;
 };
 
 #endif //LINE_FINDER_H

@@ -134,9 +134,9 @@ void YOLO_DARKNET::draw_detections_new(image im, detection *dets, int num,
 
 std::ostream &operator<<(std::ostream &out,
                          YOLO_DARKNET::YOLO_OUT &item) {
-    out << item.frame_index << ", " << item.name
-        << ", " << item.bbox.x << ", " << item.bbox.y << ", "
-        << item.bbox.w << ", " << item.bbox.h << ", "
+    out << item.frame_index << " " << item.name
+        << " " << item.bbox.x << " " << item.bbox.y << " "
+        << item.bbox.w << " " << item.bbox.h << " "
         << item.prob;
     return out;
 }
@@ -155,8 +155,8 @@ void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
 
     std::ofstream outfile;
     std::string data_out = basePath + "/data/yolo_out_data.txt";
-    outfile.open(data_out);
     std::remove((char *) data_out.c_str());
+    outfile.open(data_out);
     if (!outfile)std::cout << "Error" << std::endl;
     double t = what_time_is_it_now();
     float all_frame = (float) cap.get(CV_CAP_PROP_FRAME_COUNT);
@@ -167,7 +167,7 @@ void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
         yoloProcess(resized, resized, res, 0.5, 0.5, 0.4);
         videoWriter << resized;
         for (auto &item : res)
-            outfile << item << std::endl << std::endl;
+            outfile << item << std::endl;
         std::cout << counter / all_frame * 100.0f << ", " << 1. / (what_time_is_it_now() - t) << std::endl;
         t = what_time_is_it_now();
     }
