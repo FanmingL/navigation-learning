@@ -9,7 +9,7 @@
 #include "opencv2/xfeatures2d.hpp"
 #include "opencv2/features2d.hpp"
 #include "opencv2/opencv_modules.hpp"
-
+#include "opencv2/calib3d.hpp"
 #include <mutex>
 class stabling {
 public:
@@ -32,6 +32,8 @@ private:
     cv::Ptr<cv::xfeatures2d::SiftDescriptorExtractor> sift_descriptor;
     std::vector<cv::KeyPoint> init_sift_key_points;
     cv::Mat init_canvas, init_description;
+    cv::Mat init_image;
+    cv::Mat homograph_from_init;
     std::mutex init_image_mutex;
     int click_step = 0;
     std::vector<cv::Point> click_point_buffer;

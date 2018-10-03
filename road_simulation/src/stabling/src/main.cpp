@@ -12,6 +12,12 @@
 int main(int argc, char**argv)
 {
     stabling stabling1;
-
+    cv::Mat dst;
+    while (stabling1.run(dst))
+    {
+        cv::imshow("11", dst);
+        auto key = cv::waitKey(1);
+        if (key == 'q')break;
+    }
     return 0;
 }
