@@ -187,8 +187,6 @@ bool car_tracker::read_one_car(std::ifstream &_ff, car_tracker::yolo_car &one_ca
     if (std::getline(ff, tmp)) {
         std::stringstream ss(tmp);
         ss >> one_car.index_it >> one_car.name;
-        if (one_car.name == "cell")
-            ss >> one_car.name;
         ss >> one_car.bbox.x\
  >> one_car.bbox.y >> one_car.bbox.width >> one_car.bbox.height >> one_car.probility;
         one_car.bbox.x -= one_car.bbox.width / 2.0;

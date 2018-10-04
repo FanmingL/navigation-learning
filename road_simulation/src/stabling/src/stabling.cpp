@@ -22,8 +22,8 @@ void stabling::init_config() {
     car_filter1.read_next_frame(current_car, current_frame);
     mask = cv::Mat(cv::Size(current_frame.rows, current_frame.cols), CV_8UC1, cv::Scalar(255));
     click_point_buffer = std::vector<cv::Point>(2);
-    for (auto &item : current_car)
-        mask(item.bbox) = cv::Scalar(0);
+    /*for (auto &item : current_car)
+        mask(item.bbox) = cv::Scalar(0);*/
     refresh_init(current_frame);
     cv::imshow(init_window_name, init_canvas);
     cv::setMouseCallback(init_window_name, stabling::onMouse, this);
