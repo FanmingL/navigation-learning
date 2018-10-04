@@ -18,8 +18,9 @@ car_tracker::car_tracker(float _position_cov, float _control_cov, int _max_count
     std::unordered_set<std::string> string_may_be;
     string_may_be.insert("car");
     string_may_be.insert("truck");
-    string_may_be.insert("phone");
+    string_may_be.insert("cell_phone");
     string_may_be.insert("remote");
+    string_may_be.insert("bus");
 
     yolo_car::set_parameter(_min_area, string_may_be, _probility_threshold);
     single_tracker::set_parameter(_position_cov, _control_cov, _min_over_lap,

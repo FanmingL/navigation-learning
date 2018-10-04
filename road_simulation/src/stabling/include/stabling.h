@@ -11,6 +11,7 @@
 #include "opencv2/opencv_modules.hpp"
 #include "opencv2/calib3d.hpp"
 #include <mutex>
+#define USE_SIFT 0
 class stabling {
 public:
     stabling();
@@ -27,9 +28,15 @@ public:
     std::string mask_path;
     cv::Mat mask;
 private:
+    std::ofstream of;
     void refresh_init(const cv::Mat &src);
+#if USE_SIFT
     cv::Ptr<cv::xfeatures2d::SiftFeatureDetector> sift_feature_detector;
     cv::Ptr<cv::xfeatures2d::SiftDescriptorExtractor> sift_descriptor;
+#else
+    cv::Ptr<cv::ORB> sift_feature_detector;
+    cv::Ptr<cv::xfeatures2d::LATCH> sift_descriptor;
+#endif
     std::vector<cv::KeyPoint> init_sift_key_points;
     cv::Mat init_canvas, init_description;
     cv::Mat init_image;

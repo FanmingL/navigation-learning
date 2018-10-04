@@ -6,11 +6,19 @@
 
 #include "stabling.h"
 stabling::stabling():
+#if USE_SIFT
 sift_feature_detector(cv::xfeatures2d::SiftFeatureDetector::create()),
 sift_descriptor(cv::xfeatures2d::SiftDescriptorExtractor::create()),
+#else
+        sift_feature_detector(cv::ORB::create(4000)),
+        sift_descriptor(cv::xfeatures2d::LATCH::create()),
+#endif
 bfMatcher(cv::NORM_L2)
 {
     mask_path = car_filter1.base_path + "/data/stabling_mask.jpg";
+    std::string out_data_path = car_filter1.base_path + "/data/stabling_data_matrix.txt";
+    std::remove((char*)out_data_path.c_str());
+    of.open(out_data_path);
     mask = cv::imread(mask_path, cv::IMREAD_GRAYSCALE) >= 100;
     /*cv::imshow(init_window_name,mask);
     cv::waitKey(0);*/
@@ -90,9 +98,12 @@ void stabling::init() {
 bool stabling::run(cv::Mat &dst) {
     if (!car_filter1.read_next_frame(current_car,current_frame))return false;
     cv::Mat it_mask(current_frame.rows, current_frame.cols,CV_8UC1, cv::Scalar(255));
-    /*for (auto &item : current_car)
-        if (item.bbox.width > 0 && item.bbox.height > 0 )
-            it_mask(item.bbox) = cv::Scalar(0);*/
+    for (auto &item : current_car)
+    {
+        cv::Rect p((int)item.bbox.x, (int)item.bbox.y, (int)item.bbox.width, (int)item.bbox.height);
+        if (p.width > 0 && p.height > 0 && (p.br().x) < current_frame.cols &&(p.br().y) < current_frame.rows )
+            it_mask(p) = cv::Scalar(0);
+    }
     std::vector<cv::KeyPoint> sift_key_points;
     cv::Mat sift_description;
     cv::Mat res_img, gray;
@@ -102,17 +113,22 @@ bool stabling::run(cv::Mat &dst) {
     sift_descriptor->compute(gray,sift_key_points, sift_description);
     /// query train
     bfMatcher.match(init_description, sift_description, good_matches);
-    int match_num = 50;
+    int match_num = 60;
     std::nth_element(good_matches.begin(), good_matches.begin()+match_num-1, good_matches.end());
     good_matches.erase(good_matches.begin()+match_num, good_matches.end());
-    //cv::drawMatches(init_image,init_sift_key_points,current_frame,sift_key_points,good_matches, dst);
+    cv::Mat res;
+    cv::drawMatches(init_image,init_sift_key_points,current_frame,sift_key_points,good_matches, res);
+    cv::imshow("sss", res);
     std::vector<cv::Point2f> init_points, now_points;
     for (auto & item : good_matches)
     {
         init_points.push_back(init_sift_key_points[item.queryIdx].pt);
         now_points.push_back(sift_key_points[item.trainIdx].pt);
     }
-    homograph_from_init = cv::findHomography(now_points, init_points, cv::RANSAC);
+    homograph_from_init = cv::findHomography(now_points, init_points, cv::RHO);
+    of << car_filter::car_data::frame_index<<" "<< homograph_from_init.at<double>(0,0)<<" "<<homograph_from_init.at<double>(0,1)<<" "<<homograph_from_init.at<double>(0,2)<<" "<<
+    homograph_from_init.at<double>(1,0)<<" "<<homograph_from_init.at<double>(1,1)<<" "<<homograph_from_init.at<double>(1,2)<<" "<<
+    homograph_from_init.at<double>(2,0)<<" "<<homograph_from_init.at<double>(2,1)<<" "<<homograph_from_init.at<double>(2,2)<<" "<<std::endl;
     cv::warpPerspective(current_frame, dst, homograph_from_init, current_frame.size());
     std::cout<<car_filter::car_data::frame_index<<std::endl;
 

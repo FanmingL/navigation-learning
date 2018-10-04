@@ -11,7 +11,7 @@
 #include "car_tracker.h"
 
 int main(int argc, char **argv) {
-    car_tracker car_tracker1(3.f, 10.0f, 60, 3, 450, 0.6, 0.5);
+    car_tracker car_tracker1(3.f, 10.0f, 60, 3, 450, 0.6, 0.35);
     cv::Mat dst;
     std::vector<std::pair<int, cv::Rect2d> > res;
 
