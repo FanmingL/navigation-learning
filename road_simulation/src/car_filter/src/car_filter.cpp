@@ -33,8 +33,8 @@ car_filter::car_filter(double _overlap_threshold) {
     assert(ff.is_open());
     videoCapture.open(base_path + "/data/in_video.mp4");
     assert(videoCapture.isOpened());
-    frame_height = (int)videoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
-    frame_width = (int)videoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+    frame_height = (int) videoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+    frame_width = (int) videoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
     read_one_car();
     index_max_now = 0;
     overlap_threshold = _overlap_threshold;
@@ -107,8 +107,7 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
                 if (car_buffer[item].back().area() > one_frame_car[i].bbox.area()) {
                     flag = false;
                     break;
-                } else
-                {
+                } else {
                     index_to_delete.push_back(item);
                 }
             }
@@ -122,11 +121,11 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
     }
 
     for (auto &item : index_to_delete) {
-        if (if_write_data)
-        {
-            of << item<< " " << car_data::frame_index - car_buffer[item].size() << " " <<car_data::frame_index - 1<<" ";
+        if (if_write_data) {
+            of << item << " " << car_data::frame_index - car_buffer[item].size() << " " << car_data::frame_index - 1
+               << " ";
             for (auto &item1 : car_buffer[item])
-                of<<item1.x <<" "<<item1.y<<" "<<item1.width<<" "<<item1.height<<" ";
+                of << item1.x << " " << item1.y << " " << item1.width << " " << item1.height << " ";
             of << std::endl;
         }
         car_buffer.erase(item);
@@ -139,7 +138,7 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
         res.emplace_back(std::pair<int, cv::Rect2d>(item, car_buffer[item].back()));
         cv::rectangle(dst, car_buffer[item].back(), cv::Scalar(0, 0, 128), 2);
         cv::putText(dst, std::to_string(item), car_buffer[item].back().tl(),
-                cv::FONT_ITALIC, 0.5, cv::Scalar(128, 0, 0));
+                    cv::FONT_ITALIC, 0.5, cv::Scalar(128, 0, 0));
     }
 
     return true;
@@ -169,15 +168,15 @@ double car_filter::calculate_overlap(cv::Rect2d &rect1, cv::Rect2d &rect2) {
 
 car_filter::car_filter(const std::string &_out_data_path, double _overlap_threshold) {
     if_write_data = true;
-    std::remove((char*)(base_path+_out_data_path).c_str());
+    std::remove((char *) (base_path + _out_data_path).c_str());
     of.open(base_path + _out_data_path);
     /*readonly*/
     ff.open(base_path + "/data/tracker_out_data.txt");
     assert(ff.is_open());
     videoCapture.open(base_path + "/data/in_video.mp4");
     assert(videoCapture.isOpened());
-    frame_height = (int)videoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
-    frame_width = (int)videoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+    frame_height = (int) videoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+    frame_width = (int) videoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
     read_one_car();
     index_max_now = 0;
     overlap_threshold = _overlap_threshold;
@@ -196,8 +195,8 @@ car_filter::car_filter(const std::string &_out_data_path, const std::string &_no
     assert(ff.is_open());
     videoCapture.open(base_path + "/data/in_video.mp4");
     assert(videoCapture.isOpened());
-    frame_height = (int)videoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
-    frame_width = (int)videoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+    frame_height = (int) videoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+    frame_width = (int) videoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
     read_one_car();
     index_max_now = 0;
 }

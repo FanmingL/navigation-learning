@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     of.open(out_txt_path);
     assert(of.is_open());
 #ifdef WRITE_VIDEO
-    cv::VideoWriter videoWriter(out_path,CV_FOURCC('D', 'I', 'V', 'X'),\
+    cv::VideoWriter videoWriter(out_path, CV_FOURCC('D', 'I', 'V', 'X'), \
            30, cv::Size(car_tracker1.frame_width, car_tracker1.frame_height));
 #endif
     while (car_tracker1.run(dst, res)) {

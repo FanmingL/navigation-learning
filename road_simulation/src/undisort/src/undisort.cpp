@@ -6,23 +6,23 @@
 
 #include "undisort.h"
 
-undisort::undisort(const std::string &data_in_path, const std::string &data_out_path){
-    std::string config_path = base_path+"/data/camera.xml";
+undisort::undisort(const std::string &data_in_path, const std::string &data_out_path) {
+    std::string config_path = base_path + "/data/camera.xml";
     cv::FileStorage fs(config_path, cv::FileStorage::READ);
     cv::FileNode root_node = fs.root();
     auto iter = root_node.begin();
     (*iter) >> inner_matrix;
     iter++;
     (*iter) >> disorted_matrix;
-    disorted_vector.push_back(disorted_matrix.at<double>(0,0));
-    disorted_vector.push_back(disorted_matrix.at<double>(0,1));
+    disorted_vector.push_back(disorted_matrix.at<double>(0, 0));
+    disorted_vector.push_back(disorted_matrix.at<double>(0, 1));
     disorted_vector.push_back(0);
     disorted_vector.push_back(0);
     //std::cout<<inner_matrix<<std::endl;
     //std::cout<<disorted_matrix<<std::endl;
-    std::string data_in_path_real = base_path+data_in_path, data_out_path_real = base_path+data_out_path;
+    std::string data_in_path_real = base_path + data_in_path, data_out_path_real = base_path + data_out_path;
     videoCapture.open(data_in_path_real);
-    std::remove((char*)data_out_path_real.c_str());
+    std::remove((char *) data_out_path_real.c_str());
     videoWriter.open(data_out_path_real, CV_FOURCC('D', 'I', 'V', 'X'), 30, cv::Size(960, 960));
 }
 

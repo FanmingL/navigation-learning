@@ -18,7 +18,9 @@ class undisort {
 
 public:
     undisort(const std::string &data_in_path, const std::string &data_out_path);
+
     bool run(cv::Mat &dst);
+
     const std::string base_path = std::string(PATH);
     cv::Mat inner_matrix;
     cv::Mat disorted_matrix;
