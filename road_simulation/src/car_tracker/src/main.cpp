@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
         /*for (auto &item : res)
             std::cout<<item.first<<std::endl;*/
         std::sort(res.begin(), res.end(), [](std::pair<int, cv::Rect2d> x,
-                                             std::pair<int, cv::Rect2d> y) -> bool { return x.first > y.first; });
+                                             std::pair<int, cv::Rect2d> y) -> bool { return x.first < y.first; });
         for (auto &item : res)
             of << car_tracker::yolo_car::frame_index << " " << item.first << " " << item.second.x << " "\
  << item.second.y << " " << item.second.width << " " << item.second.height << std::endl;

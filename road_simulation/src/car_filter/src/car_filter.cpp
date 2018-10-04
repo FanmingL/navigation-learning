@@ -9,7 +9,7 @@
 *===============================================================*/
 
 
-#include <src/car_filter/include/car_filter.h>
+//#include <src/car_filter/include/car_filter.h>
 
 #include "car_filter.h"
 
@@ -79,6 +79,7 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
     one_frame_image.copyTo(dst);
     std::unordered_set<int> index_accepted_this_frame;
     std::vector<int> index_to_delete;
+    std::reverse(one_frame_car.begin(), one_frame_car.end());
     int i = 0;
     for (; i < one_frame_car.size(); ++i) {
         if (one_frame_car[i].car_index > index_max_now)
@@ -97,6 +98,28 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
         }
     }
 
+    for (; i < one_frame_car.size(); i++) {
+        index_max_now = one_frame_car[i].car_index;
+        int flag = true;
+        for (auto &item : index_accepted_this_frame) {
+            if (calculate_overlap(car_buffer[item].back(), one_frame_car[i].bbox) > overlap_threshold) {
+                if (car_buffer[item].back().area() > one_frame_car[i].bbox.area()) {
+                    flag = false;
+                    break;
+                } else
+                {
+                   index_to_delete.push_back(item);
+                }
+            }
+        }
+        if (flag) {
+            index_accepted_this_frame.insert(one_frame_car[i].car_index);
+            car_buffer[one_frame_car[i].car_index].push_back(one_frame_car[i].bbox);
+            // TODO: keep add low_pass filter and feature extract filter
+            car_filter_buffer[one_frame_car[i].car_index] = std::make_shared<move_mean>(one_frame_car[i].bbox, 3);
+        }
+    }
+
     for (auto &item : index_to_delete) {
         if (if_write_data)
         {
@@ -109,22 +132,7 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
         car_filter_buffer.erase(item);
     }
 
-    for (; i < one_frame_car.size(); i++) {
-        index_max_now = one_frame_car[i].car_index;
-        int flag = true;
-        for (auto &item : index_accepted_this_frame) {
-            if (calculate_overlap(car_buffer[item].back(), one_frame_car[i].bbox) > overlap_threshold) {
-                flag = false;
-                break;
-            }
-        }
-        if (flag) {
-            index_accepted_this_frame.insert(one_frame_car[i].car_index);
-            car_buffer[one_frame_car[i].car_index].push_back(one_frame_car[i].bbox);
-            // TODO: keep add low_pass filter and feature extract filter
-            car_filter_buffer[one_frame_car[i].car_index] = std::make_shared<move_mean>(one_frame_car[i].bbox, 3);
-        }
-    }
+
 
     for (auto &item :index_accepted_this_frame) {
         res.emplace_back(std::pair<int, cv::Rect2d>(item, car_buffer[item].back()));
@@ -147,7 +155,7 @@ void car_filter::sort_car_by_index() {
 
 double car_filter::calculate_overlap(cv::Rect2d &rect1, cv::Rect2d &rect2) {
     // TODO: find a properly method to resolve the overlap problem
-#if 1
+#if 0
     return 0;
 #else
     double a1 = rect1.area(), a2 = rect2.area();

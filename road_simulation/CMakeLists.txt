@@ -8,7 +8,7 @@ set(LIBRARY_OUTPUT_PATH  ${PROJECT_BINARY_DIR}/lib)
 add_definitions(-DPATH="${CMAKE_CURRENT_SOURCE_DIR}")
 add_definitions(-DDIMENSION=2)
 add_definitions(-DSHOW_VIDEO)
-# add_definitions(-DWRITE_VIDEO)
+add_definitions(-DWRITE_VIDEO)
 
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
