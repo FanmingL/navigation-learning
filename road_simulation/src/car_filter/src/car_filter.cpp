@@ -97,7 +97,6 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
             index_to_delete.push_back(item.first);
         }
     }
-
     for (; i < one_frame_car.size(); i++) {
         index_max_now = one_frame_car[i].car_index;
         int flag = true;
@@ -108,7 +107,7 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
                     break;
                 } else
                 {
-                   index_to_delete.push_back(item);
+                    index_to_delete.push_back(item);
                 }
             }
         }
@@ -133,8 +132,8 @@ bool car_filter::run(cv::Mat &dst, std::vector<std::pair<int, cv::Rect2d> > &res
     }
 
 
-
     for (auto &item :index_accepted_this_frame) {
+        if (!car_buffer.count(item))continue;
         res.emplace_back(std::pair<int, cv::Rect2d>(item, car_buffer[item].back()));
         cv::rectangle(dst, car_buffer[item].back(), cv::Scalar(0, 0, 128), 2);
         cv::putText(dst, std::to_string(item), car_buffer[item].back().tl(),
