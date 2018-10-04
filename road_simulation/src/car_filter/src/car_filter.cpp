@@ -11,6 +11,8 @@
 
 //#include <src/car_filter/include/car_filter.h>
 
+#include <src/car_filter/include/car_filter.h>
+
 #include "car_filter.h"
 
 int car_filter::car_data::frame_index = 0;
@@ -185,6 +187,19 @@ car_filter::~car_filter() {
     if (if_write_data)
         of.close();
 
+}
+
+car_filter::car_filter(const std::string &_out_data_path, const std::string &_no) {
+    if_write_data = false;
+    /*readonly*/
+    ff.open(base_path + _out_data_path);
+    assert(ff.is_open());
+    videoCapture.open(base_path + "/data/in_video.mp4");
+    assert(videoCapture.isOpened());
+    frame_height = (int)videoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+    frame_width = (int)videoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+    read_one_car();
+    index_max_now = 0;
 }
 
 

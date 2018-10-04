@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     {
 #ifdef SHOW_VIDEO
     cv::imshow("111", dst);
-    auto key = cv::waitKey(1);
+    auto key = cv::waitKey();
     if (key == 'q')break;
 #endif
     }

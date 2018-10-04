@@ -1,0 +1,6 @@
+project(relocation)
+include_directories(include ../car_filter/include)
+set(SRC src/main.cpp src/relocation.cpp)
+add_executable(${PROJECT_NAME} ${SRC})
+add_dependencies(${PROJECT_NAME} car_filter_lib)
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} car_filter_lib)

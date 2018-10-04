@@ -272,7 +272,7 @@ void line_finder::find_line(cv::Mat &src, cv::Mat &dst, std::vector<std::pair<cv
     if (!homography_matrix.empty())
     {
         //std::cout<<homography_matrix<<std::endl;
-        cv::warpPerspective(dst, dst, homography_matrix, dst.size());
+        //cv::warpPerspective(dst, dst, homography_matrix, dst.size());
     }
     std::cout<<car_filter::car_data::frame_index<<std::endl;
     //std::cout<<line_list.size()<<std::endl;

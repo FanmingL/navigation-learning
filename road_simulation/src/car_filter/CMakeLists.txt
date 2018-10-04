@@ -1,6 +1,6 @@
 project(car_filter)
 include_directories(include)
-# add_definitions(-DREAD_IMAGE)
+add_definitions(-DREAD_IMAGE)
 set(SRC src/main.cpp src/car_filter.cpp src/filter_algorithm.cpp)
 add_executable(${PROJECT_NAME} ${SRC})
 add_library(${PROJECT_NAME}_lib SHARED ${SRC})

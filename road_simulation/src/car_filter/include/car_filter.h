@@ -64,6 +64,8 @@ public:
 
     car_filter(const std::string &_out_data_path, double overlap_threshold = 0.7);
 
+    car_filter(const std::string &_in_data_path, const std::string &_no);
+
     ~car_filter();
 
     bool read_one_car(std::ifstream &_ff, car_data &_one_car);
