@@ -14,14 +14,10 @@
 #include "information.h"
 
 information::information(float _distance_thrashold) : distance_threshold(_distance_thrashold){
-    read_from_proto(&video_data, "/data/all_car.proto.data");
+    read_from_binary(&video_data, base_path+ "/data/all_car.proto.data");
+    //read_from_binary(&all_trajectory, base_path + "/data/extract_data.proto.data");
+    //std::cout<<all_trajectory.trajectories_size()<<std::endl;
 }
-
-void information::read_from_proto(rs::video *_video_data, const std::string &path) {
-    std::ifstream ff(base_path+path, std::ios::binary);
-    _video_data->ParseFromIstream(&ff);
-}
-
 
 
 void information::run() {
@@ -80,24 +76,12 @@ void information::run() {
         for (auto &item : position_after_filter)
         {
             auto iter = trajectory_map[item.first]->add_objects();
-            auto object_iter = new rs::object();
+            auto object_iter = new rs::object(frame.objects(index_to_map[item.first]));
 
             auto point_iter = new rs::point();
             point_iter->set_x((float)position_after_filter[item.first].x);
-            point_iter->set_x((float)position_after_filter[item.first].y);
+            point_iter->set_y((float)position_after_filter[item.first].y);
             object_iter->set_allocated_world_center(point_iter);
-            auto rect_iter = new rs::rect();
-            rect_iter->set_x(frame.objects(index_to_map[item.first]).world_position().x());
-            rect_iter->set_y(frame.objects(index_to_map[item.first]).world_position().y());
-            rect_iter->set_width(frame.objects(index_to_map[item.first]).world_position().width());
-            rect_iter->set_height(frame.objects(index_to_map[item.first]).world_position().height());
-            object_iter->set_allocated_world_position(rect_iter);
-            rect_iter = new rs::rect();
-            rect_iter->set_x(frame.objects(index_to_map[item.first]).image_position().x());
-            rect_iter->set_y(frame.objects(index_to_map[item.first]).image_position().y());
-            rect_iter->set_width(frame.objects(index_to_map[item.first]).image_position().width());
-            rect_iter->set_height(frame.objects(index_to_map[item.first]).image_position().height());
-            object_iter->set_allocated_image_position(rect_iter);
             iter->set_allocated_it(object_iter);
             point_iter = new rs::point();
             double head_angle = 0;
@@ -123,7 +107,7 @@ void information::run() {
                 iter_surround->set_angle_to_center((float) ((angle_absolute - head_angle) / CV_PI * 180));
                 iter_surround->set_index(item2.first);
                 iter_surround->set_surround_type(rs::surround_type::BUS);
-                rect_iter = new rs::rect();
+                auto rect_iter = new rs::rect();
                 rect_iter->set_x(frame.objects(index_to_map[item2.first]).world_position().x());
                 rect_iter->set_y(frame.objects(index_to_map[item2.first]).world_position().y());
                 rect_iter->set_width(frame.objects(index_to_map[item2.first]).world_position().width());
@@ -136,12 +120,9 @@ void information::run() {
             }
         }
     }
-    std::ofstream of(base_path+"/data/extract_data.proto.data");
-    all_trajectory.SerializePartialToOstream(&of);
+    write_to_binary(&all_trajectory, base_path+"/data/all_trajectories.proto.data");
 }
 
-void information::calculate_surround(const rs::object &object, const rs::frame &frame, rs::object_pro &object_pro) {
 
-}
 
 
