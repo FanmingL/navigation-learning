@@ -2,6 +2,8 @@
 // Created by Fanming Luo on 2018/9/29.
 //
 
+#include <src/car_filter/include/filter_algorithm.h>
+
 #include "filter_algorithm.h"
 
 /***       low_pass_filter!!!!!!   *****/
@@ -58,6 +60,31 @@ move_mean::move_mean(cv::Rect2d &rect, int _batch_size) : batch_size(_batch_size
         ptl_sum += rect.tl();
     }
 
+}
+
+void move_mean::init(cv::Point2d &point) {
+
+}
+
+cv::Point2d move_mean::run(const cv::Point2d &point_in, cv::Point2d &point_out) {
+    cv::Point2d p_tmp = p_last;
+    p_sum -= p_v[index];
+    p_v[index] = point_in;
+    p_sum += p_v[index];
+    if ((++index) >= batch_size)index=0;
+    point_out = p_sum / batch_size;
+    p_last = point_out;
+    return (point_out - p_tmp);
+
+}
+
+move_mean::move_mean(const cv::Point2d &point, int _batch_size) : batch_size(_batch_size),index(0) {
+    p_last = point;
+    for (int i = 0; i < _batch_size; i++)
+    {
+        p_v.push_back(point);
+        p_sum += point;
+    }
 }
 
 /**     get_feature!!!!     ****/

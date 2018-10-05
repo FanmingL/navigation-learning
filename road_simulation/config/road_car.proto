@@ -1,0 +1,64 @@
+syntax = "proto2";
+package rs;
+
+
+message point{
+    required float x = 1;
+    required float y = 2;
+}
+
+message rect{
+    required float x = 1;
+    required float y = 2;
+    required float width = 3;
+    required float height = 4;
+}
+
+message object{
+    required int32 frame_index = 1;
+    required int32 object_index = 2;
+    required rect image_position = 3;
+    required rect world_position = 5;
+    required point world_center = 6;
+}
+
+message frame{
+    required int32 frame_index = 1;
+    repeated object objects = 2;
+}
+
+enum surround_type{
+    PERSON = 0;
+    CAR = 1;
+    BUS = 2;
+    BICYCLE = 3;
+    MOTORBIKE = 4;
+    OBSTACLE = 5;
+}
+
+message surround{
+    required point obj_position = 1;
+    required rect obj_rect = 2;
+    required float angle_to_center = 3;
+    required float distance_to_center = 4;
+    optional surround_type surround_type = 5 [default = CAR];
+    optional int32 index = 6 [default = 0];
+}
+
+message object_pro{
+    required object it = 1;
+    required point velocity = 2;
+    repeated surround obj = 3;
+}
+
+message trajectory{
+    repeated object_pro objects = 1;
+}
+
+message video{
+    repeated frame frames = 1;
+}
+
+message all_trajectory{
+    repeated trajectory trajectories = 1;
+}

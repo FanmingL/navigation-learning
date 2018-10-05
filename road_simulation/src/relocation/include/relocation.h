@@ -14,19 +14,21 @@
 
 #include "car_filter.h"
 #include "opencv2/calib3d.hpp"
+#include "road_car.pb.h"
 #include <iomanip>
 
 class relocation {
 public:
     class car_data {
     public:
-        car_data(const int &_index, const int &_frame_count, const cv::Rect2d &world, const cv::Rect2d &image) :
-                index(_index), frame_count(_frame_count), bbox_in_world(world), bbox_in_image(image) {}
+        car_data(const int &_index, const int &_frame_count, const cv::Rect2d &world, const cv::Rect2d &image, const cv::Point2d &_world_center) :
+                index(_index), frame_count(_frame_count), bbox_in_world(world), bbox_in_image(image),center_in_world(_world_center) {}
 
         int index;
         int frame_count;
         cv::Rect2d bbox_in_world;
         cv::Rect2d bbox_in_image;
+        cv::Point2d center_in_world;
     };
 
     relocation();

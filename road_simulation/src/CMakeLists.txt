@@ -5,5 +5,6 @@ add_subdirectory(yolo)
 add_subdirectory(line_finder)
 add_subdirectory(stabling)
 add_subdirectory(relocation)
+add_subdirectory(information)
 
 

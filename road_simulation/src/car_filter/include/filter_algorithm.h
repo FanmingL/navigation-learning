@@ -33,7 +33,11 @@ public:
 
     virtual void init(cv::Rect2d &rect, cv::Mat &image) = 0;
 
+    virtual void init(cv::Point2d &point) = 0;
+
     virtual void run(cv::Rect2d &rect_in, cv::Mat &image, cv::Rect2d &rect_out) = 0;
+
+    virtual cv::Point2d run(const cv::Point2d &point_in, cv::Point2d &point_out) = 0;
 
     void convert(const cv::Point2d &br, const cv::Point2d &tl, cv::Rect2d &out);
 };
@@ -46,6 +50,7 @@ public:
 
     void init(cv::Rect2d &rect, cv::Mat &image);
 
+
     void run(cv::Rect2d &rect_in, cv::Mat &image, cv::Rect2d &rect_out);
 
 private:
@@ -55,18 +60,26 @@ class move_mean : public filter_algorithm_base {
 public:
     explicit move_mean(cv::Rect2d &rect, int _batch_size = 6);
 
+    explicit move_mean(const cv::Point2d &point, int _batch_size = 6);
+
+    void init(cv::Point2d &point);
+
     ~move_mean() = default;
 
     void init(cv::Rect2d &rect, cv::Mat &image);
 
     void run(cv::Rect2d &rect_in, cv::Mat &image, cv::Rect2d &rect_out);
 
+    cv::Point2d run(const cv::Point2d &point_in, cv::Point2d &point_out);
+
+    cv::Point2d p_last;
 private:
     int batch_size;
-    std::vector<cv::Point2d> ptl_v, pbr_v;
-    cv::Point2d ptl_sum, pbr_sum;
+    std::vector<cv::Point2d> ptl_v, pbr_v, p_v;
+    cv::Point2d ptl_sum, pbr_sum, p_sum;
     int index;
     cv::Rect2d last_rect;
+
 };
 
 class get_feature : public filter_algorithm_base {

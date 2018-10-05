@@ -12,7 +12,7 @@
 #include "opencv2/calib3d.hpp"
 #include <mutex>
 
-#define USE_SIFT 0
+#define USE_SIFT 1
 
 class stabling {
 public:

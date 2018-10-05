@@ -129,7 +129,7 @@ bool stabling::run(cv::Mat &dst) {
        << homograph_from_init.at<double>(2, 2) << " " << std::endl;
     cv::warpPerspective(current_frame, dst, homograph_from_init, current_frame.size());
     std::cout << car_filter::car_data::frame_index << std::endl;
-
+    return true;
 }
 
 

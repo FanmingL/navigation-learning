@@ -133,7 +133,7 @@ bool relocation::run(cv::Mat &dst, std::vector<relocation::car_data> &res) {
         put_to += to_string_with_precision(p_res.y);
         cv::putText(dst, put_to, item.bbox.tl() + cv::Point2d(0, 20), cv::FONT_ITALIC, 0.7, cv::Scalar(0, 0, 255), 2);
         res.emplace_back(relocation::car_data(item.car_index, car_filter::car_data::frame_index, \
-        cv::Rect2d(p_tl, p_br), item.bbox));
+        cv::Rect2d(p_tl, p_br), item.bbox, p_res));
     }
 
 
