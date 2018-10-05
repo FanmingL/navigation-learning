@@ -37,7 +37,7 @@ void information::run() {
             if (item.object_index() > max_index_now)break;
             if (filter_map.count(item.object_index()))
             {
-                cv::Point2d point_tmp(item.world_center().x(), item.world_center().x());
+                cv::Point2d point_tmp(item.world_center().x(), item.world_center().y());
                 velocity[item.object_index()] = filter_map[item.object_index()]->run(point_tmp, point_tmp) * 30.0;
                 position_after_filter[item.object_index()] = point_tmp;
                 index_to_map[item.object_index()] = j;
@@ -132,7 +132,7 @@ void information::print_one_trajectory(const rs::trajectory &trajectory) {
     std::cout<<"trajectory index: "<<trajectory.objects(0).it().object_index()<<std::endl;
     std::cout<<"target position:"<<trajectory.objects(trajectory.objects().size()-1).it().world_center().x()<<", "
     <<trajectory.objects(trajectory.objects().size()-1).it().world_center().y()<<std::endl;
-    std::cout<<"remain time length: "<<trajectory.objects().size()*1/30.<<std::endl<<std::endl;
+    std::cout<<"remain time length(s): "<<trajectory.objects().size()*1/30.<<std::endl<<std::endl;
     for (auto &item : trajectory.objects())
     {
         std::cout<<"frame index: "<<item.it().frame_index()<<std::endl;
