@@ -32,6 +32,7 @@ public:
     rs::video video_data;
     const std::string base_path = PATH;
     rs::all_trajectory all_trajectory;
+    void print_one_trajectory(const rs::trajectory &trajectory);
 private:
     float distance_threshold;
 

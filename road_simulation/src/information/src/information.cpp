@@ -14,13 +14,12 @@
 #include "information.h"
 
 information::information(float _distance_thrashold) : distance_threshold(_distance_thrashold){
-    read_from_binary(&video_data, base_path+ "/data/all_car.proto.data");
-    //read_from_binary(&all_trajectory, base_path + "/data/extract_data.proto.data");
-    //std::cout<<all_trajectory.trajectories_size()<<std::endl;
 }
 
 
 void information::run() {
+#if 1
+    read_from_binary(&video_data, base_path+ "/data/all_car.proto.data");
     std::unordered_map<int, std::shared_ptr<filter_algorithm_base> > filter_map;
     std::unordered_map<int, rs::trajectory*> trajectory_map;
     int max_index_now = -1;
@@ -100,7 +99,7 @@ void information::run() {
                 if (point_2_tmp.x == item2.second.x || point_2_tmp.y == item2.second.y)continue;
                 auto point_3_tmp = item2.second - point_2_tmp;
                 auto distance = cv::norm(point_3_tmp);
-                if (distance > distance_threshold)continue;
+                if (distance > distance_threshold || distance < 1)continue;
                 auto iter_surround = iter->add_obj();
                 iter_surround->set_distance_to_center((float) distance);
                 auto angle_absolute = atan2(point_3_tmp.y, point_3_tmp.x);
@@ -121,6 +120,31 @@ void information::run() {
         }
     }
     write_to_binary(&all_trajectory, base_path+"/data/all_trajectories.proto.data");
+#else
+    read_from_binary(&all_trajectory, base_path + "/data/all_trajectories.proto.data");
+    print_one_trajectory(all_trajectory.trajectories(0));
+#endif
+}
+
+
+
+void information::print_one_trajectory(const rs::trajectory &trajectory) {
+    std::cout<<"trajectory index: "<<trajectory.objects(0).it().object_index()<<std::endl;
+    std::cout<<"target position:"<<trajectory.objects(trajectory.objects().size()-1).it().world_center().x()<<", "
+    <<trajectory.objects(trajectory.objects().size()-1).it().world_center().y()<<std::endl;
+    std::cout<<"remain time length: "<<trajectory.objects().size()*1/30.<<std::endl<<std::endl;
+    for (auto &item : trajectory.objects())
+    {
+        std::cout<<"frame index: "<<item.it().frame_index()<<std::endl;
+        std::cout<<"current position: "<<item.it().world_center().x()<<", "<<item.it().world_center().y()<<std::endl;
+        std::cout<<"obstacle: "<<std::endl;
+        for (auto &item2 : item.obj())
+        {
+            std::cout<<"distance: "<<item2.distance_to_center()<<", relative angle: "<<item2.angle_to_center()
+            <<", object index: "<<item2.index()<<", object position: "<<item2.obj_position().x()
+            <<", "<<item2.obj_position().y()<<", object type: "<<item2.surround_type()<<std::endl;
+        }
+    }
 }
 
 
