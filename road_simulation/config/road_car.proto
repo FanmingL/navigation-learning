@@ -41,6 +41,7 @@ message surround{
     required rect obj_rect = 2;
     required float angle_to_center = 3;
     required float distance_to_center = 4;
+    required point velocity = 7;
     optional surround_type surround_type = 5 [default = CAR];
     optional int32 index = 6 [default = 0];
 }
@@ -61,4 +62,12 @@ message video{
 
 message all_trajectory{
     repeated trajectory trajectories = 1;
+}
+
+message homograph_matrix{
+    repeated float coefficient  =1;
+}
+
+message all_homograph_matrix{
+    repeated homograph_matrix single_homograph_matrix = 1;
 }

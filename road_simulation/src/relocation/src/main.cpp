@@ -53,6 +53,14 @@ void add_a_frame(rs::frame *frame, std::vector<relocation::car_data> &data)
     }
 }
 
+void add_a_matrix(rs::homograph_matrix *frame, cv::Mat &homo)
+{
+    for (auto iter = homo.begin<float>();iter!= homo.end<float>();iter++)
+    {
+        frame->add_coefficient(*iter);
+    }
+}
+
 int main(int argc, char **argv) {
     relocation relocation1;
     cv::Mat dst;
@@ -62,6 +70,10 @@ int main(int argc, char **argv) {
     std::remove((char *) data_out_path.c_str());
     of.open(data_out_path);*/
     rs::video video_data;
+    rs::all_homograph_matrix all_homograph_matrix;
+    cv::Mat m_init(3,3,CV_32FC1, cv::Scalar(0));
+    m_init.at<float>(0,0) = m_init.at<float>(1,1) = m_init.at<float>(2,2) = 1;
+    add_a_matrix(all_homograph_matrix.add_single_homograph_matrix(),m_init);
 #ifdef WRITE_VIDEO
     std::string video_out_path = relocation1.car_reader.base_path + "/data/relocation_out_video.mp4";
     std::remove((char *) video_out_path.c_str());
@@ -78,6 +90,7 @@ int main(int argc, char **argv) {
         videoWriter << dst;
 #endif
         add_a_frame(video_data.add_frames(),res);
+        add_a_matrix(all_homograph_matrix.add_single_homograph_matrix(),relocation1.homography_to_first);
         /*for (auto &item : res) {
             of << item.frame_count << " " << item.index << " " << item.bbox_in_world.x << " " << item.bbox_in_world.y
                << " "
@@ -85,8 +98,14 @@ int main(int argc, char **argv) {
         }*/
         std::cout << car_filter::car_data::frame_index << std::endl;
     }
-    std::ofstream off(relocation1.car_reader.base_path + "/data/all_car.proto.data", std::ios::trunc | std::ios::binary);
-    video_data.SerializePartialToOstream(&off);
+    {
+        std::ofstream off(relocation1.car_reader.base_path + "/data/all_car.proto.data", std::ios::trunc | std::ios::binary);
+        video_data.SerializePartialToOstream(&off);
+    }
+    {
+        std::ofstream off(relocation1.car_reader.base_path + "/data/all_matrix.proto.data", std::ios::trunc | std::ios::binary);
+        all_homograph_matrix.SerializePartialToOstream(&off);
+    }
     return 0;
 }
 

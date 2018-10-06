@@ -47,10 +47,10 @@ public:
     }
 
     car_filter car_reader;
+    cv::Mat homography_to_first;
 private:
     cv::Point2d original_point;
     cv::Mat homography_base;
-    cv::Mat homography_to_first;
     std::ifstream ff;
     cv::Mat current_image;
     std::vector<car_filter::car_data> current_frame_car;

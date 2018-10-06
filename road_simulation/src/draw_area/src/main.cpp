@@ -3,16 +3,14 @@
 *   
 *   File name   : main.cpp
 *   Author      : FanmingL
-*   Created date: 2018-10-05 13:51:11
+*   Created date: 2018-10-06 13:32:08
 *   Description : 
 *
 *===============================================================*/
-#include "information.h"
+#include "draw_area.h"
 
-int main(int argc, char ** argv)
+int main(int , char**)
 {
-    information information1(2000);
-    information1.run();
+    draw_area draw_area1;
     return 0;
 }
-
