@@ -18,8 +18,10 @@ draw_area::draw_area() : mask(960, 960, CV_8UC1, cv::Scalar(255)), click_step(0)
     first_image = cv::imread(base_path + "/data/first_frame.jpg");
     for (int i = 0; i < 10; i++)
         val_buffer.push_back(i*20);
-    //draw_position();
-    read_position();
+    mask = cv::imread(base_path + "/data/cant_touch_place_mask.png", cv::IMREAD_GRAYSCALE);
+
+    draw_position();
+    //read_position();
 
 }
 void draw_area::mouse_cb(int event, int x, int y, int flags) {
@@ -85,14 +87,17 @@ void draw_area::draw_position() {
             case '9':
                 fill_val = val_buffer[(key - '0')];
                 break;
+            case 'y':
+                fill_val = 200;
+                break;
             default:
                 break;
         }
     }
     std::vector<int> parameters;
-    parameters.push_back(CV_IMWRITE_JPEG_QUALITY);
-    parameters.push_back(100);
-    cv::imwrite(base_path + "/data/cant_touch_place_mask.jpg", mask, parameters);
+    parameters.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    parameters.push_back(0);
+    cv::imwrite(base_path + "/data/cant_touch_place_mask.png", mask, parameters);
 }
 
 void draw_area::read_position() {

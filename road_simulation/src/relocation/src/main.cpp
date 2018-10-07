@@ -69,11 +69,17 @@ int main(int argc, char **argv) {
     /*std::string data_out_path(relocation1.car_reader.base_path + "/data/relocation_out_data.txt");
     std::remove((char *) data_out_path.c_str());
     of.open(data_out_path);*/
+    rs::homograph_matrix homo_to_world;
+    add_a_matrix(&homo_to_world, relocation1.homography_base);
+    {
+        std::ofstream off(relocation1.car_reader.base_path + "/data/homography_base.proto.data", std::ios::trunc|std::ios::binary);
+        homo_to_world.SerializePartialToOstream(&off);
+    }
     rs::video video_data;
     rs::all_homograph_matrix all_homograph_matrix;
     cv::Mat m_init(3,3,CV_32FC1, cv::Scalar(0));
-    m_init.at<float>(0,0) = m_init.at<float>(1,1) = m_init.at<float>(2,2) = 1;
-    add_a_matrix(all_homograph_matrix.add_single_homograph_matrix(),m_init);
+    //m_init.at<float>(0,0) = m_init.at<float>(1,1) = m_init.at<float>(2,2) = 1;
+    //add_a_matrix(all_homograph_matrix.add_single_homograph_matrix(),m_init);
 #ifdef WRITE_VIDEO
     std::string video_out_path = relocation1.car_reader.base_path + "/data/relocation_out_video.mp4";
     std::remove((char *) video_out_path.c_str());

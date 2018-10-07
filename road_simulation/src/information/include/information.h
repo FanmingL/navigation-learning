@@ -27,7 +27,10 @@ public:
         CAN_REACH_SURROUND_WITH_LINE,
         RIGHT_DOWN_BIG_ROAD,
         RIGHT_ROAD_INDEX_1,
-        RIGHT_ROAD_INDEX_2
+        RIGHT_ROAD_INDEX_2,
+        AREA_DONT_CONSIDER,
+        CAR_ONLY,
+        NOTHING
     };
     explicit information(float _distance_threshold = 1000.0f);
     template <typename T>
@@ -45,7 +48,9 @@ public:
     const std::string base_path = PATH;
     rs::all_homograph_matrix all_matrix;
     rs::all_trajectory all_trajectory;
+    rs::homograph_matrix base_homograph_proto;
     void print_one_trajectory(const rs::trajectory &trajectory);
+    cv::Mat first_image, mask, base_homograph;
 private:
     float distance_threshold;
 

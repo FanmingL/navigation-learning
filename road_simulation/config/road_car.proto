@@ -34,16 +34,14 @@ enum surround_type{
     BICYCLE = 3;
     MOTORBIKE = 4;
     OBSTACLE = 5;
+    NOTHING = 6;
 }
 
 message surround{
-    required point obj_position = 1;
-    required rect obj_rect = 2;
-    required float angle_to_center = 3;
-    required float distance_to_center = 4;
-    required point velocity = 7;
-    optional surround_type surround_type = 5 [default = CAR];
-    optional int32 index = 6 [default = 0];
+    required int32 surround_type = 1;
+    required float real_angle = 2;
+    required float relative_angle = 3;
+    required float distance = 4;
 }
 
 message object_pro{

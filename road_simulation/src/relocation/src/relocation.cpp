@@ -18,7 +18,7 @@ relocation::relocation() : car_reader("/data/filter_out_data_normal.txt", "no") 
     ff.open(car_reader.base_path + "/data/stabling_matrix.txt");
 
     read_one_frame(current_image, current_frame_car, homography_base);
-    original_point = cv::Point2d(-1000, -1000);
+    original_point = cv::Point2d(0, 0);
 }
 
 
@@ -132,8 +132,27 @@ bool relocation::run(cv::Mat &dst, std::vector<relocation::car_data> &res) {
         put_to = "";
         put_to += to_string_with_precision(p_res.y);
         cv::putText(dst, put_to, item.bbox.tl() + cv::Point2d(0, 20), cv::FONT_ITALIC, 0.7, cv::Scalar(0, 0, 255), 2);
+        cv::Point2d image_tl, image_br;
+
+        calcu_tmp.at<float>(0, 0) = (float) item.bbox.tl().x;
+        calcu_tmp.at<float>(1, 0) = (float) item.bbox.tl().y;
+        calcu_tmp.at<float>(2, 0) = 1;
+        calcu_res = homography_to_first * calcu_tmp;
+        calcu_res /= calcu_res.at<float>(2,0);
+        image_tl = cv::Point2d(calcu_res.at<float>(0,0), calcu_res.at<float>(1,0));
+
+        calcu_tmp.at<float>(0, 0) = (float) item.bbox.br().x;
+        calcu_tmp.at<float>(1, 0) = (float) item.bbox.br().y;
+        calcu_tmp.at<float>(2, 0) = 1;
+        calcu_res = homography_to_first * calcu_tmp;
+        calcu_res /= calcu_res.at<float>(2,0);
+        image_br = cv::Point2d(calcu_res.at<float>(0,0), calcu_res.at<float>(1,0));
+
+
+
+
         res.emplace_back(relocation::car_data(item.car_index, car_filter::car_data::frame_index, \
-        cv::Rect2d(p_tl, p_br), item.bbox, p_res));
+        cv::Rect2d(p_tl, p_br), cv::Rect2d(image_tl, image_br), p_res));
     }
 
 

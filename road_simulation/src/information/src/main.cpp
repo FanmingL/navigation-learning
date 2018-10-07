@@ -11,7 +11,7 @@
 
 int main(int argc, char ** argv)
 {
-    information information1(2000);
+    information information1(400);
     information1.run();
     return 0;
 }
