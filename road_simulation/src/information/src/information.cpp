@@ -27,7 +27,7 @@ information::information(float _distance_thrashold) : distance_threshold(_distan
 
 
 void information::run() {
-#if 1
+#if 0
     read_from_binary(&video_data, base_path+ "/data/all_car.proto.data");
     //video_data.frames(2).PrintDebugString();
     float distance_add_step = 0.5f;
@@ -40,7 +40,7 @@ void information::run() {
         cv::Mat frame_mask = mask.clone();
 
         std::cout<<frame.frame_index()<<std::endl;
-        if (frame.frame_index() > 13000)break;
+        if (frame.frame_index() > 11000)break;
         if (frame.frame_index() % 100 == 0){
             //std::cout<<all_trajectory.trajectories(all_trajectory.trajectories_size()/2).objects_size()<<std::endl;
             //std::ofstream offfff(base_path + "/data/dubug.txt");
