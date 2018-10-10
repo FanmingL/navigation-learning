@@ -69,3 +69,20 @@ message homograph_matrix{
 message all_homograph_matrix{
     repeated homograph_matrix single_homograph_matrix = 1;
 }
+
+message yolo_object{
+    required float x = 1;
+    required float y = 2;
+    required float width = 3;
+    required float height = 4;
+    required string name = 5;
+    required float probility = 6;
+}
+
+message yolo_frame{
+    repeated yolo_object object = 1;
+}
+
+message yolo_video{
+    repeated yolo_frame frame = 1;
+}

@@ -11,7 +11,8 @@
 #include "opencv2/video.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "darknet.h"
-
+#include "road_car.pb.h"
+#include <algorithm>
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -141,16 +141,38 @@ std::ostream &operator<<(std::ostream &out,
     return out;
 }
 
+void add_one_obj(rs::yolo_object *object, YOLO_DARKNET::YOLO_OUT &res)
+{
+    object->set_x((float)res.bbox.x);
+    object->set_y((float)res.bbox.y);
+    object->set_width((float)res.bbox.w);
+    object->set_height((float)res.bbox.h);
+
+    object->set_name(res.name);
+
+    object->set_probility(res.prob);
+
+
+}
+
+void add_one_frame(rs::yolo_frame *frame, std::vector<YOLO_DARKNET::YOLO_OUT> &res)
+{
+    for (auto &item : res)
+    {
+        add_one_obj(frame->add_object(), item);
+    }
+}
 
 void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
+
     std::string in_path(basePath + _in_path), out_path(basePath + _out_path);
     std::remove((char *) out_path.c_str());
 
-    cv::VideoWriter videoWriter(out_path, CV_FOURCC('D', 'I', 'V', 'X'), 30, cv::Size(960, 960));
+    cv::VideoWriter videoWriter(out_path, CV_FOURCC('D', 'I', 'V', 'X'), 30, cv::Size(1080, 1080));
     cv::VideoCapture cap(in_path);
     cv::Mat m;
     //cv::Rect rect(1280-960, 0, 960, 960);
-    cv::Rect rect(0, 0, 960, 960);
+    cv::Rect rect(0, 0, 1080, 1080);
     std::vector<YOLO_OUT> res;
 
     std::ofstream outfile;
@@ -160,16 +182,23 @@ void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
     if (!outfile)std::cout << "Error" << std::endl;
     double t = what_time_is_it_now();
     float all_frame = (float) cap.get(CV_CAP_PROP_FRAME_COUNT);
+    rs::yolo_video video;
     for (;;) {
         cap >> m;
         if (m.empty())break;
         cv::Mat resized(m, rect);
         yoloProcess(resized, resized, res, 0.5, 0.5, 0.4);
         videoWriter << resized;
+        std::sort(res.begin(), res.end(), [](YOLO_OUT a1, YOLO_OUT a2)->bool{return a1.frame_index < a2.frame_index;});
+        add_one_frame(video.add_frame(), res);
         for (auto &item : res)
             outfile << item << std::endl;
         std::cout << counter / all_frame * 100.0f << ", " << 1. / (what_time_is_it_now() - t) << std::endl;
         t = what_time_is_it_now();
+    }
+    {
+        std::ofstream of(basePath+"/data/yolo_out_data.proto.b", std::ios::binary|std::ios::trunc);
+        video.SerializePartialToOstream(&of);
     }
     outfile.close();
 }
