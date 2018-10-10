@@ -7,5 +7,5 @@ height_final: 1080
 video_input_path: "data/RS-005-12min.MOV"
 video_output_path: "data/out_video.mp4"
 if_show_video : false
-if_write_video : false
+if_write_video : true
 fps: 30

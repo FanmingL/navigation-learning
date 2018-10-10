@@ -16,7 +16,6 @@ namespace rs{
         preprocess::preprocess(const std::string &name) : rs(name) {
             if (!ReadConfig())
                 std::cout<<"Error Occurred While Loading config"<<std::endl;
-            //std::cout<<preprocess_config.DebugString()<<std::endl;
             if (if_write_video())
             {
                 std::remove((char*)common::get_absolute_path(preprocess_config.video_output_path()).c_str());
@@ -41,13 +40,17 @@ namespace rs{
                 res = mat(ROI).clone();
                 if (!(ROI.width == preprocess_config.width_final() && ROI.height == preprocess_config.height_final()))
                     cv::resize(res, res, cv::Size(preprocess_config.width_final(), preprocess_config.height_final()));
-                if (preprocess_config.if_show_video())
+                if (if_show_video())
                 {
                     cv::imshow(GetModuleName(), res);
                     auto key = cv::waitKey(1);
                     if (key == 'q')break;
                 }
+                if (if_write_video())
+                    video_writer << res;
             }
+            if (if_write_video())
+                video_writer.release();
         }
 
         bool preprocess::ReadConfig() {
@@ -61,6 +64,7 @@ namespace rs{
         bool preprocess::if_write_video() {
             return preprocess_config.if_write_video();
         }
+
 
 
     }
