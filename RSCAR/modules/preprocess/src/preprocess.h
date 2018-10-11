@@ -15,7 +15,7 @@
 #include "common/io.h"
 #include "common/main_interface.h"
 #include "common/rs.h"
-#include "preprocess.pb.h"
+#include "modules/preprocess/preprocess.pb.h"
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>

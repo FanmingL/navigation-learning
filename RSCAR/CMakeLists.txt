@@ -15,8 +15,10 @@ find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Protobuf REQUIRED)
 
+set(PROTOBUF_IMPORT_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
+
 include_directories(
-${EIGEN3_INCLUDE_DIR} 
+${EIGEN3_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${OpenCV_INCLUDE_DIRS}
         /usr/include

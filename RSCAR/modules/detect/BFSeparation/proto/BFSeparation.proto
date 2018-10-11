@@ -1,0 +1,8 @@
+syntax = "proto2";
+package rs.vp;
+
+//import "modules/tracker/proto/tracker.proto";
+
+message BFSeparationConfig{
+    required int32 period = 1;
+}
