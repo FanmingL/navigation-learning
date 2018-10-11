@@ -12,6 +12,7 @@ namespace rs{
         }
 
         void YoloDetection::DetectObject(const cv::Mat &input, cv::Mat &output, std::vector<DetectData> &res) {
+            SetAlgorithmName("You Only Look Ones!!!");
             int nboxes = 0;
             image _tmp_image = mat_to_image(input);
             image _sized = letterbox_image(_tmp_image, net->w, net->h);

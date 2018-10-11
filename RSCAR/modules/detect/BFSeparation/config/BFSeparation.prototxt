@@ -1,1 +1,6 @@
-period: 1800
+period: 5400
+if_init: false
+width:1080
+height:1080
+binary_threshold: 20
+open_operate_radius: 4

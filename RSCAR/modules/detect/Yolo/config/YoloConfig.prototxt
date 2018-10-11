@@ -1,11 +1,10 @@
 threshold: 0.4
 net_input_width: 608
 net_input_height: 608
-nms: 0.5
+nms: 0.2
 if_nms:true
 net_config_path: "config/yolov3.cfg"
 name_config_path: "data/coco.names"
 label_path:"data/labels"
 net_weight_path:"data/yolov3.weights"
-if_only_draw: true
 hier:0.5

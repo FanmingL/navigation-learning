@@ -1,2 +1,5 @@
 algorithm_name: "BFSeparation"
 video_input_path: "data/in_video.mp4"
+if_show_directly: true
+data_input_path: "data/yolo_out_data.proto.b1"
+direct_threshold: 40

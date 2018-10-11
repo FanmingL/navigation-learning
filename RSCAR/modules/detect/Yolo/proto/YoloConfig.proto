@@ -11,6 +11,5 @@ message YoloConfig{
     required string name_config_path = 7;
     required string label_path = 8;
     required string net_weight_path = 9;
-    required bool if_only_draw = 10;
-    required float hier = 11;
+    required float hier = 10;
 }

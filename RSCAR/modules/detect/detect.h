@@ -21,7 +21,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "modules/detect/detect_algorithm_base.h"
-
+#include "common/string_util.h"
 
 namespace rs{
     namespace vp{
@@ -37,6 +37,7 @@ namespace rs{
             cv::VideoCapture video_capture;
             DetectConfig detect_config;
             std::shared_ptr<DetectAlgorithmBase> detect_algorithm;
+            void DrawOnImage(cv::Mat &src, cv::Mat &dst, const DetectFrame &frame);
         };
     }
 }

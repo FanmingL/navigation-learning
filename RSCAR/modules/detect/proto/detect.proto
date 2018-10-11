@@ -20,5 +20,8 @@ message DetectVideo{
 message DetectConfig{
     required string algorithm_name = 1;
     required string video_input_path = 2;
+    required bool if_show_directly = 3;
+    required string data_input_path = 4;
+    required float direct_threshold = 5;
 }
 
