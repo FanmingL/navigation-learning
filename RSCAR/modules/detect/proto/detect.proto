@@ -7,6 +7,7 @@ message DetectObject{
     required float height = 4;
     required string name = 5;
     required float probility = 6;
+    optional int32 car_index = 7;
 }
 
 message DetectFrame{

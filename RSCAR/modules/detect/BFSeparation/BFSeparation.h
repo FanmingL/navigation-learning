@@ -15,6 +15,7 @@
 #include "modules/detect/detect.pb.h"
 #include "common/io.h"
 #include "common/algorithm_factory.h"
+#include "common/image_util.h"
 #include <unordered_map>
 namespace rs{
     namespace vp{
@@ -25,11 +26,10 @@ namespace rs{
             void DetectObject(const cv::Mat &input, cv::Mat &output, std::vector<DetectData> &res) override;
             void ReadConfig();
             void ReadData();
+            void InitRun(const cv::Mat &src, cv::Mat &res, int counter);
         private:
             int FindSetMax(const std::unordered_map<int, int> &in);
             BFSeparationConfig bfs_config;
-
-            std::vector<cv::Mat> background_frame;
             cv::Mat init_image;
             std::vector<std::vector<std::vector<int> > > stastic_matrix;
             //std::vector<std::vector<std::unordered_map<int, int> > > stastic_matrix;

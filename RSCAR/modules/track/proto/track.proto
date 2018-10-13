@@ -1,0 +1,13 @@
+syntax = "proto2";
+package rs.vp;
+
+message TrackConfig{
+    required string algorithm_name = 1;
+    optional string data_path = 2 [default = "data/yolo_out_data.proto.b1"];
+    optional string in_video_path = 3 [default = "data/in_video.mp4"];
+    optional bool if_show_video = 4 [default = true];
+    optional bool if_write_video = 5 [default = false];
+    optional string write_video_path = 6 [default = "data/track_out_video.mp4"];
+    optional bool if_show_res_directly = 7 [default = false];
+    optional string out_data_path = 8 [default = "data/track_out_data.bin"];
+}

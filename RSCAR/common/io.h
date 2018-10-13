@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 #include <stdint.h>
-
+#include <fstream>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -34,6 +34,14 @@
 namespace rs {
 namespace common {
 const int kProtoReadBytesLimit = INT_MAX;  // Max size of 2 GB minus 1 byte.
+
+template <typename T>
+void WriteProtoToBinaryFile(const std::string path, T* proto)
+{
+  std::ofstream of(common::get_absolute_path(path), std::ios::trunc | std::ios::binary);
+
+  proto->SerializePartialToOstream(&of);
+}
 
 template<class T>
 bool ReadProtoFromTextFile(const char *file_name, T *proto) {

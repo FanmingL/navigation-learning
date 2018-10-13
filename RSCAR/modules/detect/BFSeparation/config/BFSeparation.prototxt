@@ -1,5 +1,5 @@
 period: 5400
-if_init: false
+if_init: true
 width:1080
 height:1080
 binary_threshold: 20

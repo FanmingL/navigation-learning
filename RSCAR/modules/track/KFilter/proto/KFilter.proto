@@ -1,0 +1,18 @@
+syntax = "proto2";
+package rs.vp;
+
+message KFilterConfig{
+    optional float measure_cov = 1 [default = 4];
+    optional float control_cov = 2 [default = 5];
+    optional uint32 yolo_max_count = 3 [default = 80];
+    optional uint32 track_max_count = 4 [default = 2];
+    optional float min_area = 5 [default = 500];
+    optional float max_area = 6 [default = 200000];
+    optional float max_overlap_ratio = 7 [default = 0.9];
+    optional float probility_threshold = 8 [default = 0.4];
+    optional int32 mean_filter_length = 9 [default = 4];
+    optional int32 width = 10 [default = 1080];
+    optional int32 height = 11 [default = 1080];
+    optional float min_overlap_ratio = 12 [default = 0.5];
+    optional float recheck_overlap_ratio = 13 [default = 0.6];
+}
