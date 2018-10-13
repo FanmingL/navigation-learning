@@ -7,7 +7,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(${PROJECT_NAME}_proto SHARED ${PROTO_${PROJECT_NAME}_SRC})
 
-target_link_libraries(${PROJECT_NAME}_proto ${PROTOBUF_LIBS})
+target_link_libraries(${PROJECT_NAME}_proto ${PROTOBUF_LIBRARIES})
 
 add_subdirectory(BFSeparation)
 add_subdirectory(Yolo)
