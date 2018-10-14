@@ -32,7 +32,7 @@ namespace rs{
                     bool flag = true;
                     for (auto &item : res)
                     {
-                        if (common::CalculateRectOverlapRatio(item.bbox, tmp_track_data.bbox) >
+                        if (common::CalculateRectOverlapRatio(item.bbox, tmp_track_data.bbox, common::AND_OR) >
                         kf_config.max_overlap_ratio() && item.name == tmp_track_data.name)
                         {
                             flag = false;
@@ -87,6 +87,7 @@ namespace rs{
 
         bool KFilter::CheckConstraint(const DetectData &object) {
             float area = object.bbox.area();
+            if (object.name == "person" && area > kf_config.person_max_area())return false;
             return  (area > kf_config.min_area() &&
                 area < kf_config.max_area() &&
                 object.probility > kf_config.probility_threshold() &&
@@ -173,7 +174,13 @@ namespace rs{
             if (yolo_find && kcf_find) {
                 auto bbox = _detect_data[target_index].bbox;
                 auto bbox_es = cv::Rect2f(tracker_res);
-                if (common::CalculateRectOverlapRatio(bbox, bbox_es) > rechek_overlap_ratio)
+                bool recheck_flag = false;
+                if (track_data.name == "car"){
+                    recheck_flag = common::CalculateRectOverlapRatio(bbox, bbox_es,common::AND_MIN) > rechek_overlap_ratio;
+                }else{
+                    recheck_flag = common::CalculateRectOverlapRatio(bbox, bbox_es, common::AND_OR) > rechek_overlap_ratio;
+                }
+                if (recheck_flag)
                 {
                     RunKF(_detect_data[target_index].bbox, tracker_res, track_data.bbox);
                 }else{

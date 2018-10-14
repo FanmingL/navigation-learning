@@ -1,13 +1,14 @@
 measure_cov: 4
-control_cov: 4
-yolo_max_count: 70
+control_cov: 1
+yolo_max_count: 120
 track_max_count: 2
 min_area: 300
-max_area: 200000
-max_overlap_ratio: 0.7
-probility_threshold: 0.6
+max_area: 150000
+max_overlap_ratio: 0.9
+probility_threshold: 60
 mean_filter_length: 3
 width: 1080
 height: 1080
-min_overlap_ratio:0.3
-recheck_overlap_ratio:0.6
+min_overlap_ratio:0.2
+recheck_overlap_ratio:0.85
+person_max_area:80000

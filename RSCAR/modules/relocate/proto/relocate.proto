@@ -1,0 +1,14 @@
+syntax = "proto2";
+package rs.vp;
+
+message RelocateConfig{
+    optional string input_video_path = 1 [default = "data/in_video.mp4"];
+    optional string input_data_path = 2 [default = "data/track_out_data.bin"];
+    optional bool if_show_video = 3 [default = true];
+    optional string out_data_path = 4 [default = "data/relocate_out_data.bin"];
+    optional bool if_write_video = 5 [default = false];
+    optional string out_video_path = 6 [default = "data/relocate_out_video.mp4"];
+    optional int32 width = 7 [default = 1080];
+    optional int32 height = 8 [default = 1080];
+
+}

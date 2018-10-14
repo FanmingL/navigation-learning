@@ -29,12 +29,21 @@ namespace rs {
             dst_point.x = res_tmp.at<float>(0,0);
             dst_point.y = res_tmp.at<float>(1,0);
         }
-
-        float CalculateRectOverlapRatio(const cv::Rect2f &r1, const cv::Rect2f &r2)
+        enum OVERLAP_MODE{
+            AND_OR = 1,
+            AND_MIN = 2,
+            AND_MAX = 3
+        };
+        float CalculateRectOverlapRatio(const cv::Rect2f &r1, const cv::Rect2f &r2, int mode = 2)
         {
             float a1 = r1.area(), a2 = r2.area();
-            return (r1 & r2).area() / std::min(a1, a2);
-            return ((r1&r2).area() / (r1|r2).area());
+            if (mode == 1) {
+                return ((r1&r2).area() / (r1|r2).area());
+            } else if (mode == 2) {
+                return (r1 & r2).area() / std::min(a1, a2);
+            }else if (mode == 3){
+                return (r1 & r2).area() / std::max(a1, a2);
+            }
         }
     }
 }
