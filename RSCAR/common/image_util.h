@@ -43,6 +43,8 @@ namespace rs {
                 return (r1 & r2).area() / std::min(a1, a2);
             }else if (mode == 3){
                 return (r1 & r2).area() / std::max(a1, a2);
+            }else{
+                return 0;
             }
         }
     }
