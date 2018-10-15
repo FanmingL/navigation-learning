@@ -14,6 +14,7 @@
 
 #include <common/rs.h>
 #include "common/io.h"
+#include "common/image_util.h"
 #include "common/main_interface.h"
 #include "modules/relocate/relocate.pb.h"
 #include "modules/detect/detect.pb.h"
@@ -22,7 +23,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/calib3d.hpp"
 #include "modules/relocate/draw_area.h"
-
+#include "common/string_util.h"
 namespace rs{
     namespace vp{
         class relocate : public common::rs{
@@ -34,7 +35,8 @@ namespace rs{
             bool ReadData();
             void ShowFirstFrame();
             void CalculateHomographMatrix(cv::Mat &_homograph_matrix);
-            //void AddOneObject()
+            void AddOneObject(const DetectObject &detect_object, const cv::Point2f &p_world, TrackObject* dst);
+            void DrawOnImage(cv::Mat &inout_image, TrackObject* data);
         private:
             RelocateConfig relocate_config;
             PointPairSet points_pair_set;

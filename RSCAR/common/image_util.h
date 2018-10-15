@@ -23,7 +23,7 @@ namespace rs {
         {
             cv::Mat cal_tmp(3,1,CV_32FC1,cv::Scalar(1)), res_tmp(3,1,CV_32FC1,cv::Scalar(1));
             cal_tmp.at<float>(0,0) = src_point.x;
-            cal_tmp.at<float>(0,1) = dst_point.y;
+            cal_tmp.at<float>(0,1) = src_point.y;
             res_tmp = transform_matrix * cal_tmp;
             res_tmp /= res_tmp.at<float>(2,0);
             dst_point.x = res_tmp.at<float>(0,0);

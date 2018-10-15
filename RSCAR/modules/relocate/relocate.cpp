@@ -16,6 +16,7 @@ namespace rs{
 
         relocate::relocate(const std::string &name) : rs(name) {
             ReadConfig();
+            ReadData();
             if (relocate_config.if_write_video()){
                 std::remove((char*)common::get_absolute_path(relocate_config.out_video_path()).c_str());
                 video_writer.open(common::get_absolute_path(relocate_config.out_video_path()),CV_FOURCC('D', 'I', 'V', 'X'),
@@ -41,15 +42,43 @@ namespace rs{
         }
 
         void relocate::Run() {
-            return ;
-            for (int counter = 0;;counter++){
-                cv::Mat src;
+            for (int counter = 0; counter<detect_video.frame_size(); counter++) {
+                std::cout<<counter<<std::endl;
+                cv::Mat src, dst;
                 video_capture >> src;
-                if (src.empty())break;
+                auto frame_iter = track_video.add_frame();
+                for (auto &item : detect_video.frame(counter).object()){
+                    cv::Point2f position_image, position_world;
+                    if (item.name() == "person" || item.name() == "bicycle" || item.name() == "motorbike"){
+                        position_image = cv::Point2f(item.x() + item.width() / 2, item.y() + item.height());
+                    }else {
+                        position_image = cv::Point2f(item.x() + item.width()/2, item.y() + item.height()/2);
+                    }
+                    common::CalculateTransform(homograph_matrix,position_image,position_world);
+                    auto object_iter = frame_iter->add_object();
+                    AddOneObject(item,position_world,object_iter);
+                    DrawOnImage(src,object_iter);
 
-
-
+                }
+                if (relocate_config.if_show_video()){
+                        cv::imshow("relocate", src);
+                        auto key = cv::waitKey(1);
+                        if (key == 'q')break;
+                    }
+                    if (relocate_config.if_write_video()){
+                        video_writer << src;
+                    }
             }
+
+            common::WriteProtoToBinaryFile(relocate_config.out_data_path(),&track_video);
+            //for (int counter = 0;;counter++){
+                //cv::Mat src;
+                //video_capture >> src;
+                //if (src.empty())break;
+                //common::CalculateTransform();
+
+
+            //}
         }
 
         void relocate::ShowFirstFrame() {
@@ -76,7 +105,35 @@ namespace rs{
                 image_points.emplace_back(cv::Point2f(item.x_pixel(), item.y_pixel()));
                 world_points.emplace_back(cv::Point2f(item.x_world(), item.y_world()));
             }
-            _homograph_matrix = cv::findHomography(image_points, world_points);
+            cv::Mat tmp_val = cv::findHomography(image_points, world_points);
+            _homograph_matrix = cv::Mat(3,3,CV_32FC1,cv::Scalar(0));
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++){
+                    _homograph_matrix.at<float>(i,j) = (float)tmp_val.at<double>(i,j);
+                }
+
+        }
+
+        void relocate::AddOneObject(const DetectObject &detect_object, const cv::Point2f &p_world, TrackObject*dst) {
+            dst->set_probility(detect_object.probility());
+            dst->set_name(detect_object.name());
+            dst->set_image_bbox_height(detect_object.height());
+            dst->set_image_bbox_width(detect_object.width());
+            dst->set_image_bbox_x(detect_object.x());
+            dst->set_image_bbox_y(detect_object.y());
+            dst->set_object_index(detect_object.car_index());
+            dst->set_world_position_x(p_world.x);
+            dst->set_world_position_y(p_world.y);
+        }
+
+        void relocate::DrawOnImage(cv::Mat &inout_image, TrackObject *data) {
+            cv::rectangle(inout_image,cv::Rect2f(data->image_bbox_x(),data->image_bbox_y(),data->image_bbox_width(),data->image_bbox_height()),
+                    cv::Scalar(255,0,0),2);
+            cv::putText(inout_image,common::to_string_with_precision(data->world_position_x(),5),
+                    cv::Point2f(data->image_bbox_x(),data->image_bbox_y()),cv::FONT_ITALIC,0.4,cv::Scalar(0,0,255),2);
+            cv::putText(inout_image,common::to_string_with_precision(data->world_position_y(),5),
+                        cv::Point2f(data->image_bbox_x(),data->image_bbox_y() + 15),cv::FONT_ITALIC,0.4,cv::Scalar(0,0,255),2);
+
         }
     }
 }
