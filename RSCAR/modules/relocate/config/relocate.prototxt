@@ -1,7 +1,7 @@
 input_video_path: "data/in_video.mp4"
 input_data_path: "data/track_out_data.bin"
-if_show_video: true
-if_write_video: false
+if_show_video: false
+if_write_video: true
 out_data_path: "data/relocate_out_data.bin"
 out_video_path: "data/relocate_out_video.mp4"
 point_data_path: "modules/relocate/config/PointsSet.prototxt"

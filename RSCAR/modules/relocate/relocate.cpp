@@ -42,10 +42,11 @@ namespace rs{
         }
 
         void relocate::Run() {
+            cv::Mat src, dst;
             for (int counter = 0; counter<detect_video.frame_size(); counter++) {
                 std::cout<<counter<<std::endl;
-                cv::Mat src, dst;
-                video_capture >> src;
+                if (relocate_config.if_show_video() || relocate_config.if_write_video())
+                    video_capture >> src;
                 auto frame_iter = track_video.add_frame();
                 for (auto &item : detect_video.frame(counter).object()){
                     cv::Point2f position_image, position_world;
@@ -57,17 +58,19 @@ namespace rs{
                     common::CalculateTransform(homograph_matrix,position_image,position_world);
                     auto object_iter = frame_iter->add_object();
                     AddOneObject(item,position_world,object_iter);
-                    DrawOnImage(src,object_iter);
+                    if (relocate_config.if_show_video() || relocate_config.if_write_video())
+                        DrawOnImage(src,object_iter);
 
+                }
+                if (relocate_config.if_write_video()){
+                        video_writer << src;
                 }
                 if (relocate_config.if_show_video()){
                         cv::imshow("relocate", src);
                         auto key = cv::waitKey(1);
                         if (key == 'q')break;
                     }
-                    if (relocate_config.if_write_video()){
-                        video_writer << src;
-                    }
+
             }
 
             common::WriteProtoToBinaryFile(relocate_config.out_data_path(),&track_video);

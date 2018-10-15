@@ -15,6 +15,7 @@ namespace rs{
             explicit mean_filter(const T &data_init, int _length = 6) : num(1), index(1), length(_length){
                 buffer.push_back(data_init);
                 sum = data_init;
+                last_out = data_init;
             }
             T Run(const T &in){
                 if (num == length)
@@ -35,12 +36,20 @@ namespace rs{
                 return sum / num;
             }
 
+            T RunAndCalVel(const T &in, T &velocity){
+                T now = Run(in);
+                velocity = now - last_out;
+                last_out = now;
+                return now;
+            }
+
         private:
             std::vector<T> buffer;
             int index;
             int num;
             int length;
             T sum;
+            T last_out;
         };
     }
 }

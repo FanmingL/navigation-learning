@@ -227,7 +227,7 @@ namespace rs{
                 track_data.probility = 0;
             }
 
-            //RunMF(track_data.bbox);
+            //RunMF(video_data.bbox);
 
             if (yolo_find)
             {

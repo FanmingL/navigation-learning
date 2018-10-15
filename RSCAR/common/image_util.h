@@ -44,12 +44,17 @@ namespace rs {
             }else if (mode == 3){
                 return a3 / std::max(a1, a2);
             }
+            return 0;
         }
         enum MAP_TYPE{
             CANNOT_GO = 0,
             NON_MOTOR_ROAD = 20,
             MOTOR_ROAD = 40,
-            PERSON_ROAD = 60
+            PERSON_ROAD = 60,
+            CAR = 80,
+            PERSON = 100,
+            BICYCLE = 120,
+            MOTORBIKE = 140
         };
     }
 }
