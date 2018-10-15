@@ -20,7 +20,8 @@
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
-
+#include "opencv2/calib3d.hpp"
+#include "modules/relocate/draw_area.h"
 
 namespace rs{
     namespace vp{
@@ -31,12 +32,17 @@ namespace rs{
             void Run() override ;
             bool ReadConfig();
             bool ReadData();
-            void show_first_frame();
+            void ShowFirstFrame();
+            void CalculateHomographMatrix(cv::Mat &_homograph_matrix);
+            //void AddOneObject()
         private:
             RelocateConfig relocate_config;
+            PointPairSet points_pair_set;
             DetectVideo detect_video;
             cv::VideoCapture video_capture;
             cv::VideoWriter video_writer;
+            cv::Mat homograph_matrix;
+            TrackVideo track_video;
         };
     }
 }

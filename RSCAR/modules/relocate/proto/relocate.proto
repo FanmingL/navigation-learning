@@ -10,5 +10,39 @@ message RelocateConfig{
     optional string out_video_path = 6 [default = "data/relocate_out_video.mp4"];
     optional int32 width = 7 [default = 1080];
     optional int32 height = 8 [default = 1080];
+    optional string point_data_path = 9 [default = "modules/relocate/config/PointsSet.prototxt"];
+    optional bool if_draw_mask = 10 [default = false];
+    optional string mask_save_path = 11 [default = "data/mask.png"];
 
+}
+
+message PointPair{
+    required int32 x_pixel = 1;
+    required int32 y_pixel = 2;
+    required int32 x_world = 3;
+    required int32 y_world = 4;
+}
+
+message PointPairSet{
+    repeated PointPair points = 1;
+}
+
+message TrackObject{
+    optional int32 object_index = 1;
+    optional float probility = 2;
+    optional float image_bbox_x = 3;
+    optional float image_bbox_y = 4;
+    optional float image_bbox_width = 5;
+    optional float image_bbox_height = 6;
+    optional float world_position_x = 7;
+    optional float world_position_y = 8;
+    optional string name = 9;
+}
+
+message TrackFrame{
+    repeated TrackObject object = 1;
+}
+
+message TrackVideo{
+    repeated TrackFrame frame = 1;
 }

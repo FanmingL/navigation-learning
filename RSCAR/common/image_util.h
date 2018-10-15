@@ -36,17 +36,21 @@ namespace rs {
         };
         float CalculateRectOverlapRatio(const cv::Rect2f &r1, const cv::Rect2f &r2, int mode = 2)
         {
-            float a1 = r1.area(), a2 = r2.area();
+            float a1 = r1.area(), a2 = r2.area(),a3 = (r1 & r2).area();
             if (mode == 1) {
-                return ((r1&r2).area() / (r1|r2).area());
+                return (a3 / (a1 + a2 - a3));
             } else if (mode == 2) {
-                return (r1 & r2).area() / std::min(a1, a2);
+                return a3 / std::min(a1, a2);
             }else if (mode == 3){
-                return (r1 & r2).area() / std::max(a1, a2);
-            }else{
-                return 0;
+                return a3 / std::max(a1, a2);
             }
         }
+        enum MAP_TYPE{
+            CANNOT_GO = 0,
+            NON_MOTOR_ROAD = 20,
+            MOTOR_ROAD = 40,
+            PERSON_ROAD = 60
+        };
     }
 }
 

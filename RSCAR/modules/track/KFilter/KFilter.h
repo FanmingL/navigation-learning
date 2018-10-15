@@ -52,6 +52,7 @@ namespace rs{
             float overlap_threshold;
             float rechek_overlap_ratio;
             static int car_index_counter;
+            std::unordered_set<std::string> peron_bicycle_motor;
         };
 
         class KFilter : public BaseTrackAlgorithm{
@@ -71,7 +72,8 @@ namespace rs{
             std::unordered_set<std::string> names_should_take_care;
             std::unordered_map<std::string, cv::Scalar> color_map;
             cv::Rect2f max_image_rect;
-
+            cv::Mat road_type_mask;
+            std::unordered_set<std::string> peron_bicycle_motor;
         };
 
         rs::common::REGISTER_ALGORITHM(BaseTrackAlgorithm, "KFilter", KFilter);

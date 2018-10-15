@@ -4,3 +4,5 @@ if_show_video: true
 if_write_video: false
 out_data_path: "data/relocate_out_data.bin"
 out_video_path: "data/relocate_out_video.mp4"
+point_data_path: "modules/relocate/config/PointsSet.prototxt"
+if_draw_mask: false

@@ -16,4 +16,5 @@ message KFilterConfig{
     optional float min_overlap_ratio = 12 [default = 0.5];
     optional float recheck_overlap_ratio = 13 [default = 0.6];
     optional float person_max_area = 14 [default = 80000];
+    optional string road_type_mask_path = 15 [default = "data/mask.png"];
 }

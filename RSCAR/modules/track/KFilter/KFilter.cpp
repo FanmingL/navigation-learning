@@ -9,12 +9,14 @@ namespace rs{
 
     namespace vp{
 
-
         KFilter::KFilter() {
+            ReadConfig();
             SetAlgorithmName("Kalman Filter Tracking Algorhitm!!!");
-            common::mean_filter<cv::Point2f> mf(cv::Point2f(1,1));
             init_names();
             max_image_rect = cv::Rect2f(0, 0, kf_config.width(), kf_config.height());
+            road_type_mask = cv::imread(common::get_absolute_path(kf_config.road_type_mask_path()),
+                    cv::IMREAD_GRAYSCALE);
+            kf_config.PrintDebugString();
         }
         int single_tracker::car_index_counter = 0;
         void
@@ -33,10 +35,17 @@ namespace rs{
                     for (auto &item : res)
                     {
                         if (common::CalculateRectOverlapRatio(item.bbox, tmp_track_data.bbox, common::AND_OR) >
-                        kf_config.max_overlap_ratio() && item.name == tmp_track_data.name)
+                        kf_config.max_overlap_ratio())
                         {
-                            flag = false;
-                            break;
+                            if (item.name == tmp_track_data.name) {
+                                flag = false;
+                                break;
+                            }else if (peron_bicycle_motor.count(tmp_track_data.name) && peron_bicycle_motor.count(item.name)){
+                                flag = false;
+                                iter->last_track.name = "bicycle";
+                                //item.name = "bicycle";
+                                break;
+                            }
                         }
                     }
                     if(flag){
@@ -58,8 +67,7 @@ namespace rs{
             {
                 if (matched_index_set.count(i))continue;
                 bool flag = true;
-                for (auto &item : new_in)
-                {
+                for (auto &item : new_in) {
                     if (common::CalculateRectOverlapRatio(item.bbox, detect_frame_vector[i].bbox) > kf_config.min_overlap_ratio()){
                         flag = false;
                         break;
@@ -87,7 +95,14 @@ namespace rs{
 
         bool KFilter::CheckConstraint(const DetectData &object) {
             float area = object.bbox.area();
+
             if (object.name == "person" && area > kf_config.person_max_area())return false;
+            if (peron_bicycle_motor.count(object.name)){
+                cv::Point2f p_tmp = object.bbox.br();
+                p_tmp.x -= object.bbox.width/2;
+                if (max_image_rect.contains(p_tmp) && road_type_mask.at<uchar>(p_tmp) == common::CANNOT_GO)
+                    return false;
+            }
             return  (area > kf_config.min_area() &&
                 area < kf_config.max_area() &&
                 object.probility > kf_config.probility_threshold() &&
@@ -108,6 +123,10 @@ namespace rs{
             names_should_take_care.insert("person"); color_map["person"] = cv::Scalar(128, 0, 0);
             names_should_take_care.insert("bicycle");color_map["bicycle"] = cv::Scalar(128, 128, 0);
             names_should_take_care.insert("motorbike");color_map["motorbike"] = cv::Scalar(0, 128, 128);
+            peron_bicycle_motor.insert("person");
+            peron_bicycle_motor.insert("bicycle");
+            peron_bicycle_motor.insert("motorbike");
+
         }
 
         cv::Mat KFilter::ConvertData(const DetectFrame &detect_frame, std::vector<DetectData> &detect_frame_vector) {
@@ -156,14 +175,19 @@ namespace rs{
             max_image_rect = cv::Rect(0, 0, kf_config.width(), kf_config.height());
             overlap_threshold = kf_config.min_overlap_ratio();
             rechek_overlap_ratio = kf_config.recheck_overlap_ratio();
+            peron_bicycle_motor.insert("person");
+            peron_bicycle_motor.insert("bicycle");
+            peron_bicycle_motor.insert("motorbike");
         }
 
         bool single_tracker::Update(const cv::Mat &src, const std::vector<DetectData> &_detect_data,
                                     const cv::Mat &index_mat, TrackData &track_data, std::vector<std::pair<float, int> > &index_matched) {
             bool yolo_find = false, kcf_find = false;
             cv::Rect2d tracker_res(0, 0, 0, 0);
-            if ( kcf_find = (kcf_tracker->update(src, tracker_res)))
+            if ( kcf_find = (kcf_tracker->update(src, tracker_res))){
                 tracker_dog->FeedDog();
+                last_track.bbox = tracker_res;
+            }
             int target_index = -1;
             if ( yolo_find = Match(_detect_data, index_mat, last_track, index_matched))
             {
@@ -171,6 +195,7 @@ namespace rs{
                 target_index = index_matched.back().second;
             }
             track_data = last_track;
+
             if (yolo_find && kcf_find) {
                 auto bbox = _detect_data[target_index].bbox;
                 auto bbox_es = cv::Rect2f(tracker_res);
@@ -183,6 +208,7 @@ namespace rs{
                 if (recheck_flag)
                 {
                     RunKF(_detect_data[target_index].bbox, tracker_res, track_data.bbox);
+                    track_data.name = (last_track.name == "person") ?  _detect_data[target_index].name :last_track.name;
                 }else{
                     track_data.bbox = tracker_res;
                     yolo_find = false;
@@ -192,6 +218,7 @@ namespace rs{
             else if (yolo_find){
                 track_data.bbox = _detect_data[target_index].bbox;
                 track_data.probility = _detect_data[target_index].probility;
+                track_data.name = (last_track.name == "person") ?  _detect_data[target_index].name :last_track.name;
             }else if (kcf_find){
                 track_data.bbox = tracker_res;
                 track_data.probility = 101;
@@ -236,12 +263,17 @@ namespace rs{
             }*/
             now_index.clear();
             for (int i = 0 ;i < _detect_data.size(); ++i) {
-
                 float overlap_ratio =  common::CalculateRectOverlapRatio(last_track.bbox, _detect_data[i].bbox);
+
                 if (overlap_ratio > overlap_threshold)
                 {
                     if (_detect_data[i].name == last_track.name)
                         now_index.emplace_back(std::pair<float, int>(overlap_ratio, i));
+                    else if (peron_bicycle_motor.count(_detect_data[i].name) &&
+                    peron_bicycle_motor.count(last_track.name)) {
+                        now_index.emplace_back(std::pair<float, int>(overlap_ratio, i));
+                        this->last_track.name = "bicycle";
+                    }
                 }
             }
 
