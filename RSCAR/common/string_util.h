@@ -9,8 +9,9 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
-namespace rs{
-    namespace common{
+
+namespace rs {
+    namespace common {
         template<typename T>
         std::string to_string_with_precision(const T a_value, const int n = 5) {
             std::ostringstream out;

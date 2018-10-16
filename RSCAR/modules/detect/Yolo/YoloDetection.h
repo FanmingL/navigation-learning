@@ -38,7 +38,7 @@ void embed_image(image source, image dest, int dx, int dy);
 
 namespace rs {
     namespace vp {
-        class YoloDetection : public DetectAlgorithmBase{
+        class YoloDetection : public DetectAlgorithmBase {
 
         public:
             YoloDetection();
@@ -55,6 +55,7 @@ namespace rs {
             void load_alphabet_new();
 
             YoloConfig yolo_config;
+
             void draw_detections_new(image im, detection *dets, int num,
                                      float thresh, int classes, std::vector<DetectData> &res_name);
 
@@ -62,10 +63,10 @@ namespace rs {
             char **names;
             network *net;
         };
-        rs::common::REGISTER_ALGORITHM(DetectAlgorithmBase,"Yolo", YoloDetection);
+
+        rs::common::REGISTER_ALGORITHM(DetectAlgorithmBase, "Yolo", YoloDetection);
     }
 }
-
 
 
 #endif //RSCAR_YOLODETECTION_H

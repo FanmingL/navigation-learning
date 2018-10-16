@@ -24,14 +24,20 @@
 
 namespace rs {
     namespace vp {
-        class preprocess : public rs::common::rs{
+        class preprocess : public rs::common::rs {
         public:
-            preprocess(const std::string & name);
+            preprocess(const std::string &name);
+
             ~preprocess() final = default;
+
             void Run() override;
+
             bool ReadConfig();
+
             bool if_show_video();
+
             bool if_write_video();
+
         private:
             PreprocessConfig preprocess_config;
             cv::VideoCapture video_capture;

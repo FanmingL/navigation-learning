@@ -3,7 +3,8 @@
 //
 
 #include "KalmanFilter.h"
-namespace rs{
+
+namespace rs {
     namespace vp {
 
         void KalmanFilter::correct(const VECTOR_TYPE &measure, const VECTOR_TYPE &control, VECTOR_TYPE &output,
@@ -26,7 +27,8 @@ namespace rs{
             output = xPost;
         }
 
-        KalmanFilter::KalmanFilter(const VECTOR_TYPE &_start_measure, const MATRIX_TYPE &_measureCov, const MATRIX_TYPE &_controlCov,
+        KalmanFilter::KalmanFilter(const VECTOR_TYPE &_start_measure, const MATRIX_TYPE &_measureCov,
+                                   const MATRIX_TYPE &_controlCov,
                                    const MATRIX_TYPE &_transferMatrix, const MATRIX_TYPE &_controlMatrix,
                                    const MATRIX_TYPE &_measureMatrix) :
                 measureCov(_measureCov), controlCov(_controlCov), transferMatrix(_transferMatrix),

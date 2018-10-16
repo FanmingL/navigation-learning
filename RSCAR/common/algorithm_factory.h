@@ -17,6 +17,7 @@
 
 #ifndef COMMON_ALGORITHM_FACTORY_H
 #define COMMON_ALGORITHM_FACTORY_H
+
 #include <memory>
 #include <stdio.h>
 #include <iostream>
@@ -26,8 +27,8 @@
 //#include "common/log.h"
 //#include "common/bind_this.h"
 
-namespace rs{
-    namespace common{
+namespace rs {
+    namespace common {
 /**
  * @brief In order to conveniently using the sepecific algorithm in each function module
  *        such as mapping, localization, planning, it is nessessary to register algorithm
@@ -36,120 +37,117 @@ namespace rs{
  * @tparam AlgorithmBase The base class of algorithm.
  * @tparam Args Parameter pack
  */
-template<class AlgorithmBase, typename... Args>
-class AlgorithmFactory
-{
- public:
-  using AlgorithmHash = std::unordered_map<std::string, std::function<std::unique_ptr<AlgorithmBase>(Args...)>>;
+        template<class AlgorithmBase, typename... Args>
+        class AlgorithmFactory {
+        public:
+            using AlgorithmHash = std::unordered_map<std::string, std::function<std::unique_ptr<AlgorithmBase>(
+                    Args...)>>;
 
-  /**
-   * @brief The only way to get AlgorithmHash.
-   * @return Ref of AlgorithmHash
-   */
-  static AlgorithmHash& GetAlgorithmHash(){
-    static AlgorithmHash algorithm_hash;
-    return algorithm_hash;
-  }
+            /**
+             * @brief The only way to get AlgorithmHash.
+             * @return Ref of AlgorithmHash
+             */
+            static AlgorithmHash &GetAlgorithmHash() {
+                static AlgorithmHash algorithm_hash;
+                return algorithm_hash;
+            }
 
-  /**
-   * @brief Register specific algorithm to the algorithm container called AlgorithmHash.
-   * @tparam ParamType Type emplate of parameters
-   * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
-   * @param args Parameter pack
-   * @return Return true if register successfully, false otherwith.
-   */
-  template <typename ParamType>
-  static bool Register(const std::string algorithm_name,
-                       ParamType&& args){
-    AlgorithmHash& algorithm_hash = GetAlgorithmHash();
-    auto factory_iter = algorithm_hash.find(algorithm_name);
-    if(factory_iter == algorithm_hash.end()) {
-      algorithm_hash.emplace(std::make_pair(algorithm_name, std::forward<ParamType>(args)));
-      std::cout << algorithm_name << " registered successfully!" << std::endl;
-    }
-    else
-      std::cout << algorithm_name << " has been registered!" << std::endl;
-    return true;
-  }
+            /**
+             * @brief Register specific algorithm to the algorithm container called AlgorithmHash.
+             * @tparam ParamType Type emplate of parameters
+             * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
+             * @param args Parameter pack
+             * @return Return true if register successfully, false otherwith.
+             */
+            template<typename ParamType>
+            static bool Register(const std::string algorithm_name,
+                                 ParamType &&args) {
+                AlgorithmHash &algorithm_hash = GetAlgorithmHash();
+                auto factory_iter = algorithm_hash.find(algorithm_name);
+                if (factory_iter == algorithm_hash.end()) {
+                    algorithm_hash.emplace(std::make_pair(algorithm_name, std::forward<ParamType>(args)));
+                    std::cout << algorithm_name << " registered successfully!" << std::endl;
+                } else
+                    std::cout << algorithm_name << " has been registered!" << std::endl;
+                return true;
+            }
 
-  /**
-   * @brief Unregister algorithm from the algorithm container.
-   * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
-   * @return Return true if register successfully, false otherwith.
-   */
-  static bool UnRegister(const std::string algorithm_name){
-    AlgorithmHash& algorithm_hash = GetAlgorithmHash();
-    auto factory_iter = algorithm_hash.find(algorithm_name);
-    if(factory_iter != algorithm_hash.end()){
-      algorithm_hash.erase(algorithm_name);
-      return true;
-    }
-    else{
-      std::cout << "Failed to unregister algorithm, it is a unregistered alrorithm."
-                << algorithm_name << std::endl;
-      return false;
-    }
-  }
+            /**
+             * @brief Unregister algorithm from the algorithm container.
+             * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
+             * @return Return true if register successfully, false otherwith.
+             */
+            static bool UnRegister(const std::string algorithm_name) {
+                AlgorithmHash &algorithm_hash = GetAlgorithmHash();
+                auto factory_iter = algorithm_hash.find(algorithm_name);
+                if (factory_iter != algorithm_hash.end()) {
+                    algorithm_hash.erase(algorithm_name);
+                    return true;
+                } else {
+                    std::cout << "Failed to unregister algorithm, it is a unregistered alrorithm."
+                              << algorithm_name << std::endl;
+                    return false;
+                }
+            }
 
-  /**
-   * @brief Create an algorithm class that has been registered before.
-   * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
-   * @param args Parameter pack
-   * @return The base class unique_ptr that point to Algorithm corresponding to the algorithm name.
-   */
-  static std::unique_ptr<AlgorithmBase> CreateAlgorithm(const std::string algorithm_name,
-                                                        Args... args) {
-    AlgorithmHash& algorithm_hash = GetAlgorithmHash();
+            /**
+             * @brief Create an algorithm class that has been registered before.
+             * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
+             * @param args Parameter pack
+             * @return The base class unique_ptr that point to Algorithm corresponding to the algorithm name.
+             */
+            static std::unique_ptr<AlgorithmBase> CreateAlgorithm(const std::string algorithm_name,
+                                                                  Args... args) {
+                AlgorithmHash &algorithm_hash = GetAlgorithmHash();
 
-    auto factory_iter = algorithm_hash.find(algorithm_name);
-    if(factory_iter == algorithm_hash.end()){
-      std::cout << "Can't creat algorithm " << algorithm_name <<
-               ", because you haven't register it!" << std::endl;
-      return nullptr;
-    }
-    else{
-      return (factory_iter->second)(std::forward<Args>(args)...);
-    }
-  }
+                auto factory_iter = algorithm_hash.find(algorithm_name);
+                if (factory_iter == algorithm_hash.end()) {
+                    std::cout << "Can't creat algorithm " << algorithm_name <<
+                              ", because you haven't register it!" << std::endl;
+                    return nullptr;
+                } else {
+                    return (factory_iter->second)(std::forward<Args>(args)...);
+                }
+            }
 
- private:
-  AlgorithmFactory(){}
-};
+        private:
+            AlgorithmFactory() {}
+        };
 
-template<typename AlgorithmBase, typename Algorithm, typename... Args>
-class AlgorithmRegister{
- public:
-  /**
-   * @brief Constructor function of AlgorithmRegister class.
-   * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
-   */
-  explicit AlgorithmRegister(std::string algorithm_name) {
-    Register(algorithm_name, make_int_sequence<sizeof...(Args)>{});
-  }
-  /**
-   * @brief Create an unique_ptr pointer of Algorithm corresponding to the algorithm name.
-   * @param data Parameter pack
-   * @return The base class unique_ptr that point to Algorithm corresponding to the algorithm name.
-   */
-  static std::unique_ptr<Algorithm> create(Args&&... data)
-  {
-    return std::make_unique<Algorithm>(std::forward<Args>(data)...);
-  }
+        template<typename AlgorithmBase, typename Algorithm, typename... Args>
+        class AlgorithmRegister {
+        public:
+            /**
+             * @brief Constructor function of AlgorithmRegister class.
+             * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
+             */
+            explicit AlgorithmRegister(std::string algorithm_name) {
+                Register(algorithm_name, make_int_sequence<sizeof...(Args)>{});
+            }
 
- private:
-  /**
-   * @brief Using std::bind to create a std::function, than pass it to Register function befined in AlgorithmnFactory
-   *        class
-   * @tparam Is Parameter pack
-   * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
-   */
-  template <int... Is>
-  void Register(std::string algorithm_name, int_sequence<Is...>) {
-    auto function = std::bind(&AlgorithmRegister<AlgorithmBase, Algorithm, Args...>::create,
-                              std::placeholder_template<Is>{}...);
-    AlgorithmFactory<AlgorithmBase, Args...>::Register(algorithm_name, function);
-  }
-};
+            /**
+             * @brief Create an unique_ptr pointer of Algorithm corresponding to the algorithm name.
+             * @param data Parameter pack
+             * @return The base class unique_ptr that point to Algorithm corresponding to the algorithm name.
+             */
+            static std::unique_ptr<Algorithm> create(Args &&... data) {
+                return std::make_unique<Algorithm>(std::forward<Args>(data)...);
+            }
+
+        private:
+            /**
+             * @brief Using std::bind to create a std::function, than pass it to Register function befined in AlgorithmnFactory
+             *        class
+             * @tparam Is Parameter pack
+             * @param algorithm_name Algorithm name, which must be the same with the variable defined in ".prototxt" file.
+             */
+            template<int... Is>
+            void Register(std::string algorithm_name, int_sequence<Is...>) {
+                auto function = std::bind(&AlgorithmRegister<AlgorithmBase, Algorithm, Args...>::create,
+                                          std::placeholder_template<Is>{}...);
+                AlgorithmFactory<AlgorithmBase, Args...>::Register(algorithm_name, function);
+            }
+        };
 /**
  * @brief It is convenient to register specific algorithm using this Macro.
  * @example

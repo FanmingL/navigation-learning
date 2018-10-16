@@ -28,18 +28,26 @@
 #include <unordered_map>
 #include "common/util.h"
 
-namespace rs{
-    namespace vp{
-        class information : public common::rs{
+namespace rs {
+    namespace vp {
+        class information : public common::rs {
         public:
-            explicit information(const std::string & name);
+            explicit information(const std::string &name);
+
             ~information() override = default;
+
             void Run() override;
+
             void ReadConfig();
+
             void ReadData();
+
             void ReadMask();
+
             void ReadMatrix();
+
             void MapInit();
+
             cv::Point GetImageCenter(const TrackObject &object);
 
         private:

@@ -4,8 +4,8 @@
 
 #include "YoloDetection.h"
 
-namespace rs{
-    namespace vp{
+namespace rs {
+    namespace vp {
 
         void YoloDetection::ReadConfig() {
             common::ReadProtoFromTextFile("modules/detect/Yolo/config/YoloConfig.prototxt", &yolo_config);
@@ -19,7 +19,8 @@ namespace rs{
 
             layer *l = &(net->layers[net->n - 1]);
             network_predict(net, _sized.data);
-            detection *dets = get_network_boxes(net, _tmp_image.w, _tmp_image.h, yolo_config.threshold(), yolo_config.hier(), nullptr, 1, &nboxes);
+            detection *dets = get_network_boxes(net, _tmp_image.w, _tmp_image.h, yolo_config.threshold(),
+                                                yolo_config.hier(), nullptr, 1, &nboxes);
             if (yolo_config.if_nms())do_nms_sort(dets, nboxes, l->classes, yolo_config.nms());
             draw_detections_new(_tmp_image, dets, nboxes, yolo_config.threshold(), l->classes, res);
             output = image_to_mat(_tmp_image);
@@ -30,12 +31,11 @@ namespace rs{
 
         YoloDetection::YoloDetection() {
             ReadConfig();
-            names = get_labels((char *) common::get_absolute_path(yolo_config.name_config_path()).c_str());
-            net = load_network((char *) common::get_absolute_path(yolo_config.net_config_path()).c_str(),
-                    (char *) common::get_absolute_path(yolo_config.net_weight_path()).c_str(), 0);
+            names = get_labels((char *) common::GetAbsolutePath(yolo_config.name_config_path()).c_str());
+            net = load_network((char *) common::GetAbsolutePath(yolo_config.net_config_path()).c_str(),
+                               (char *) common::GetAbsolutePath(yolo_config.net_weight_path()).c_str(), 0);
             set_batch_network(net, 1);
-            if (!(yolo_config.net_input_width() == 608 && yolo_config.net_input_height() == 608))
-            {
+            if (!(yolo_config.net_input_width() == 608 && yolo_config.net_input_height() == 608)) {
                 resize_network(net, yolo_config.net_input_width(), yolo_config.net_input_height());
             }
             load_alphabet_new();
@@ -49,7 +49,8 @@ namespace rs{
                 alphabets[j] = (image *) calloc(128, sizeof(image));
                 for (i = 32; i < 127; ++i) {
                     char buff[256];
-                    sprintf(buff, "%s/%d_%d.png", (char *) common::get_absolute_path(yolo_config.label_path()).c_str(), i, j);
+                    sprintf(buff, "%s/%d_%d.png", (char *) common::GetAbsolutePath(yolo_config.label_path()).c_str(),
+                            i, j);
                     alphabets[j][i] = load_image_color(buff, 0, 0);
                 }
             }
@@ -73,8 +74,8 @@ namespace rs{
                         }
                         //printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
                         //YOLO_OUT y(names[j], dets[i].bbox, dets[i].prob[j] * 100, counter);
-                        DetectData y(cv::Rect2f(dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h)
-                                , names[j], dets[i].prob[j] * 100);
+                        DetectData y(cv::Rect2f(dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h),
+                                     names[j], dets[i].prob[j] * 100);
                         res_name.push_back(y);
                         break;
                     }

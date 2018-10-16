@@ -26,11 +26,12 @@
 #define VECTOR_TYPE Eigen::Matrix<NUM_TYPE, DIMENSION, 1>
 #define MATRIX_I Eigen::Matrix<NUM_TYPE, DIMENSION, DIMENSION>::Identity()
 #define VECTOR_ZERO Eigen::Matrix<NUM_TYPE, DIMENSION, 1>::Zero()
-namespace rs{
+namespace rs {
     namespace vp {
         class KalmanFilter {
         public:
-            KalmanFilter(const VECTOR_TYPE&_start_measure, const MATRIX_TYPE &_measureCov, const MATRIX_TYPE &_controlCov,
+            KalmanFilter(const VECTOR_TYPE &_start_measure, const MATRIX_TYPE &_measureCov,
+                         const MATRIX_TYPE &_controlCov,
                          const MATRIX_TYPE &_transferMatrix = MATRIX_I, const MATRIX_TYPE &_controlMatrix = MATRIX_I,
                          const MATRIX_TYPE &_measureMatrix = MATRIX_I);
 

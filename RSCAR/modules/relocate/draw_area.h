@@ -12,31 +12,33 @@
 #include <vector>
 #include <iostream>
 #include <mutex>
-namespace rs{
-    namespace vp{
-        class draw_area{
-            public:
-    draw_area(const cv::Mat &src, const std::string &path, int width = 1080, int height = 1080);
 
-    cv::Mat first_image, canvas, mask, mask_cant_reach;
+namespace rs {
+    namespace vp {
+        class draw_area {
+        public:
+            draw_area(const cv::Mat &src, const std::string &path, int width = 1080, int height = 1080);
 
-    void draw_position();
+            cv::Mat first_image, canvas, mask, mask_cant_reach;
 
-    void read_position();
+            void draw_position();
 
-    const std::string base_path = PATH;
+            void read_position();
 
-    void mouse_cb(int event, int x, int y, int flags) ;
+            const std::string base_path = PATH;
 
-    static void onMouse(int event, int x, int y, int flag, void *user_data);
-private:
-    std::mutex init_image_mutex;
+            void mouse_cb(int event, int x, int y, int flags);
 
-    int click_step;
+            static void onMouse(int event, int x, int y, int flag, void *user_data);
 
-    std::vector<cv::Point> click_buffer;
+        private:
+            std::mutex init_image_mutex;
 
-    std::vector<int> val_buffer;
+            int click_step;
+
+            std::vector<cv::Point> click_buffer;
+
+            std::vector<int> val_buffer;
         };
     }
 }

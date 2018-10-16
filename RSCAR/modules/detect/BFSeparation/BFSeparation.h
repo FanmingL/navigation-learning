@@ -17,18 +17,26 @@
 #include "common/algorithm_factory.h"
 #include "common/image_util.h"
 #include <unordered_map>
-namespace rs{
-    namespace vp{
-        class BFSeparation : public DetectAlgorithmBase{
+
+namespace rs {
+    namespace vp {
+        class BFSeparation : public DetectAlgorithmBase {
         public:
             BFSeparation();
+
             ~BFSeparation() override = default;
+
             void DetectObject(const cv::Mat &input, cv::Mat &output, std::vector<DetectData> &res) override;
+
             void ReadConfig();
+
             void ReadData();
+
             void InitRun(const cv::Mat &src, cv::Mat &res, int counter);
+
         private:
             int FindSetMax(const std::unordered_map<int, int> &in);
+
             BFSeparationConfig bfs_config;
             cv::Mat init_image;
             std::vector<std::vector<std::vector<int> > > stastic_matrix;
@@ -36,7 +44,8 @@ namespace rs{
             DetectVideo detect_video;
             std::vector<cv::Mat> back_ground_vec;
         };
-        rs::common::REGISTER_ALGORITHM(DetectAlgorithmBase,"BFSeparation",BFSeparation);
+
+        rs::common::REGISTER_ALGORITHM(DetectAlgorithmBase, "BFSeparation", BFSeparation);
     }
 }
 

@@ -14,21 +14,21 @@
 #include "track.h"
 
 
-namespace rs{
-    namespace vp{
+namespace rs {
+    namespace vp {
 
         track::track(const std::string &name) : rs(name) {
             ReadConfig();
             ReadData();
-            track_algorithm = common::AlgorithmFactory<BaseTrackAlgorithm>::CreateAlgorithm(track_config.algorithm_name());
+            track_algorithm = common::AlgorithmFactory<BaseTrackAlgorithm>::CreateAlgorithm(
+                    track_config.algorithm_name());
             //video_capture.open(common::.in_video_path());
-            video_capture.open(common::get_absolute_path(track_config.in_video_path()));
-            int width = (int)video_capture.get(CV_CAP_PROP_FRAME_WIDTH);
-            int height = (int)video_capture.get(CV_CAP_PROP_FRAME_HEIGHT);
-            if (track_config.if_write_video())
-            {
-                std::string write_video_path = common::get_absolute_path(track_config.write_video_path());
-                std::remove((char*)write_video_path.c_str());
+            video_capture.open(common::GetAbsolutePath(track_config.in_video_path()));
+            int width = (int) video_capture.get(CV_CAP_PROP_FRAME_WIDTH);
+            int height = (int) video_capture.get(CV_CAP_PROP_FRAME_HEIGHT);
+            if (track_config.if_write_video()) {
+                std::string write_video_path = common::GetAbsolutePath(track_config.write_video_path());
+                std::remove((char *) write_video_path.c_str());
                 video_writer.open(write_video_path, CV_FOURCC('D', 'I', 'V', 'X'), 30, cv::Size(width, height));
             }
             counter = 0;
@@ -37,25 +37,21 @@ namespace rs{
         void track::Run() {
             cv::Mat src, dst;
             std::vector<TrackData> res;
-            while (true)
-            {
+            while (true) {
                 video_capture >> src;
                 if (src.empty())break;
-                std::cout<<counter<<std::endl;
-                track_algorithm->Track(src, dst, detect_data.frame(counter),res);
+                std::cout << counter << std::endl;
+                track_algorithm->Track(src, dst, detect_data.frame(counter), res);
                 auto iter_proto = detect_video.add_frame();
-                for (auto &item : res)
-                {
+                for (auto &item : res) {
                     AddObject(item, iter_proto->add_object());
                 }
-                if (track_config.if_show_video())
-                {
+                if (track_config.if_show_video()) {
                     cv::imshow("track", dst);
                     auto key = cv::waitKey(1);
                     if (key == 'q')break;
                 }
-                if(track_config.if_write_video())
-                {
+                if (track_config.if_write_video()) {
                     video_writer << dst;
                 }
                 counter++;
@@ -68,7 +64,7 @@ namespace rs{
         }
 
         void track::ReadData() {
-           common::ReadProtoFromBinaryFile(track_config.data_path(), &detect_data);
+            common::ReadProtoFromBinaryFile(track_config.data_path(), &detect_data);
         }
 
         void track::AddObject(const TrackData &data, DetectObject *object) {

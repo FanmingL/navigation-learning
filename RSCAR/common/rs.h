@@ -8,14 +8,18 @@
 #include <string>
 #include <iostream>
 
-namespace rs{
+namespace rs {
     namespace common {
         class rs {
         public:
             explicit rs(const std::string &_name);
+
             virtual ~rs() = default;
+
             virtual void Run();
+
             std::string GetModuleName();
+
         private:
             std::string name;
         };

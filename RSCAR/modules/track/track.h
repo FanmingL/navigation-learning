@@ -21,15 +21,20 @@
 #include <string>
 
 
-namespace rs{
-    namespace vp{
-        class track :public rs::common::rs{
+namespace rs {
+    namespace vp {
+        class track : public rs::common::rs {
         public:
             explicit track(const std::string &_name);
+
             ~track() override = default;
+
             void Run() override;
+
             void ReadConfig();
+
             void ReadData();
+
             void AddObject(const TrackData &data, DetectObject *object);
 
         private:
