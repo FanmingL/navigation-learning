@@ -5,3 +5,4 @@ mask_path: "data/mask.png"
 pair_point_path:"modules/relocate/config/PointsSet.prototxt"
 mean_filter_length: 3
 distance_step: 0.5
+max_frame_count: 8000

@@ -131,9 +131,10 @@ namespace rs {
         }
 
         void relocate::DrawOnImage(cv::Mat &inout_image, TrackObject *data) {
-            cv::rectangle(inout_image, cv::Rect2f(data->image_bbox_x(), data->image_bbox_y(), data->image_bbox_width(),
-                                                  data->image_bbox_height()),
-                          cv::Scalar(255, 0, 0), 2);
+            cv::rectangle(inout_image,
+                              cv::Rect2f(data->image_bbox_x(), data->image_bbox_y(), data->image_bbox_width(),
+                                         data->image_bbox_height()),
+                              cv::Scalar(255, 0, 0), 2);
             cv::putText(inout_image, common::to_string_with_precision(data->world_position_x(), 5),
                         cv::Point2f(data->image_bbox_x(), data->image_bbox_y()), cv::FONT_ITALIC, 0.4,
                         cv::Scalar(0, 0, 255), 2);

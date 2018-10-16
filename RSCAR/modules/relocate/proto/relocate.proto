@@ -13,6 +13,7 @@ message RelocateConfig{
     optional string point_data_path = 9 [default = "modules/relocate/config/PointsSet.prototxt"];
     optional bool if_draw_mask = 10 [default = false];
     optional string mask_save_path = 11 [default = "data/mask.png"];
+    optional float den = 12 [default = 3];
 
 }
 

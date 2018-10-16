@@ -37,10 +37,10 @@ namespace rs {
                 cv::Mat frame_mask = mask.clone();
 
                 std::cout << frame_index << std::endl;
-                if (frame_index > 8000)break;
-                if (frame_index % 100 == 99) {
+                if (frame_index > information_config.max_frame_count())break;
+                if (frame_index % 100 == 99 ) {
                     std::ofstream of(common::GetAbsolutePath("data/debug.txt"), std::ios::trunc);
-                    of << all_trajectories.trajectory(all_trajectories.trajectory_size() - 1).DebugString();
+                    of << all_trajectories.trajectory(all_trajectories.trajectory_size()/2).DebugString();
                 }
                 std::unordered_map<int, cv::Point2f> position_after_filter;
                 std::unordered_map<int, cv::Point2f> velocity;
@@ -110,10 +110,7 @@ namespace rs {
                 }
                 for (auto &item : position_after_filter) {
                     int car_index = index_to_map[item.first];
-                    cv::Rect rect_fill_color_tmp((int) frame.object(car_index).image_bbox_x(),
-                                                 (int) frame.object(car_index).image_bbox_y(),
-                                                 (int) frame.object(car_index).image_bbox_width(),
-                                                 (int) frame.object(car_index).image_bbox_height());
+                    cv::Rect rect_fill_color_tmp(GetBoundingBox(frame.object(car_index)));
                     frame_mask(rect_fill_color_tmp & image_max_rect) = cv::Scalar(
                             string_image_map[frame.object(car_index).name()]);
                 }
@@ -174,8 +171,10 @@ namespace rs {
                                         point_image_obstacle[angle_i] = cv::Point2f(find_point);
                                         switch (val_here) {
                                             case (int) common::CANNOT_GO:
-                                                surround_type_image[angle_i] = OBSTACLE;
-                                                break_flag = true;
+                                                if (original_data != common::PERSON) {
+                                                    surround_type_image[angle_i] = OBSTACLE;
+                                                    break_flag = true;
+                                                }
                                                 break;
                                             case (int) common::CAR:
                                                 surround_type_image[angle_i] = CAR;
@@ -340,9 +339,25 @@ namespace rs {
                                          (int) (object.image_bbox_y() + object.image_bbox_height() / 2));
             } else {
                 image_center = cv::Point((int) (object.image_bbox_x() + object.image_bbox_width() / 2),
-                                         (int) (object.image_bbox_y() + object.image_bbox_height()));
+                                         (int) (object.image_bbox_y() + object.image_bbox_height() - 1));
             }
             return image_center;
+        }
+
+        cv::Rect2f information::GetBoundingBox(const TrackObject &object) {
+            cv::Rect2f rect;
+            if (object.name() == "car"){
+                rect = cv::Rect2f(object.image_bbox_x(), object.image_bbox_y(),
+                        object.image_bbox_width(), object.image_bbox_height());
+            } else{
+                cv::Rect2f(object.image_bbox_x(), object.image_bbox_y() + object.image_bbox_height() *
+                (information_config.den()-1)/information_config.den()
+                                      , object.image_bbox_width(),
+                                         1/information_config.den() * object.image_bbox_height());
+                rect = cv::Rect2f(object.image_bbox_x(), object.image_bbox_y(),
+                                  object.image_bbox_width(), object.image_bbox_height());
+            }
+            return rect;
         }
     }
 }

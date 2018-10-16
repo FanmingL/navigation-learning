@@ -50,6 +50,8 @@ namespace rs {
 
             cv::Point GetImageCenter(const TrackObject &object);
 
+            cv::Rect2f GetBoundingBox(const TrackObject &object);
+
         private:
             TrackVideo video_data;
             AllTrajectory all_trajectories;
