@@ -29,8 +29,13 @@ namespace rs {
             if (relocate_config.if_draw_mask()) {
                 cv::Mat first_image;
                 video_capture >> first_image;
-                draw_area da(first_image, common::GetAbsolutePath(relocate_config.mask_save_path()),
-                             relocate_config.width(), relocate_config.height());
+                if (relocate_config.if_point()){
+                    draw_area da(first_image, common::GetAbsolutePath(relocate_config.point_image_out_path()),
+                                 relocate_config.width(), relocate_config.height(), draw_area::DRAW_POINT, homograph_matrix);
+                }else {
+                    draw_area da(first_image, common::GetAbsolutePath(relocate_config.mask_save_path()),
+                                 relocate_config.width(), relocate_config.height());
+                }
             }
         }
 

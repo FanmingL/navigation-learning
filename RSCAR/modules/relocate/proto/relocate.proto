@@ -14,6 +14,8 @@ message RelocateConfig{
     optional bool if_draw_mask = 10 [default = false];
     optional string mask_save_path = 11 [default = "data/mask.png"];
     optional float den = 12 [default = 3];
+    optional bool if_point = 13 [default = true];
+    optional string point_image_out_path = 14 [default = "data/point.png"];
 
 }
 

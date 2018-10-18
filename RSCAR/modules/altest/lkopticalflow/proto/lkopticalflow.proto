@@ -1,0 +1,6 @@
+syntax = "proto2";
+package rs.vp;
+message LkConfig{
+    optional float threshold_diff = 1 [default = 4.4];
+    optional int32 threshold_binary = 2 [default = 50];
+}

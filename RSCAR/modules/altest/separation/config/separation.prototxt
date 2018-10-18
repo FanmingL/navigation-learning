@@ -1,0 +1,6 @@
+threshold : 60
+learning_rate: -1
+open_radius: 3
+if_detect_shadow: true
+history_number: 500
+shadow_threshold: 0.5

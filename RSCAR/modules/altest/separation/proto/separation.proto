@@ -1,0 +1,11 @@
+syntax = "proto2";
+package rs.vp;
+
+message SeparationConfig{
+    optional int32 threshold = 1 [default = 10];
+    optional float learning_rate = 2 [default = -1];
+    optional int32 open_radius = 3 [default = 2];
+    optional bool if_detect_shadow = 4 [default = false];
+    optional int32 history_number = 5 [default = 500];
+    optional float shadow_threshold = 6 [default = 100];
+}
