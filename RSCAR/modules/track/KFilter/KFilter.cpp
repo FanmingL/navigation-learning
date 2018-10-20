@@ -188,7 +188,7 @@ namespace rs {
                                     std::vector<std::pair<float, int> > &index_matched) {
             bool yolo_find = false, kcf_find = false;
             cv::Rect2d tracker_res(0, 0, 0, 0);
-            if (kcf_find = (kcf_tracker->update(src, tracker_res))) {
+            if (kcf_find = (kcf_tracker->update(src, tracker_res)) && tracker_res.area() != 0) {
                 tracker_dog->FeedDog();
                 last_track.bbox = tracker_res;
             }
@@ -226,7 +226,6 @@ namespace rs {
                 track_data.bbox = tracker_res;
                 track_data.probility = 101;
             } else {
-                track_data.bbox = tracker_res;
                 track_data.probility = 0;
             }
 

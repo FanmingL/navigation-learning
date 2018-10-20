@@ -30,9 +30,9 @@ namespace rs{
             bgsubtractor->apply(src, bgmask,  separation_config.learning_rate());
             //RefineSegments(src, bgmask, front_mask);
             MyRefine(bgmask,separation_config.open_radius());
-            dst = cv::Mat(src.size(), CV_8UC3, cv::Scalar(0,0,0));
-            src.copyTo(dst,bgmask);
-
+            //dst = cv::Mat(src.size(), CV_8UC3, cv::Scalar(0,0,0));
+            //src.copyTo(dst,bgmask);
+            dst = src.clone();
             cv::imshow("mask", bgmask);
         }
 

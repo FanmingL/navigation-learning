@@ -32,13 +32,13 @@ namespace rs {
             std::unordered_map<int, DescriptionTrajectory *> trajectory_map;
             int max_index_now = -1;
             float distance_threshold = information_config.max_distance();
+            cv::Mat frame_mask = mask.clone();
             for (int frame_index = 0; frame_index < video_data.frame_size(); frame_index++) {
                 auto &frame = video_data.frame(frame_index);
-                cv::Mat frame_mask = mask.clone();
-
+                mask.copyTo(frame_mask);
                 std::cout << frame_index << std::endl;
                 if (frame_index > information_config.max_frame_count())break;
-                if (frame_index % 100 == 99 ) {
+                if ( information_config.if_save_debug()  && frame_index % 100 == 99 ) {
                     std::ofstream of(common::GetAbsolutePath("data/debug.txt"), std::ios::trunc);
                     of << all_trajectories.trajectory(all_trajectories.trajectory_size()/2).DebugString();
                 }
@@ -86,6 +86,7 @@ namespace rs {
 
                 for (; j < frame.object().size(); j++) {
                     auto &item = frame.object(object_index_sort[j].second);
+                    max_index_now = std::max(item.object_index(), max_index_now);
 
                     //cv::Point image_center = cv::Point((int)(item.image_position().x() + item.image_position().width()/2),
                     //                                   (int)(item.image_position().y() + item.image_position().height()/2));
@@ -97,13 +98,13 @@ namespace rs {
                           mask.at<uchar>(image_center) != common::CANNOT_GO)
                             )
                         continue;
-                    max_index_now = std::max(item.object_index(), max_index_now);
                     //filter_map[item.object_index()] = std::make_shared<move_mean>(cv::Point2d(item.world_center().x(),
                     //        item.world_center().y()), 4);
                     filter_map[item.object_index()] = std::make_shared<common::mean_filter<cv::Point2f> >(
                             cv::Point2f(item.world_position_x(),
                                         item.world_position_y()), information_config.mean_filter_length());
-                    trajectory_map[item.object_index()] = all_trajectories.add_trajectory();
+                    if (item.name() == "person")
+                        trajectory_map[item.object_index()] = all_trajectories.add_trajectory();
                     position_after_filter[item.object_index()] = cv::Point2f(item.world_position_x(),
                                                                              item.world_position_y());
                     index_to_map[item.object_index()] = object_index_sort[j].second;
@@ -116,6 +117,7 @@ namespace rs {
                 }
 
                 for (auto &item : position_after_filter) {
+                    if (!trajectory_map.count(item.first))continue;
                     auto iter = trajectory_map[item.first]->add_trajectory_point();
                     int car_index = index_to_map[item.first];
                     iter->set_image_bbox_x(frame.object(car_index).image_bbox_x());
