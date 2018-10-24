@@ -81,7 +81,11 @@ namespace rs {
             }
             cv::Mat canvas = src.clone();
             for (auto &item : res) {
-                cv::rectangle(canvas, item.bbox, color_map[item.name], 2);
+                if (item.probility != 0)
+                    cv::rectangle(canvas, item.bbox, color_map[item.name], 2);
+                else
+                    cv::rectangle(canvas, item.bbox, cv::Scalar(0,0,0), 2);
+
                 cv::putText(canvas, std::to_string(item.object_index), item.bbox.tl(),
                             cv::FONT_ITALIC, 0.8, cv::Scalar(0, 0, 128), 2);
             }
@@ -96,6 +100,9 @@ namespace rs {
             float area = object.bbox.area();
 
             if (object.name == "person" && area > kf_config.person_max_area())return false;
+            if (object.name != "car" && area > 2300)return false;
+            if (object.name != "car" && ((!max_image_rect.contains(object.bbox.br() + cv::Point2f(15,15))) ||
+            (!max_image_rect.contains(object.bbox.tl() - cv::Point2f(15,15))) ))return false;
             if (peron_bicycle_motor.count(object.name)) {
                 cv::Point2f p_tmp = object.bbox.br();
                 p_tmp.x -= object.bbox.width / 2;
@@ -157,7 +164,12 @@ namespace rs {
         single_tracker::single_tracker(const cv::Mat &src, const DetectData &_detect_data,
                                        const KFilterConfig &kf_config) {
             cv::Point2f tl = _detect_data.bbox.tl(), br = _detect_data.bbox.br();
-            kcf_tracker = cv::TrackerKCF::create();
+            cv::TrackerKCF::Params param;
+            param.desc_pca = cv::TrackerKCF::GRAY | cv::TrackerKCF::CN;
+            param.desc_npca = 0;
+            param.compress_feature = true;
+            param.compressed_size = 2;
+            kcf_tracker = cv::TrackerKCF::create(param);
             kcf_tracker->init(src, _detect_data.bbox);
             mean_filter.emplace_back(common::mean_filter<cv::Point2f>(tl, kf_config.mean_filter_length()));
             mean_filter.emplace_back(common::mean_filter<cv::Point2f>(br, kf_config.mean_filter_length()));
@@ -210,8 +222,11 @@ namespace rs {
                     recheck_flag =
                             common::CalculateRectOverlapRatio(bbox, bbox_es, common::AND_OR) > rechek_overlap_ratio;
                 }
+                if (track_data.name != "car")
+                    recheck_flag = false;
                 if (recheck_flag) {
                     RunKF(_detect_data[target_index].bbox, tracker_res, track_data.bbox);
+                    //track_data.bbox = tracker_res;
                     track_data.name = (last_track.name == "person") ? _detect_data[target_index].name : last_track.name;
                 } else {
                     track_data.bbox = tracker_res;
@@ -228,12 +243,17 @@ namespace rs {
             } else {
                 track_data.probility = 0;
             }
+            if (kcf_find){
+                track_data.probility = 101;
+            }else {
+                track_data.probility = 0;
+            }
 
             //RunMF(video_data.bbox);
 
             if (yolo_find) {
-                kcf_tracker = cv::TrackerKCF::create();
-                kcf_tracker->init(src, track_data.bbox);
+                //kcf_tracker = cv::TrackerKCF::create();
+                //kcf_tracker->init(src, track_data.bbox);
             }
 
             last_track = track_data;

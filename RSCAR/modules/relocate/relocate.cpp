@@ -146,6 +146,9 @@ namespace rs {
             cv::putText(inout_image, common::to_string_with_precision(data->world_position_y(), 5),
                         cv::Point2f(data->image_bbox_x(), data->image_bbox_y() + 15), cv::FONT_ITALIC, 0.4,
                         cv::Scalar(0, 0, 255), 2);
+            cv::putText(inout_image, common::to_string_with_precision(data->probility(), 5),
+                        cv::Point2f(data->image_bbox_x(), data->image_bbox_y() + 30), cv::FONT_ITALIC, 0.4,
+                        cv::Scalar(0, 0, 255), 2);
 
         }
     }

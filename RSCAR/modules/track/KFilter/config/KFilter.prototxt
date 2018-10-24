@@ -1,6 +1,6 @@
-measure_cov: 1
+measure_cov: 10
 control_cov: 3
-yolo_max_count: 120
+yolo_max_count: 200
 track_max_count: 3
 min_area: 300
 max_area: 150000

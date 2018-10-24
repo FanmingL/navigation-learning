@@ -1,0 +1,7 @@
+syntax = "proto2";
+package rs.vp;
+message MannulConfig{
+    optional string out_data_path = 1 [default = "data/mannul_mark"];
+    optional string in_data_path = 2 [default = "data/yolo_out_data.proto.b1"];
+    optional string in_video_path = 3 [default = "data/in_video.mp4"];
+}

@@ -27,9 +27,9 @@ namespace rs{
         void separation::PerformAlgorithm(const cv::Mat &src, cv::Mat &dst) {
             cv::Mat front_mask;
             dst = src.clone();
-            bgsubtractor->apply(src, bgmask,  separation_config.learning_rate());
+            bgsubtractor->apply(src, bgmask, separation_config.learning_rate());
             //RefineSegments(src, bgmask, front_mask);
-            MyRefine(bgmask,separation_config.open_radius());
+            MyRefine(bgmask, separation_config.open_radius());
             //dst = cv::Mat(src.size(), CV_8UC3, cv::Scalar(0,0,0));
             //src.copyTo(dst,bgmask);
             dst = src.clone();
@@ -82,6 +82,7 @@ namespace rs{
         void separation::MyRefine(cv::Mat &mask, int radius) {
             cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(radius, radius));
             cv::morphologyEx(mask,mask,cv::MORPH_OPEN, element);
+            cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, element);
             mask = (mask > 130);
 
         }

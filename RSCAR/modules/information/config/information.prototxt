@@ -3,6 +3,6 @@ max_distance: 2000
 output_data_path: "data/trajectories_out_data.bin"
 mask_path: "data/mask.png"
 pair_point_path:"modules/relocate/config/PointsSet.prototxt"
-mean_filter_length: 3
+mean_filter_length: 6
 distance_step: 0.5
 max_frame_count: 16000
