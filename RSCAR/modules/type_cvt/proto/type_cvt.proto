@@ -1,0 +1,8 @@
+syntax = "proto2";
+package rs.vp;
+
+message TypeCvtConfig{
+    optional string input_data_path = 1 [default = "data/mask_bbox.txt"];
+    optional string output_data_path = 2[default = "data/mask_data.bin"];
+    optional string input_mask_video_path = 3 [default = "data/mask_video.mp4"];
+}

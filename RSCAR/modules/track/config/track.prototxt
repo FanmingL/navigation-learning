@@ -1,5 +1,5 @@
 algorithm_name: "KFilter"
-data_path: "data/yolo_out_data.proto.b1"
+data_path: "data/yolo_out_data.proto.b"
 in_video_path: "data/in_video.mp4"
 if_show_video: true
 if_write_video: true

@@ -98,7 +98,6 @@ namespace rs {
 
         bool KFilter::CheckConstraint(const DetectData &object) {
             float area = object.bbox.area();
-
             if (object.name == "person" && area > kf_config.person_max_area())return false;
             if (object.name != "car" && area > 2300)return false;
             if (object.name != "car" && ((!max_image_rect.contains(object.bbox.br() + cv::Point2f(15,15))) ||
@@ -117,6 +116,7 @@ namespace rs {
         }
 
         cv::Rect2f KFilter::GetRect(const DetectObject &object) {
+            //return cv::Rect2f(object.x(),object.y(), object.width(), object.height());
             return cv::Rect2f((object.x() - object.width() / 2) * kf_config.width(),
                               (object.y() - object.height() / 2) * kf_config.height(),
                               object.width() * kf_config.width(), object.height() * kf_config.height());
@@ -129,12 +129,15 @@ namespace rs {
             //names_should_take_care.insert("truck");
             names_should_take_care.insert("person");
             color_map["person"] = cv::Scalar(128, 0, 0);
-            names_should_take_care.insert("bicycle");
+            //names_should_take_care.insert("bicycle");
             color_map["bicycle"] = cv::Scalar(128, 128, 0);
+            //names_should_take_care.insert("motorcycle");
+            color_map["motorcycle"] = cv::Scalar(0, 128, 128);
             names_should_take_care.insert("motorbike");
             color_map["motorbike"] = cv::Scalar(0, 128, 128);
             peron_bicycle_motor.insert("person");
             peron_bicycle_motor.insert("bicycle");
+            peron_bicycle_motor.insert("motorcycle");
             peron_bicycle_motor.insert("motorbike");
 
         }
@@ -192,6 +195,7 @@ namespace rs {
             rechek_overlap_ratio = kf_config.recheck_overlap_ratio();
             peron_bicycle_motor.insert("person");
             peron_bicycle_motor.insert("bicycle");
+            peron_bicycle_motor.insert("motorcycle");
             peron_bicycle_motor.insert("motorbike");
         }
 
@@ -222,8 +226,8 @@ namespace rs {
                     recheck_flag =
                             common::CalculateRectOverlapRatio(bbox, bbox_es, common::AND_OR) > rechek_overlap_ratio;
                 }
-                if (track_data.name != "car")
-                    recheck_flag = false;
+                //if (track_data.name != "car")
+                //    recheck_flag = false;
                 if (recheck_flag) {
                     RunKF(_detect_data[target_index].bbox, tracker_res, track_data.bbox);
                     //track_data.bbox = tracker_res;
@@ -243,17 +247,18 @@ namespace rs {
             } else {
                 track_data.probility = 0;
             }
+            /*
             if (kcf_find){
                 track_data.probility = 101;
             }else {
                 track_data.probility = 0;
-            }
+            }*/
 
             //RunMF(video_data.bbox);
 
             if (yolo_find) {
-                //kcf_tracker = cv::TrackerKCF::create();
-                //kcf_tracker->init(src, track_data.bbox);
+                kcf_tracker = cv::TrackerKCF::create();
+                kcf_tracker->init(src, track_data.bbox);
             }
 
             last_track = track_data;

@@ -1,0 +1,19 @@
+syntax = "proto2";
+package rs.vp;
+
+message FilterTrackerConfig{
+    optional string mask_video_path = 1 [default = "data/mask_video.mp4"];
+    optional string in_data_path = 2 [default = "data/track_out_data.bin"];
+    optional string out_data_path = 3 [default = "data/track_out_data_new.bin"];
+    optional bool if_show_video = 4 [default = true];
+    optional bool if_write_video = 5 [default = false];
+    optional string out_video_path = 6 [default = "data/track_out_stable.mp4"];
+    optional string in_video_path = 7 [default = "data/in_video.mp4"];
+    optional float min_car_area = 8 [default = 5000];
+    optional int32 size_mean_filter_length = 9 [default = 5];
+    optional int32 position_mean_filter_length = 10 [default = 2];
+    optional int32 min_trajectory_length = 11 [default = 10];
+    optional int32 shift_type_count = 12 [default = 10];
+    optional float shift_overlap = 13 [default = 0.3];
+    optional string raw_data_path = 14 [default = "data/mask_data.bin"];
+}

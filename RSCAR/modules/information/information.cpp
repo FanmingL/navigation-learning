@@ -59,7 +59,7 @@ namespace rs {
                     if (item.object_index() > max_index_now)break;
                     if (filter_map.count(item.object_index())) {
                         cv::Point2f point_tmp(item.world_position_x(), item.world_position_y());
-                        //velocity[item.object_index()] = filter_map[item.object_index()].run(point_tmp, point_tmp) * 30.0;
+                        //velocity[item.object_index()] = size_filter_map[item.object_index()].run(point_tmp, point_tmp) * 30.0;
                         cv::Point2f velocity_tmp;
                         point_tmp = filter_map[item.object_index()]->RunAndCalVel(point_tmp, velocity_tmp);
                         position_after_filter[item.object_index()] = point_tmp;
@@ -98,7 +98,7 @@ namespace rs {
                           mask.at<uchar>(image_center) != common::CANNOT_GO)
                             )
                         continue;
-                    //filter_map[item.object_index()] = std::make_shared<move_mean>(cv::Point2d(item.world_center().x(),
+                    //size_filter_map[item.object_index()] = std::make_shared<move_mean>(cv::Point2d(item.world_center().x(),
                     //        item.world_center().y()), 4);
                     filter_map[item.object_index()] = std::make_shared<common::mean_filter<cv::Point2f> >(
                             cv::Point2f(item.world_position_x(),
@@ -194,7 +194,7 @@ namespace rs {
                                                 surround_type_image[angle_i] = MOTORBIKE;
                                                 break_flag = true;
                                                 break;
-                                            case (int) common::MOTOR_ROAD:
+                                            case (int) common::NON_MOTOR_ROAD:
                                                 if (original_data == common::CAR) {
                                                     surround_type_image[angle_i] = OBSTACLE;
                                                     break_flag = true;

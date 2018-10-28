@@ -1,0 +1,10 @@
+mask_video_path: "data/mask_video.mp4"
+in_data_path: "data/track_out_data.bin"
+out_data_path: "data/track_out_data_new.bin"
+if_show_video: true
+if_write_video:true
+size_mean_filter_length: 8
+position_mean_filter_length: 2
+min_car_area: 100
+
+

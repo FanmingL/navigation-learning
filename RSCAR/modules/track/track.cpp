@@ -41,6 +41,7 @@ namespace rs {
                 video_capture >> src;
                 if (src.empty())break;
                 std::cout << counter << std::endl;
+                if (counter >= detect_data.frame_size())break;
                 track_algorithm->Track(src, dst, detect_data.frame(counter), res);
                 auto iter_proto = detect_video.add_frame();
                 for (auto &item : res) {

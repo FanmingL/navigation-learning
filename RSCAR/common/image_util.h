@@ -11,15 +11,18 @@
 
 namespace rs {
     namespace common {
-        void GetHue(const cv::Mat &src, cv::Mat &dst, int channel_index = 0) {
+
+        void GetOneChannel(const cv::Mat &src, cv::Mat &dst, int channel_index=0){
             std::vector<cv::Mat> hsv_vector;
-            cv::Mat hsv;
-            cv::cvtColor(src, hsv, cv::COLOR_BGR2HSV_FULL);
-            //cv::cvtColor(src, hsv, cv::COLOR_BGR2YUV);
-            cv::split(hsv, hsv_vector);
+            cv::split(src, hsv_vector);
             dst = hsv_vector[channel_index].clone();
         }
 
+        void GetHue(const cv::Mat &src, cv::Mat &dst, int channel_index = 0) {
+            cv::Mat hsv;
+            cv::cvtColor(src, hsv, cv::COLOR_BGR2HSV_FULL);
+            GetOneChannel(hsv, dst,channel_index);
+        }
         void CalculateTransform(const cv::Mat &transform_matrix, const cv::Point2f &src_point, cv::Point2f &dst_point) {
             cv::Mat cal_tmp(3, 1, CV_32FC1, cv::Scalar(1)), res_tmp(3, 1, CV_32FC1, cv::Scalar(1));
             cal_tmp.at<float>(0, 0) = src_point.x;

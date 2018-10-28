@@ -72,6 +72,7 @@ namespace rs{
             std::string GetStringFromType(const OBJECT_TYPE & in);
             std::string GetStringFromState(const MARK_STATUS & in);
             void SaveToFile();
+            void init();
         private:
             DetectVideo detect_video;
             MannulConfig mannul_config;
@@ -91,6 +92,7 @@ namespace rs{
             int object_index;
             OBJECT_TYPE object_type;
             int x_now, y_now;
+            TempData mannul_temp_data;
         };
     }
 }

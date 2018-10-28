@@ -90,6 +90,7 @@ namespace rs {
             int fd = open((char *) full_path.c_str(), O_RDONLY);
             if (fd == -1) {
                 proto = NULL;
+                return false;
 //    LOG_ERROR << "File not found: " << file_name;
             }
 

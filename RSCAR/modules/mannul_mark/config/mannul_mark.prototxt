@@ -1,3 +1,4 @@
 out_data_path: "data/mannul_mark"
 in_data_path: "data/yolo_out_data.proto.b1"
 in_video_path: "data/in_video.mp4"
+out_temp_path: "data/mannul_tmp.bin"

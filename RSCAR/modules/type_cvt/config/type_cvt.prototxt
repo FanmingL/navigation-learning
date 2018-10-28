@@ -1,0 +1,4 @@
+input_data_path: "data/mask_bbox.txt"
+output_data_path: "data/mask_data.bin"
+input_mask_video_path: "data/mask_video.mp4"
+

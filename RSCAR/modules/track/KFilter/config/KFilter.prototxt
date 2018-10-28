@@ -1,6 +1,6 @@
-measure_cov: 10
-control_cov: 3
-yolo_max_count: 200
+measure_cov: 3
+control_cov: 10
+yolo_max_count: 100
 track_max_count: 3
 min_area: 300
 max_area: 150000
@@ -10,5 +10,5 @@ mean_filter_length: 3
 width: 1080
 height: 1080
 min_overlap_ratio:0.35
-recheck_overlap_ratio:0.6
+recheck_overlap_ratio:0.4
 person_max_area:80000

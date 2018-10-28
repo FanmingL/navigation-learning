@@ -187,7 +187,7 @@ void YOLO_DARKNET::videoProcess(const char *_in_path, const char *_out_path) {
         cap >> m;
         if (m.empty())break;
         cv::Mat resized(m, rect);
-        yoloProcess(resized, resized, res, 0.5, 0.5, 0.4);
+        yoloProcess(resized, resized, res, 0.35, 0.5, 0.1);
         videoWriter << resized;
         std::sort(res.begin(), res.end(), [](YOLO_OUT a1, YOLO_OUT a2)->bool{return a1.frame_index < a2.frame_index;});
         add_one_frame(video.add_frame(), res);

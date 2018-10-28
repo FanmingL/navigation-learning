@@ -22,10 +22,12 @@ namespace rs{
             video_capture.open(common::GetAbsolutePath(mannul_config.in_video_path()));
             width = (int)video_capture.get(cv::CAP_PROP_FRAME_WIDTH);
             height = (int)video_capture.get(cv::CAP_PROP_FRAME_HEIGHT);
+            init();
         }
 
         void mannul_mark::Run() {
             DetectFrame data_frame;
+            cv::Mat last_canvas;
             cv::namedWindow(canvas_window_name);
             cv::setMouseCallback(canvas_window_name, mannul_mark::onMouse, this);
             std::thread key_monitor(&mannul_mark::GetKeyAct, this);
@@ -37,9 +39,10 @@ namespace rs{
                 data_frame = detect_video.frame(count);
                 video_capture >> frame;
                 canvas = frame.clone();
-                //SetFrameData(data_frame);
+                SetFrameData(data_frame);
                 DrawRectangle(canvas);
                 if (frame.empty())break;
+                /*
                 for (auto &item : trackers){
                     int index_tmp = item.first;
                     cv::Rect2d bbox_tmp;
@@ -49,7 +52,7 @@ namespace rs{
                     }
                 }
                 trackers.clear();
-                trackers_name.clear();
+                trackers_name.clear();*/
                 while(!step_flag) {
                     {
                         std::lock_guard<std::mutex> lock_guard_(show_image_mutex);
@@ -123,7 +126,7 @@ namespace rs{
                                     mark_state = CHANGE_BBOX;
                                     break;
                                 }
-                                case 'w': { // add new person
+                                case 'r': { // add new person
                                     if (point_buffer.size() < 2)break;
                                     frame_data_list.emplace_back(data_set(
                                             TrackData(cv::Rect(point_buffer[0], point_buffer[1]),
@@ -131,7 +134,7 @@ namespace rs{
                                     point_buffer.clear();
                                     break;
                                 }
-                                case 'r': {//
+                                case 'w': {//
                                     if (point_buffer.size() < 2)break;
                                     int index = -1;
                                     float max_overlap = 0;
@@ -174,15 +177,18 @@ namespace rs{
                     }
                 }
                 last_list = frame_data_list;
+                /*
                 for (auto &item:frame_data_list){
                     trackers[item.track_data.object_index] = cv::TrackerKCF::create();
                     trackers[item.track_data.object_index]->init(frame,item.track_data.bbox);
                     trackers_name[item.track_data.object_index] = item.track_data.name;
-                }
+                }*/
                 SaveToFile();
                 frame_data_list.clear();
                 mark_state = INIT_FRAME;
                 if (key == '\\')break;
+                last_canvas = canvas.clone();
+                cv::imshow("last_image", last_canvas);
                 AddCount();
             }
         }
@@ -248,16 +254,20 @@ namespace rs{
 
         void mannul_mark::DrawRectangle(cv::Mat &src) {
             for (auto &item : frame_data_list){
-                if (item.index_flag)
-                    cv::rectangle(src, item.track_data.bbox, cv::Scalar(0,0,255),2);
-                else
-                    cv::rectangle(src, item.track_data.bbox, cv::Scalar(255,0,0),2);
+                if (item.track_data.name == "person"){
+                    cv::rectangle(src, item.track_data.bbox, cv::Scalar(0,0,255),1);
+                }else if(item.track_data.name == "bicycle"){
+                    cv::rectangle(src, item.track_data.bbox, cv::Scalar(255,0,0),1);
+                }else{
+                    cv::rectangle(src, item.track_data.bbox, cv::Scalar(255,0,144),1);
+                }
                 cv::putText(src,std::to_string(item.track_data.object_index),(item.track_data.bbox.tl()
                 + item.track_data.bbox.br()) / 2.0,
-                        cv::FONT_ITALIC,0.8,cv::Scalar(0,0,128),2);
+                        cv::FONT_ITALIC,0.8,cv::Scalar(0,0,128),1);
             }
             cv::putText(src, GetStringFromType(object_type), cv::Point(30, 30), cv::FONT_ITALIC, 1,cv::Scalar(255,255,255),2);
             cv::putText(src, GetStringFromState(mark_state), cv::Point(30, 70), cv::FONT_ITALIC, 1,cv::Scalar(255,255,255),2);
+            cv::putText(src, std::to_string(count), cv::Point(30, 100), cv::FONT_ITALIC, 1,cv::Scalar(255,255,255),2);
             if (point_buffer.size() == 1){
                 cv::Rect rect(point_buffer[0], cv::Point(x_now, y_now));
                 cv::rectangle(src,rect,cv::Scalar(128, 128, 128),1);
@@ -289,7 +299,18 @@ namespace rs{
                                      (item.y() - item.height()/2) * height,
                                      (item.width()) * width,
                                      (item.height()) * height);
-                frame_data_list.emplace_back(data_set(TrackData(rect_temp, item.name(),0,item.probility()), false));
+                int count = 0;
+                int index_it= -1;
+                std::string name_it ;
+                for (auto &item2 : last_list){
+                    if (common::CalculateRectOverlapRatio(item2.track_data.bbox, rect_temp) > 0){
+                        count++;
+                        index_it = item2.track_data.object_index;
+                        name_it = item2.track_data.name;
+                    }
+                }
+                if (count != 1)continue;
+                frame_data_list.emplace_back(data_set(TrackData(rect_temp,name_it ,index_it,item.probility()), true));
             }
         }
 
@@ -322,8 +343,36 @@ namespace rs{
             it_path += "/";
             it_path += std::to_string(count);
             it_path += ".bin";
-            std::cout<<it_path<<std::endl;
             common::WriteProtoToBinaryFile(it_path, &frame_data_tmp_proto);
+            mannul_temp_data.set_count_now(count);
+            mannul_temp_data.set_trajectory_now(object_index);
+            common::WriteProtoToBinaryFile(mannul_config.out_temp_path(),&mannul_temp_data);
+        }
+
+        void mannul_mark::init() {
+            if (common::ReadProtoFromBinaryFile(mannul_config.out_temp_path(), &mannul_temp_data)){
+                cv::Mat mat_temp;
+                for (int i = 0 ; i <= mannul_temp_data.count_now(); i++){
+                    video_capture >> mat_temp;
+                    AddCount();
+                }
+                std::string it_path(mannul_config.out_data_path());
+                it_path += "/";
+                it_path += std::to_string(count - 1);
+                it_path += ".bin";
+                DetectFrame frame_temp;
+                common::ReadProtoFromBinaryFile(it_path,&frame_temp);
+                last_list.clear();
+                for (auto &item : frame_temp.object()){
+                    cv::Rect2f rect_tmp(item.x(), item.y(), item.width(), item.height());
+                    last_list.emplace_back(data_set(TrackData(rect_tmp,item.name(),item.car_index(),item.probility()), true));
+                }
+                object_index = mannul_temp_data.trajectory_now();
+                frame_data_list = last_list;
+                cv::Mat l_canvas = mat_temp.clone();
+                DrawRectangle(l_canvas);
+                cv::imshow("last_image", l_canvas);
+            }
         }
 
 
