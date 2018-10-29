@@ -84,7 +84,7 @@ namespace rs {
                 if (item.probility != 0)
                     cv::rectangle(canvas, item.bbox, color_map[item.name], 2);
                 else
-                    cv::rectangle(canvas, item.bbox, cv::Scalar(0,0,0), 2);
+                    cv::rectangle(canvas, item.bbox, cv::Scalar(0, 0, 0), 2);
 
                 cv::putText(canvas, std::to_string(item.object_index), item.bbox.tl(),
                             cv::FONT_ITALIC, 0.8, cv::Scalar(0, 0, 128), 2);
@@ -100,8 +100,9 @@ namespace rs {
             float area = object.bbox.area();
             if (object.name == "person" && area > kf_config.person_max_area())return false;
             if (object.name != "car" && area > 2300)return false;
-            if (object.name != "car" && ((!max_image_rect.contains(object.bbox.br() + cv::Point2f(15,15))) ||
-            (!max_image_rect.contains(object.bbox.tl() - cv::Point2f(15,15))) ))return false;
+            if (object.name != "car" && ((!max_image_rect.contains(object.bbox.br() + cv::Point2f(15, 15))) ||
+                                         (!max_image_rect.contains(object.bbox.tl() - cv::Point2f(15, 15)))))
+                return false;
             if (peron_bicycle_motor.count(object.name)) {
                 cv::Point2f p_tmp = object.bbox.br();
                 p_tmp.x -= object.bbox.width / 2;

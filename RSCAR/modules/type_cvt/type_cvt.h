@@ -18,11 +18,14 @@
 
 namespace rs {
     namespace vp {
-        class type_cvt : public common::rs{
+        class type_cvt : public common::rs {
         public:
             explicit type_cvt(const std::string &name);
+
             ~type_cvt() override = default;
+
             void Run() override;
+
             void ReadConfig();
 
         private:

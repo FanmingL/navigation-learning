@@ -4,8 +4,8 @@
 
 #include "type_cvt.h"
 
-namespace rs{
-    namespace vp{
+namespace rs {
+    namespace vp {
 
         type_cvt::type_cvt(const std::string &name) : rs(name) {
             ReadConfig();
@@ -14,15 +14,15 @@ namespace rs{
         }
 
         void type_cvt::Run() {
-            cv::Rect max_rect(0,0,1080,1080);
-            while (true){
-               std::string tmp_str1;
-               if (!std::getline(iff,tmp_str1))break;
-               auto *iter = detect_video.add_frame();
-               int num = 0;
-               std::stringstream ss1(tmp_str1);
-               ss1 >> num;
-               for (int i = 0; i < num; i++){
+            cv::Rect max_rect(0, 0, 1080, 1080);
+            while (true) {
+                std::string tmp_str1;
+                if (!std::getline(iff, tmp_str1))break;
+                auto *iter = detect_video.add_frame();
+                int num = 0;
+                std::stringstream ss1(tmp_str1);
+                ss1 >> num;
+                for (int i = 0; i < num; i++) {
                     auto *iter2 = iter->add_object();
                     std::string tmp_str2;
                     std::getline(iff, tmp_str2);
@@ -30,7 +30,7 @@ namespace rs{
                     int x1, y1, x2, y2;
                     std::string name;
                     ss2 >> x1 >> y1 >> x2 >> y2 >> name;
-                    cv::Rect bbox(cv::Point(x1,y1), cv::Point(x2,y2));
+                    cv::Rect bbox(cv::Point(x1, y1), cv::Point(x2, y2));
                     bbox = bbox & max_rect;
                     iter2->set_x(bbox.x);
                     iter2->set_y(bbox.y);
@@ -39,10 +39,10 @@ namespace rs{
                     iter2->set_probility(100);
                     iter2->set_name(name);
                     //iter2->PrintDebugString();
-               }
+                }
 
             }
-            std::cout<<detect_video.frame_size()<<std::endl;
+            std::cout << detect_video.frame_size() << std::endl;
             common::WriteProtoToBinaryFile(type_config.output_data_path(), &detect_video);
         }
 

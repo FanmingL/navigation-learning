@@ -36,43 +36,63 @@
 #include "modules/mannul_mark/mannul_mark.pb.h"
 
 #include "modules/track/base_track_algorithm.h"
-namespace rs{
-    namespace vp{
-        class mannul_mark : public common::rs{
+
+namespace rs {
+    namespace vp {
+        class mannul_mark : public common::rs {
         public:
-            enum MARK_STATUS{
+            enum MARK_STATUS {
                 INIT_FRAME = 0,
-                CHANGE_BBOX ,
+                CHANGE_BBOX,
                 NEW_BBOX
             };
-            enum OBJECT_TYPE{
+            enum OBJECT_TYPE {
                 PERSON = 0,
-                BICYCLE ,
+                BICYCLE,
                 MOTORBIKE
             };
-            class data_set{
+
+            class data_set {
             public:
                 data_set(const TrackData &_track_data, bool _index_flag = false) : track_data(_track_data),
-                index_flag(_index_flag){}
+                                                                                   index_flag(_index_flag) {}
+
                 TrackData track_data;
                 bool index_flag;
             };
+
             typedef std::tuple<TrackData, bool> data_tuple;
-            explicit mannul_mark(const std::string & name);
+
+            explicit mannul_mark(const std::string &name);
+
             ~mannul_mark() override;
-            void Run() override ;
+
+            void Run() override;
+
             void ReadConfig();
+
             void ReadData();
+
             static void onMouse(int event, int x, int y, int flag, void *user_data);
+
             void MouseCb(int event, int x, int y, int flags);
+
             void AddCount();
+
             void DrawRectangle(cv::Mat &src);
+
             void GetKeyAct();
+
             void SetFrameData(const DetectFrame &data);
-            std::string GetStringFromType(const OBJECT_TYPE & in);
-            std::string GetStringFromState(const MARK_STATUS & in);
+
+            std::string GetStringFromType(const OBJECT_TYPE &in);
+
+            std::string GetStringFromState(const MARK_STATUS &in);
+
             void SaveToFile();
+
             void init();
+
         private:
             DetectVideo detect_video;
             MannulConfig mannul_config;
