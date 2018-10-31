@@ -1,0 +1,38 @@
+syntax = "proto2";
+package rs.vp;
+message StablingConfig{
+    optional string in_video_path = 1 [default = "data/in_video.mp4"];
+    optional bool if_show = 2 [default = true];
+    optional bool if_write_video = 3 [default = false];
+    optional int32 point_num = 4 [default = 50];
+    optional string out_video_path = 5 [default = "data/stabling_video.mp4"];
+    optional string in_data_path = 6 [default = "data/track_out_data_new.bin"];
+    optional int32 target_width = 7 [default = 640];
+    optional int32 target_height = 8 [default = 640];
+    optional float ransac_threshold = 9 [default = 1];
+    optional string mask_path = 10 [default = "data/mask.png"];
+    optional int32 max_points = 11 [default = 60];
+    optional float feature_quality_level = 12 [default = 0.05];
+    optional float min_distance = 13 [default = 5];
+    optional int32 padding_length = 14 [default = 10];
+    optional float ratio_threshold = 15 [default = 0.4];
+    optional int32 step_count = 16[ default = 4];
+    optional string out_data_path = 17 [default = "data/stabling_matrix.bin"];
+}
+
+message HomographMatrix{
+    required int32 frame_index = 1;
+    required float h11 = 2;
+    required float h12 = 3;
+    required float h13 = 4;
+    required float h21 = 5;
+    required float h22 = 6;
+    required float h23 = 7;
+    required float h31 = 8;
+    required float h32 = 9;
+    required float h33 = 10;
+}
+
+message HomographVideo{
+    repeated HomographMatrix matrix= 1;
+}
