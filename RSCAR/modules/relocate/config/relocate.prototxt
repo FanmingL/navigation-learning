@@ -1,10 +1,10 @@
-input_video_path: "data/in_video.mp4"
+input_video_path: "data/stabling_video.mp4"
 input_data_path: "data/track_out_data_new.bin"
 if_show_video: false
 if_write_video: false
 out_data_path: "data/relocate_out_data.bin"
 out_video_path: "data/relocate_out_video.mp4"
-point_data_path: "modules/relocate/config/PointsSet.prototxt"
-if_draw_mask: true
+point_data_path: "modules/relocate/config/PointsSetCar.prototxt"
+if_draw_mask: false
 if_point: false
 den: 3

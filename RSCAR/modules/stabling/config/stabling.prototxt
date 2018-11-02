@@ -6,9 +6,9 @@ if_write_video: true
 in_data_path: "data/yolo_out_data.proto.b"
 target_width: 1080
 target_height: 1080
-ransac_threshold: 2
+ransac_threshold: 0.6
 max_points : 200
 padding_length: 6
-step_count: 6
+step_count: 8
 out_data_path: "data/homograph_matrix.bin"
 ratio_threshold: 0.3

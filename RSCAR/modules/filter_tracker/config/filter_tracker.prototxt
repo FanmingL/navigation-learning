@@ -6,5 +6,6 @@ if_write_video:true
 size_mean_filter_length: 8
 position_mean_filter_length: 2
 min_car_area: 100
+raw_data_path:"data/mask_data.bin"
 
-
+in_video_path: "data/stabling_video.mp4"

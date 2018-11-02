@@ -18,6 +18,7 @@ message StablingConfig{
     optional float ratio_threshold = 15 [default = 0.4];
     optional int32 step_count = 16[ default = 4];
     optional string out_data_path = 17 [default = "data/stabling_matrix.bin"];
+    optional string new_data_path = 18 [default = "data/yolo_out_data.new.bin"];
 }
 
 message HomographMatrix{

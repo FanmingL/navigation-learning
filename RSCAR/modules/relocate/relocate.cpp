@@ -37,6 +37,7 @@ namespace rs {
                                  relocate_config.width(), relocate_config.height());
                 }
             }
+            max_rect = cv::Rect(0,0,relocate_config.width(), relocate_config.height());
         }
 
         bool relocate::ReadConfig() {
@@ -61,6 +62,9 @@ namespace rs {
                     } else {
                         position_image = cv::Point2f(item.x() + item.width() / 2, item.y() + item.height() / 2);
                     }
+                    if (!(max_rect.contains(cv::Point2f(item.x(), item.y())) &&
+                    max_rect.contains(cv::Point2f(item.x() + item.width(), item.y() + item.height()))))
+                        continue;
                     common::CalculateTransform(homograph_matrix, position_image, position_world);
                     auto object_iter = frame_iter->add_object();
                     AddOneObject(item, position_world, object_iter);

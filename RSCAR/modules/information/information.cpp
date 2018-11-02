@@ -103,7 +103,7 @@ namespace rs {
                     filter_map[item.object_index()] = std::make_shared<common::mean_filter<cv::Point2f> >(
                             cv::Point2f(item.world_position_x(),
                                         item.world_position_y()), information_config.mean_filter_length());
-                    if (item.name() == "person")
+                    if (item.name() == "car")
                         trajectory_map[item.object_index()] = all_trajectories.add_trajectory();
                     position_after_filter[item.object_index()] = cv::Point2f(item.world_position_x(),
                                                                              item.world_position_y());

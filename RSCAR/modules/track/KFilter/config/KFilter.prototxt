@@ -1,9 +1,9 @@
 measure_cov: 3
 control_cov: 10
-yolo_max_count: 100
-track_max_count: 3
+yolo_max_count: 30
+track_max_count: 2
 min_area: 300
-max_area: 150000
+max_area: 30000
 max_overlap_ratio: 0.65
 probility_threshold: 46
 mean_filter_length: 3

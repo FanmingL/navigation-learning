@@ -20,7 +20,7 @@ namespace rs{
            ReadData();
            filter_tracker_config.PrintDebugString();
            video_capture.open(common::GetAbsolutePath(filter_tracker_config.in_video_path()));
-           mask_capture.open(common::GetAbsolutePath(filter_tracker_config.mask_video_path()));
+           //mask_capture.open(common::GetAbsolutePath(filter_tracker_config.mask_video_path()));
            if (filter_tracker_config.if_write_video()){
                std::remove((char*)(common::GetAbsolutePath(filter_tracker_config.out_video_path()).c_str()));
                video_writer.open(common::GetAbsolutePath(filter_tracker_config.out_video_path()),

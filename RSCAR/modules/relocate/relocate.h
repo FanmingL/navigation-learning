@@ -55,6 +55,7 @@ namespace rs {
             cv::VideoWriter video_writer;
             cv::Mat homograph_matrix;
             TrackVideo track_video;
+            cv::Rect max_rect;
         };
     }
 }

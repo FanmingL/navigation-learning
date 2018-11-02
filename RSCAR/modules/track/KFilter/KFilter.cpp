@@ -36,6 +36,7 @@ namespace rs {
                     for (auto &item : res) {
                         if (common::CalculateRectOverlapRatio(item.bbox, tmp_track_data.bbox, common::AND_OR) >
                             kf_config.max_overlap_ratio()) {
+
                             if (item.name == tmp_track_data.name) {
                                 flag = false;
                                 break;
@@ -44,6 +45,9 @@ namespace rs {
                                 flag = false;
                                 iter->last_track.name = "bicycle";
                                 //item.name = "bicycle";
+                                break;
+                            }else if (car_truck_bus.count(item.name) && car_truck_bus.count(tmp_track_data.name)){
+                                flag = false;
                                 break;
                             }
                         }
@@ -117,7 +121,7 @@ namespace rs {
         }
 
         cv::Rect2f KFilter::GetRect(const DetectObject &object) {
-            //return cv::Rect2f(object.x(),object.y(), object.width(), object.height());
+            return cv::Rect2f(object.x(),object.y(), object.width(), object.height());
             return cv::Rect2f((object.x() - object.width() / 2) * kf_config.width(),
                               (object.y() - object.height() / 2) * kf_config.height(),
                               object.width() * kf_config.width(), object.height() * kf_config.height());
@@ -126,13 +130,13 @@ namespace rs {
         void KFilter::init_names() {
             names_should_take_care.insert("car");
             color_map["car"] = cv::Scalar(0, 128, 0);
-            //names_should_take_care.insert("bus");
-            //names_should_take_care.insert("truck");
+            names_should_take_care.insert("bus");
+            names_should_take_care.insert("truck");
             names_should_take_care.insert("person");
             color_map["person"] = cv::Scalar(128, 0, 0);
-            //names_should_take_care.insert("bicycle");
+            names_should_take_care.insert("bicycle");
             color_map["bicycle"] = cv::Scalar(128, 128, 0);
-            //names_should_take_care.insert("motorcycle");
+            names_should_take_care.insert("motorcycle");
             color_map["motorcycle"] = cv::Scalar(0, 128, 128);
             names_should_take_care.insert("motorbike");
             color_map["motorbike"] = cv::Scalar(0, 128, 128);
@@ -140,6 +144,9 @@ namespace rs {
             peron_bicycle_motor.insert("bicycle");
             peron_bicycle_motor.insert("motorcycle");
             peron_bicycle_motor.insert("motorbike");
+            car_truck_bus.insert("car");
+            car_truck_bus.insert("truck");
+            car_truck_bus.insert("bus");
 
         }
 
@@ -198,6 +205,9 @@ namespace rs {
             peron_bicycle_motor.insert("bicycle");
             peron_bicycle_motor.insert("motorcycle");
             peron_bicycle_motor.insert("motorbike");
+            car_truck_bus.insert("car");
+            car_truck_bus.insert("truck");
+            car_truck_bus.insert("bus");
         }
 
         bool single_tracker::Update(const cv::Mat &src, const std::vector<DetectData> &_detect_data,
@@ -222,7 +232,7 @@ namespace rs {
                 bool recheck_flag = false;
                 if (track_data.name == "car") {
                     recheck_flag =
-                            common::CalculateRectOverlapRatio(bbox, bbox_es, common::AND_MIN) > rechek_overlap_ratio;
+                            common::CalculateRectOverlapRatio(bbox, bbox_es, common::AND_MAX) > rechek_overlap_ratio;
                 } else {
                     recheck_flag =
                             common::CalculateRectOverlapRatio(bbox, bbox_es, common::AND_OR) > rechek_overlap_ratio;
@@ -293,7 +303,7 @@ namespace rs {
                 float overlap_ratio = common::CalculateRectOverlapRatio(last_track.bbox, _detect_data[i].bbox);
 
                 if (overlap_ratio > overlap_threshold) {
-                    if (_detect_data[i].name == last_track.name)
+                    if (_detect_data[i].name == last_track.name || ((car_truck_bus.count(last_track.name)) && car_truck_bus.count(_detect_data[i].name)))
                         now_index.emplace_back(std::pair<float, int>(overlap_ratio, i));
                     else if (peron_bicycle_motor.count(_detect_data[i].name) &&
                              peron_bicycle_motor.count(last_track.name)) {

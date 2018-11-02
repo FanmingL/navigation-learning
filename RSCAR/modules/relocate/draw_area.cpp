@@ -6,7 +6,7 @@
 #include "common/string_util.h"
 namespace rs{
     namespace common{
-        void CalculateTransform(const cv::Mat &transform_matrix, const cv::Point2f &src_point, cv::Point2f &dst_point);
+        void CalculateTransform(const cv::Mat &transform_matrix, const cv::Point2f &src_point, cv::Point2f &dst_point, int type=1);
     }
 }
 

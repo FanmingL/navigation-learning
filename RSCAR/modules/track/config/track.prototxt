@@ -1,6 +1,6 @@
 algorithm_name: "KFilter"
-data_path: "data/yolo_out_data.proto.b"
-in_video_path: "data/in_video.mp4"
+data_path: "data/yolo_out_data.new.bin"
+in_video_path: "data/stabling_video.mp4"
 if_show_video: true
 if_write_video: true
 write_video_path: "data/track_out_video.mp4"

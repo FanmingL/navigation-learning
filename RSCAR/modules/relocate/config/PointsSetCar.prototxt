@@ -1,0 +1,120 @@
+points :{
+    x_pixel: 645
+    y_pixel: 983
+    x_world: 0
+    y_world: 0
+}
+
+points :{
+    x_pixel: 777
+    y_pixel: 970
+    x_world: 350
+    y_world: 0
+}
+
+points :{
+    x_pixel: 611
+    y_pixel: 633
+    x_world: 0
+    y_world: 1000
+}
+
+points :{
+    x_pixel: 708
+    y_pixel: 626
+    x_world: 350
+    y_world: 1000
+}
+
+points :{
+    x_pixel: 602
+    y_pixel: 542
+    x_world: 0
+    y_world: 1400
+}
+
+points :{
+    x_pixel: 690
+    y_pixel: 537
+    x_world: 350
+    y_world: 1400
+}
+
+points :{
+    x_pixel: 592
+    y_pixel: 434
+    x_world: 0
+    y_world: 2000
+}
+
+points :{
+    x_pixel: 668
+    y_pixel: 429
+    x_world: 350
+    y_world: 2000
+}
+points :{
+    x_pixel: 586
+    y_pixel: 377
+    x_world: 0
+    y_world: 2400
+}
+
+points :{
+    x_pixel: 656
+    y_pixel: 373
+    x_world: 350
+    y_world: 2400
+}
+points :{
+    x_pixel: 579
+    y_pixel: 304
+    x_world: 0
+    y_world: 3000
+}
+
+points :{
+    x_pixel: 642
+    y_pixel: 302
+    x_world: 350
+    y_world: 3000
+}
+points :{
+    x_pixel: 575
+    y_pixel: 266
+    x_world: 0
+    y_world: 3400
+}
+
+points :{
+    x_pixel: 634
+    y_pixel: 263
+    x_world: 350
+    y_world: 3400
+}
+points :{
+    x_pixel: 570
+    y_pixel: 213
+    x_world: 0
+    y_world: 4000
+}
+
+points :{
+    x_pixel: 623
+    y_pixel: 212
+    x_world: 350
+    y_world: 4000
+}
+points :{
+    x_pixel: 567
+    y_pixel: 185
+    x_world: 0
+    y_world: 4400
+}
+
+points :{
+    x_pixel: 617
+    y_pixel: 183
+    x_world: 350
+    y_world: 4400
+}

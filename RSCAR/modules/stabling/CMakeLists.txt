@@ -15,4 +15,10 @@ add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_proto)
 
 target_link_libraries(${PROJECT_NAME} detect_proto ${PROJECT_NAME}_proto rs ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
 
+add_executable(${PROJECT_NAME}_data stable_data.cpp ${PROTO_${PROJECT_NAME}_SRC})
+
+add_dependencies(${PROJECT_NAME}_data ${PROJECT_NAME}_proto)
+
+target_link_libraries(${PROJECT_NAME}_data detect_proto ${PROJECT_NAME}_proto rs ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
+
 
