@@ -8,4 +8,4 @@ add_library(BFSeparation SHARED BFSeparation.cpp ${PROTO_${PROJECT_NAME}_SRC})
 
 add_dependencies(BFSeparation detect_proto)
 
-target_link_libraries(BFSeparation ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES} detect_proto)
+target_link_libraries(BFSeparation rs ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES} detect_proto)
