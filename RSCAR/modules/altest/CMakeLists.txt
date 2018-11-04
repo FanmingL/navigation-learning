@@ -7,11 +7,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(lkopticalflow)
 add_subdirectory(separation)
+add_subdirectory(static_stabling)
 
 add_executable(${PROJECT_NAME} altest.cpp ${PROTO_${PROJECT_NAME}_SRC})
 
 add_dependencies(${PROJECT_NAME} lkopticalflow separation)
 
-target_link_libraries(${PROJECT_NAME} rs lkopticalflow separation ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} rs lkopticalflow separation static_stabling ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
 
 
