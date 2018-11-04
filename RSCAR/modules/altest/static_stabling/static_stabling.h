@@ -18,7 +18,7 @@
 #include "opencv2/features2d.hpp"
 #include "opencv2/calib3d.hpp"
 #include "opencv2/video/background_segm.hpp"
-
+#include "opencv2/xfeatures2d.hpp"
 #include <vector>
 #include <iostream>
 
@@ -33,6 +33,8 @@ namespace rs{
             void init(const cv::Mat &src);
             bool if_need_init();
             void MyRefine(cv::Mat &mask, int radius, std::vector<cv::Rect2f> &bboxs);
+            /// P,theta
+            void MyHoughLine(const std::vector<cv::Point2f> &points, const int threshold, std::vector<cv::Vec2f>& lines);
         private:
             StaticStablingConfig config;
             cv::Rect max_rect, roi;
@@ -40,6 +42,8 @@ namespace rs{
             cv::Mat mask, bgmask;
             bool init_flag;
             cv::Ptr<cv::BackgroundSubtractorMOG2> bgsubtractor;
+            cv::Ptr<cv::xfeatures2d::SiftFeatureDetector> feature_detector;
+            cv::Ptr<cv::xfeatures2d::SiftDescriptorExtractor> descriptor;
 
         };
         common::REGISTER_ALGORITHM(AltestAlgorithmBase, "stabling", static_stabling);

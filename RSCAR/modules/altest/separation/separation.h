@@ -25,7 +25,7 @@ namespace rs{
         class separation : public AltestAlgorithmBase{
         public:
             separation();
-            ~separation() = default;
+            ~separation() override = default;
             void PerformAlgorithm(const cv::Mat &src, cv::Mat &dst) override;
             void ReadConfig();
             void RefineSegments(const cv::Mat &src, cv::Mat &mask, cv::Mat &dst);
