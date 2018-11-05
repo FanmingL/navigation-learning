@@ -8,6 +8,7 @@
 #include "common/algorithm_factory.h"
 #include "common/io.h"
 #include "common/image_util.h"
+#include "common/string_util.h"
 
 #include "modules/altest/altest_algorithm_base.h"
 #include "modules/altest/static_stabling/static_stabling.pb.h"
@@ -22,6 +23,7 @@
 #include <vector>
 #include <iostream>
 
+
 namespace rs{
     namespace vp{
         class static_stabling : public AltestAlgorithmBase{
@@ -34,17 +36,26 @@ namespace rs{
             bool if_need_init();
             void MyRefine(cv::Mat &mask, int radius, std::vector<cv::Rect2f> &bboxs);
             /// P,theta
-            void MyHoughLine(const std::vector<cv::Point2f> &points, const int threshold, std::vector<cv::Vec2f>& lines);
+            void MyHoughLine(const std::vector<cv::Point2f> &points, const int &threshold, std::vector<cv::Vec2f>& lines);
+            void GetPointsPair(std::vector<std::vector<cv::Point2f> > &points, const cv::Mat &gray, const cv::Rect2f &roi, const cv::Mat& mask = cv::Mat());
+            void Match(const std::vector<std::vector<cv::Point2f> > &points);
         private:
             StaticStablingConfig config;
-            cv::Rect max_rect, roi;
+            cv::Rect max_rect, roi, show_roi;
             cv::Rect2f roi2f;
             cv::Mat mask, bgmask;
             bool init_flag;
+#define USE_KNN
+#ifdef USE_KNN
+            cv::Ptr<cv::BackgroundSubtractorKNN> bgsubtractor;
+#else
             cv::Ptr<cv::BackgroundSubtractorMOG2> bgsubtractor;
+#endif
+            //cv::Ptr<cv::BackgroundSubtractor> bgsubtractor;
             cv::Ptr<cv::xfeatures2d::SiftFeatureDetector> feature_detector;
             cv::Ptr<cv::xfeatures2d::SiftDescriptorExtractor> descriptor;
-
+            cv::Mat homograph_matrix;
+            std::vector<std::vector<cv::Point2f> > init_points;
         };
         common::REGISTER_ALGORITHM(AltestAlgorithmBase, "stabling", static_stabling);
     }
