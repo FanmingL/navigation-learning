@@ -17,6 +17,10 @@ namespace rs{
             ReadConfig();
 #ifdef USE_KNN
             bgsubtractor = cv::createBackgroundSubtractorKNN();
+            bgsubtractor->setDist2Threshold(1000);
+            bgsubtractor->setkNNSamples(6);
+
+            //std::cout<<bgsubtractor->getkNNSamples()<<std::endl;
 #else
             bgsubtractor = cv::createBackgroundSubtractorMOG2();
             bgsubtractor->setVarThreshold(50);
@@ -46,9 +50,22 @@ namespace rs{
             cv::warpPerspective(dst, dst, homograph_matrix, dst.size());
             dst = dst(show_roi);
             bgsubtractor->apply(dst, bgmask, -1);
-            MyRefine(bgmask, 2, bbox);
-            for (auto &item : bbox)cv::rectangle(dst, item, cv::Scalar(0,0,255),2);
-            cv::imshow("debug", bgmask);
+            std::vector<cv::Point2f> center;
+            std::vector<float> area;
+            MyRefine(bgmask, 13, bbox,center, area);
+            for (int i = 0; i < area.size(); ++i){
+                if (bbox[i].area() > 1500){
+                    cv::rectangle(dst, bbox[i], cv::Scalar(0, 0, 255), 2);
+                }else {
+                    cv::rectangle(dst, bbox[i], cv::Scalar(0, 255, 0), 2);
+                }
+                cv::circle(dst, center[i], 3, cv::Scalar(255,255,0), -1);
+                cv::putText(dst, common::to_string_with_precision(area[i] / bbox[i].area(),4),center[i],cv::FONT_ITALIC, 0.8, cv::Scalar(255,0,0),2);
+            }
+            cv::Mat canvas(cv::Size(show_roi.width * 2, show_roi.height), CV_8UC3, cv::Scalar(0,0,0));
+            cv::cvtColor(bgmask, canvas(cv::Rect(show_roi.width,0,show_roi.width,show_roi.height)),cv::COLOR_GRAY2BGR);
+            dst.copyTo(canvas(cv::Rect(0,0,show_roi.width,show_roi.height)));
+            dst = canvas.clone();
         }
 
         void static_stabling::ReadConfig() {
@@ -62,39 +79,47 @@ namespace rs{
         void static_stabling::init(const cv::Mat &src) {
            if (!if_need_init())
                return;
+           srand(time(NULL));
            max_rect = cv::Rect(0,0,src.cols, src.rows);
            mask = cv::Mat(max_rect.size(), CV_8UC1, cv::Scalar(255));
            roi2f = roi = cv::Rect(0, 379, 1080, 500);
-           show_roi = cv::Rect(cv::Point(110,252), cv::Point(1000,1000));
+           show_roi = cv::Rect(cv::Point(110,252), cv::Point(930,1000));
            init_flag = true;
            homograph_matrix.at<double>(0,0) = homograph_matrix.at<double>(1,1) =homograph_matrix.at<double>(2,2)  = 1;
            std::cout<<"INIT DONE\n";
         }
 
-        void static_stabling::MyRefine(cv::Mat &mask, int radius,std::vector<cv::Rect2f> &bboxs) {
+        void static_stabling::MyRefine(cv::Mat &mask, int radius, std::vector<cv::Rect2f> &bboxs, std::vector<cv::Point2f> &mass_center, std::vector<float> &area){
+            mass_center.clear();
+            area.clear();
             mask = (mask > 130);
-
             cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(radius, radius));
-            cv::morphologyEx(mask,mask,cv::MORPH_OPEN, element);
-            element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size( 2 * radius, 2 *   radius));
+#if 1
+            //element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(3, 3));
+            //cv::morphologyEx(mask, mask, cv::MORPH_ERODE, element);
+            element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(radius, radius));
             cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, element);
-            //cv::dilate(mask,mask,element);
-            //element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(radius,  radius));
-            //cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, element);
+            element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(9, 9));
+            cv::morphologyEx(mask, mask, cv::MORPH_ERODE, element);
+            //cv::morphologyEx(mask, mask, cv::MORPH_DILATE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3)));
+            //cv::morphologyEx(mask, mask, cv::MORPH_ERODE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(4,4)));
+
+#endif
             cv::Mat mask_copy = mask.clone();
             std::vector<std::vector<cv::Point> > contours;
             std::vector<cv::Vec4i> hierarchy;
-            cv::findContours(mask_copy, contours, hierarchy,cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
+            cv::findContours(mask_copy, contours, hierarchy,cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
             for (auto &item : contours){
-                double area = cv::contourArea(item);
-                if (area < 110)continue;
+                double area_tmp = cv::contourArea(item);
+                if (area_tmp < 30)continue;
+                cv::Mat data_in;
+                for (auto &item2 : item){
+                    cv::Mat ttt = ((cv::Mat_<float>(2,1)<<item2.x, item2.y));
+                    data_in.push_back(ttt);
+                }
+                mass_center.push_back(GetMassCenter(item));
+                area.push_back((float)area_tmp);
                 cv::Rect2f rect= cv::boundingRect(item);
-                //if (rect.width / rect.height > 5 || rect.width / rect.height < 0.2)continue;
-
-                cv::Point2f tl, br;
-                //common::CalculateTransform(homograph_matrix.inv(), rect.tl(), tl, common::DOUBLE_TYPE);
-                //common::CalculateTransform(homograph_matrix.inv(), rect.br(), br, common::DOUBLE_TYPE);
-                //bboxs.emplace_back(tl,br);
                 bboxs.push_back(rect);
             }
 
@@ -219,6 +244,16 @@ namespace rs{
             }
             cv::Mat out_mask;
             homograph_matrix = cv::findHomography(matched_points[0], matched_points[1], cv::RANSAC, 4, out_mask);
+        }
+
+        cv::Point2f static_stabling::GetMassCenter(const std::vector<cv::Point> &points) {
+            cv::Point2f res, tmp;
+            for (auto &item : points){
+                tmp = item;
+                res += tmp;
+            }
+            res = res / (float)points.size();
+            return res;
         }
     }
 }

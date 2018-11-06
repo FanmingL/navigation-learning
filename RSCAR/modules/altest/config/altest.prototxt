@@ -1,2 +1,3 @@
 algorithm_name: "stabling"
 if_show_video: true
+if_write_video: true

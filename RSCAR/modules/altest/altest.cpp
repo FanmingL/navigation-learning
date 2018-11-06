@@ -22,11 +22,17 @@ namespace rs{
             ReadConfig();
             algorithm = common::AlgorithmFactory<AltestAlgorithmBase>::CreateAlgorithm(altest_config.algorithm_name());
             video_capture.open(common::GetAbsolutePath(altest_config.input_video_path()));
+            max_rect = cv::Rect2d(0,0,video_capture.get(cv::CAP_PROP_FRAME_WIDTH),
+                    video_capture.get(cv::CAP_PROP_FRAME_HEIGHT));
             altest_config.PrintDebugString();
+            if (altest_config.if_write_video()){
+                std::remove(common::GetAbsolutePath(altest_config.out_video_path()).c_str());
+            }
         }
 
         void altest::Run() {
             cv::Mat dst, src;
+            bool init_flag = false;
             while (true){
                 video_capture >> src;
                 if (src.empty())break;
@@ -36,6 +42,15 @@ namespace rs{
                     auto key = cv::waitKey(1);
                     if (key == 'q')
                         break;
+                }
+                if (altest_config.if_write_video()){
+                    if (!init_flag){
+                       video_writer.open(common::GetAbsolutePath(altest_config.out_video_path()),CV_FOURCC('D','I','V','X'),
+                               30,dst.size()
+                               );
+                       init_flag = true;
+                    }
+                    video_writer << dst;
                 }
             }
         }

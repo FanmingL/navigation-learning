@@ -34,6 +34,8 @@ namespace rs{
             std::shared_ptr<AltestAlgorithmBase> algorithm;
             AltestConfig altest_config;
             cv::VideoCapture video_capture;
+            cv::VideoWriter video_writer;
+            cv::Rect max_rect;
         };
     }
 }
