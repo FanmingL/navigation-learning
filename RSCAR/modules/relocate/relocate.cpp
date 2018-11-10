@@ -31,10 +31,10 @@ namespace rs {
                 video_capture >> first_image;
                 if (relocate_config.if_point()){
                     draw_area da(first_image, common::GetAbsolutePath(relocate_config.point_image_out_path()),
-                                 relocate_config.width(), relocate_config.height(), draw_area::DRAW_POINT, homograph_matrix);
+                                 first_image.cols, first_image.rows, draw_area::DRAW_POINT, homograph_matrix);
                 }else {
                     draw_area da(first_image, common::GetAbsolutePath(relocate_config.mask_save_path()),
-                                 relocate_config.width(), relocate_config.height());
+                                 first_image.cols, first_image.rows);
                 }
             }
             max_rect = cv::Rect(0,0,relocate_config.width(), relocate_config.height());
@@ -58,7 +58,7 @@ namespace rs {
                 for (auto &item : detect_video.frame(counter).object()) {
                     cv::Point2f position_image, position_world;
                     if (item.name() == "person" || item.name() == "bicycle" || item.name() == "motorbike") {
-                        position_image = cv::Point2f(item.x() + item.width() / 2, item.y() + item.height());
+                        position_image = cv::Point2f(item.x() + item.width() / 2, item.y() + item.height() / 2);
                     } else {
                         position_image = cv::Point2f(item.x() + item.width() / 2, item.y() + item.height() / 2);
                     }

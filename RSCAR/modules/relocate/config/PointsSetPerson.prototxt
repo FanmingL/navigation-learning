@@ -1,0 +1,98 @@
+points :{
+    x_pixel: 152
+    y_pixel: 143
+    x_world:0
+    y_world:600
+}
+
+points :{
+    x_pixel:155
+    y_pixel:463
+    x_world:0
+    y_world:0
+}
+
+points :{
+    x_pixel:261
+    y_pixel:144
+    x_world:200
+    y_world:600
+}
+
+points :{
+    x_pixel:264
+    y_pixel:464
+    x_world:200
+    y_world:0
+}
+
+points :{
+    x_pixel:369
+    y_pixel:145
+    x_world:400
+    y_world:600
+}
+
+points :{
+    x_pixel:375
+    y_pixel:465
+    x_world:400
+    y_world:0
+}
+
+points :{
+    x_pixel:477
+    y_pixel:147
+    x_world:600
+    y_world:600
+}
+
+points :{
+    x_pixel:484
+    y_pixel:467
+    x_world:600
+    y_world:0
+}
+
+points :{
+    x_pixel:587
+    y_pixel:149
+    x_world:800
+    y_world:600
+}
+
+points :{
+    x_pixel:590
+    y_pixel:468
+    x_world:800
+    y_world:0
+}
+
+points :{
+    x_pixel:694
+    y_pixel:151
+    x_world:1000
+    y_world:600
+}
+
+points :{
+    x_pixel:699
+    y_pixel:470
+    x_world:1000
+    y_world:0
+}
+
+points :{
+    x_pixel:800
+    y_pixel:152
+    x_world:1200
+    y_world:600
+}
+
+points :{
+    x_pixel:805
+    y_pixel:471
+    x_world:1200
+    y_world:0
+}
+

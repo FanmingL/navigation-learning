@@ -39,10 +39,12 @@ namespace rs{
         void tracker_filter::Run() {
             cv::Mat canvas, mask_frame_one_channel;
             while (true){
-                video_capture >> frame;
-                //mask_capture >> frame_mask;
-                //if (frame.empty() || frame_mask.empty())break;
-                if (frame.empty())break;
+                if (filter_tracker_config.if_write_video() || filter_tracker_config.if_show_video()){
+                    video_capture >> frame;
+                    //mask_capture >> frame_mask;
+                    //if (frame.empty() || frame_mask.empty())break;
+                    if (frame.empty())break;
+                }
                 if (count >=  in_video_data.frame_size())break;
 
                 //common::GetOneChannel(frame_mask, mask_frame_one_channel, 1);
@@ -121,6 +123,17 @@ namespace rs{
         void tracker_filter::NewData(const DetectFrame &in_data, DetectFrame *out_data, const DetectFrame &raw_data) {
             for (auto &item: in_data.object()){
                 cv::Rect2f rect_temp(item.x(), item.y(), item.width(), item.height());
+                if (item.car_index() == -1){
+                    auto *iter = out_data->add_object();
+                    iter->set_name(item.name());
+                    iter->set_probility(100);
+                    iter->set_car_index(item.car_index());
+                    iter->set_x(item.x());
+                    iter->set_y(item.y());
+                    iter->set_width(item.width());
+                    iter->set_height(item.height());
+                    continue;
+                }
                 if (length_map[item.car_index()] < 10)continue;
                 if (area_low.count(item.name()) && rect_temp.area() < area_low[item.name()])continue;
                 if (area_high.count(item.name()) && rect_temp.area() > area_high[item.name()]) continue;
@@ -172,7 +185,8 @@ namespace rs{
         void tracker_filter::InitLength() {
             for (auto &item : in_video_data.frame()){
                 for (auto &item2 : item.object()){
-                   length_map[item2.car_index()]++;
+                    if (item2.car_index() != -1)
+                        length_map[item2.car_index()]++;
                 }
             }
         }

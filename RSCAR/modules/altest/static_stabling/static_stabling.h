@@ -23,13 +23,14 @@
 #include <vector>
 #include <iostream>
 
+#include "modules/detect/detect.pb.h"
 
 namespace rs{
     namespace vp{
         class static_stabling : public AltestAlgorithmBase{
         public:
             static_stabling();
-            ~static_stabling() override = default;
+            ~static_stabling() override;
             void PerformAlgorithm(const cv::Mat &src, cv::Mat &dst)override;
             void ReadConfig();
             void init(const cv::Mat &src);
@@ -40,12 +41,15 @@ namespace rs{
             void GetPointsPair(std::vector<std::vector<cv::Point2f> > &points, const cv::Mat &gray, const cv::Rect2f &roi, const cv::Mat& mask = cv::Mat());
             void Match(const std::vector<std::vector<cv::Point2f> > &points);
             cv::Point2f GetMassCenter(const std::vector<cv::Point> &points);
+            void AllocIndex(const std::vector<cv::Point2f> &mass_center, const std::vector<cv::Rect2f>&bbox, std::vector<int>&index);
+            void AddFrame(DetectFrame *frame, const std::vector<int>& index, const std::vector<cv::Point2f>& mass_center, const std::vector<cv::Rect2f>&bbox );
         private:
             StaticStablingConfig config;
             cv::Rect max_rect, roi, show_roi;
             cv::Rect2f roi2f;
             cv::Mat mask, bgmask;
             bool init_flag;
+            DetectVideo detect_video;
 #define USE_KNN
 #ifdef USE_KNN
             cv::Ptr<cv::BackgroundSubtractorKNN> bgsubtractor;
@@ -58,6 +62,10 @@ namespace rs{
             cv::Mat homograph_matrix;
             std::vector<std::vector<cv::Point2f> > init_points;
             std::vector<cv::Scalar> colors;
+            std::vector<cv::Point2f> mass_center_last;
+            std::vector<cv::Rect2f> bbox_last;
+            std::vector<int> index_last;
+            int index_counter;
         };
         common::REGISTER_ALGORITHM(AltestAlgorithmBase, "stabling", static_stabling);
     }

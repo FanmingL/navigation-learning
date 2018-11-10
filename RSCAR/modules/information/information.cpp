@@ -42,6 +42,11 @@ namespace rs {
                     std::ofstream of(common::GetAbsolutePath("data/debug.txt"), std::ios::trunc);
                     of << all_trajectories.trajectory(all_trajectories.trajectory_size()/2).DebugString();
                 }
+                for (auto &item :frame.object()) {
+                    cv::Rect rect_fill_color_tmp(GetBoundingBox(item));
+                    frame_mask(rect_fill_color_tmp & image_max_rect) = cv::Scalar(
+                            string_image_map[item.name()]);
+                }
                 std::unordered_map<int, cv::Point2f> position_after_filter;
                 std::unordered_map<int, cv::Point2f> velocity;
                 std::unordered_map<int, int> index_to_map;
@@ -103,18 +108,14 @@ namespace rs {
                     filter_map[item.object_index()] = std::make_shared<common::mean_filter<cv::Point2f> >(
                             cv::Point2f(item.world_position_x(),
                                         item.world_position_y()), information_config.mean_filter_length());
-                    if (item.name() == "car")
+                    //if (item.name() == "car")
+                    if (item.object_index() != -1)
                         trajectory_map[item.object_index()] = all_trajectories.add_trajectory();
                     position_after_filter[item.object_index()] = cv::Point2f(item.world_position_x(),
                                                                              item.world_position_y());
                     index_to_map[item.object_index()] = object_index_sort[j].second;
                 }
-                for (auto &item : position_after_filter) {
-                    int car_index = index_to_map[item.first];
-                    cv::Rect rect_fill_color_tmp(GetBoundingBox(frame.object(car_index)));
-                    frame_mask(rect_fill_color_tmp & image_max_rect) = cv::Scalar(
-                            string_image_map[frame.object(car_index).name()]);
-                }
+
 
                 for (auto &item : position_after_filter) {
                     if (!trajectory_map.count(item.first))continue;
@@ -304,7 +305,8 @@ namespace rs {
         }
 
         void information::ReadMask() {
-            mask = cv::imread(common::GetAbsolutePath(information_config.mask_path()), cv::IMREAD_GRAYSCALE);
+            mask = cv::Mat(information_config.height(), information_config.width(), CV_8UC1, cv::Scalar(255));
+            //mask = cv::imread(common::GetAbsolutePath(information_config.mask_path()), cv::IMREAD_GRAYSCALE);
         }
 
         void information::ReadMatrix() {

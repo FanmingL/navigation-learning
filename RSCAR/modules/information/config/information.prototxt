@@ -6,3 +6,6 @@ pair_point_path:"modules/relocate/config/PointsSetCar.prototxt"
 mean_filter_length: 2
 distance_step: 0.5
 max_frame_count: 15000
+width:820
+height:748
+den:1

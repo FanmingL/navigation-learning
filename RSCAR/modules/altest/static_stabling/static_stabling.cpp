@@ -12,7 +12,8 @@ namespace rs{
         static_stabling::static_stabling() : init_flag(false),
                  feature_detector(cv::xfeatures2d::SiftFeatureDetector::create()),
                  descriptor(cv::xfeatures2d::SiftDescriptorExtractor::create()),
-                 homograph_matrix(3,3,CV_64FC1, cv::Scalar(0))
+                 homograph_matrix(3,3,CV_64FC1, cv::Scalar(0)),
+                 index_counter(0)
         {
             ReadConfig();
 #ifdef USE_KNN
@@ -53,19 +54,27 @@ namespace rs{
             std::vector<cv::Point2f> center;
             std::vector<float> area;
             MyRefine(bgmask, 13, bbox,center, area);
+            std::vector<int> index_out;
+            AllocIndex(center, bbox, index_out);
             for (int i = 0; i < area.size(); ++i){
-                if (bbox[i].area() > 1500){
+                if (index_out[i] != -1){
                     cv::rectangle(dst, bbox[i], cv::Scalar(0, 0, 255), 2);
+                    cv::putText(dst, std::to_string(index_out[i]), center[i], cv::FONT_ITALIC, 0.8, cv::Scalar(255,0,0),2);
                 }else {
                     cv::rectangle(dst, bbox[i], cv::Scalar(0, 255, 0), 2);
                 }
                 cv::circle(dst, center[i], 3, cv::Scalar(255,255,0), -1);
-                cv::putText(dst, common::to_string_with_precision(area[i] / bbox[i].area(),4),center[i],cv::FONT_ITALIC, 0.8, cv::Scalar(255,0,0),2);
+                //cv::putText(dst, common::to_string_with_precision(area[i] / bbox[i].area(),4),center[i],cv::FONT_ITALIC, 0.8, cv::Scalar(255,0,0),2);
             }
+            AddFrame(detect_video.add_frame(), index_out, center, bbox);
+
             cv::Mat canvas(cv::Size(show_roi.width * 2, show_roi.height), CV_8UC3, cv::Scalar(0,0,0));
             cv::cvtColor(bgmask, canvas(cv::Rect(show_roi.width,0,show_roi.width,show_roi.height)),cv::COLOR_GRAY2BGR);
             dst.copyTo(canvas(cv::Rect(0,0,show_roi.width,show_roi.height)));
             dst = canvas.clone();
+            bbox_last = bbox;
+            mass_center_last = center;
+            index_last = index_out;
         }
 
         void static_stabling::ReadConfig() {
@@ -99,7 +108,7 @@ namespace rs{
             //cv::morphologyEx(mask, mask, cv::MORPH_ERODE, element);
             element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(radius, radius));
             cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, element);
-            element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(9, 9));
+            element = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(9, 9));
             cv::morphologyEx(mask, mask, cv::MORPH_ERODE, element);
             //cv::morphologyEx(mask, mask, cv::MORPH_DILATE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3)));
             //cv::morphologyEx(mask, mask, cv::MORPH_ERODE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(4,4)));
@@ -254,6 +263,62 @@ namespace rs{
             }
             res = res / (float)points.size();
             return res;
+        }
+
+        void
+        static_stabling::AllocIndex(const std::vector<cv::Point2f> &mass_center, const std::vector<cv::Rect2f> &bbox,
+                                    std::vector<int> &index) {
+            if (bbox.empty())return;
+            cv::Rect2f rect_roi(cv::Point2f(30,30), cv::Point2f(cv::Point(show_roi.width-30,show_roi.height-30)));
+            index = std::vector<int>(mass_center.size(), -1);
+            for (int i = 0; i < index.size(); i++){
+                if (bbox[i].area() <= 1500 && rect_roi.contains(mass_center[i])){
+                    bool matched_flag = false;
+                    int last_index_value = -1;
+                    for (int j = 0; j < mass_center_last.size(); j++){
+                        if (index_last[j] == -1)continue;
+                        auto &item = mass_center_last[j];
+                        auto dis_vector = item - mass_center[i];
+                        auto dis_val = sqrtf(dis_vector.dot(dis_vector));
+                        if (dis_val < 10){
+                            matched_flag = true;
+                            last_index_value = j;
+                            break;
+                        }
+                    }
+                    if (matched_flag){
+                        index[i] = index_last[last_index_value];
+                    }else{
+                        index[i] = (index_counter ++);
+                    }
+                }
+            }
+        }
+
+        void static_stabling::AddFrame(DetectFrame *frame, const std::vector<int> &index,
+                                       const std::vector<cv::Point2f> &mass_center,
+                                       const std::vector<cv::Rect2f> &bbox) {
+            for (int i = 0; i < index.size();++i){
+                auto *iter = frame->add_object();
+                iter->set_x(mass_center[i].x-bbox[i].width/2);
+                iter->set_y(mass_center[i].y - bbox[i].height/2);
+                iter->set_width(bbox[i].width);
+                iter->set_height(bbox[i].height);
+                iter->set_car_index(index[i]);
+                if (index[i] != -1){
+                    iter->set_name("person");
+                }else if (bbox[i].area() > 8000){
+                    iter->set_name("bicycle");
+                }else {
+                    iter->set_name("car");
+                }
+                iter->set_probility(100);
+            }
+
+        }
+
+        static_stabling::~static_stabling() {
+            common::WriteProtoToBinaryFile("data/altest_track.proto.bin", &detect_video);
         }
     }
 }
