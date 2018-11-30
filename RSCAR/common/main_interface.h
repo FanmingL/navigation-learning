@@ -19,7 +19,7 @@
 #define COMMON_MAIN_INTERFACE_H
 
 
-#define MAIN(RS_CLASS,module_name)                                                  \
+#define MAIN(RS_CLASS, module_name)                                                  \
   int main(int argc, char **argv){                                                  \
     RS_CLASS rs(module_name);                                                       \
     rs.Run();                                                                       \

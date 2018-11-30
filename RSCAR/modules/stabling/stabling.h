@@ -25,20 +25,29 @@
 #include "opencv2/xfeatures2d.hpp"
 #include "opencv2/features2d.hpp"
 #include "opencv2/calib3d.hpp"
+
 #define USE_SIFT 1
-namespace rs{
-    namespace vp{
-        class stabling : public common::rs{
+namespace rs {
+    namespace vp {
+        class stabling : public common::rs {
         public:
-            explicit stabling(const std::string & name);
+            explicit stabling(const std::string &name);
+
             ~stabling() override = default;
+
             void Run() override;
+
             void ReadConfig();
+
             void AddCount();
+
             cv::Rect CvtData(const DetectObject &object);
+
             void init();
+
             void CalculateHomograph(const cv::Mat &src, const DetectFrame &detect_frame, cv::Mat &dst);
-            void AddData(HomographMatrix * data, const cv::Mat &homograph_matrix);
+
+            void AddData(HomographMatrix *data, const cv::Mat &homograph_matrix);
 
         private:
 

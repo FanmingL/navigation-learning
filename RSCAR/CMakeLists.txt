@@ -4,7 +4,7 @@ project(RSCAR)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE Release)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH  ${PROJECT_BINARY_DIR}/lib)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 
 add_definitions(-DPATH="${CMAKE_CURRENT_SOURCE_DIR}")
@@ -18,7 +18,7 @@ find_package(Protobuf REQUIRED)
 set(PROTOBUF_IMPORT_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
 
 include_directories(
-${EIGEN3_INCLUDE_DIR}
+        ${EIGEN3_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${OpenCV_INCLUDE_DIRS}
         /usr/include

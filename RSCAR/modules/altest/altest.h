@@ -21,13 +21,16 @@
 #include "opencv2/imgproc.hpp"
 #include "modules/altest/altest.pb.h"
 
-namespace rs{
-    namespace vp{
-        class altest: public common::rs{
+namespace rs {
+    namespace vp {
+        class altest : public common::rs {
         public:
             explicit altest(const std::string &name);
-            ~altest()override = default;
+
+            ~altest() override = default;
+
             void Run() override;
+
             void ReadConfig();
 
         private:
@@ -39,7 +42,6 @@ namespace rs{
         };
     }
 }
-
 
 
 #endif //ALTEST_H

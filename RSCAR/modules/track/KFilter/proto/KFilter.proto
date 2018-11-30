@@ -1,7 +1,7 @@
 syntax = "proto2";
 package rs.vp;
 
-message KFilterConfig{
+message KFilterConfig {
     optional float measure_cov = 1 [default = 4];
     optional float control_cov = 2 [default = 5];
     optional uint32 yolo_max_count = 3 [default = 80];

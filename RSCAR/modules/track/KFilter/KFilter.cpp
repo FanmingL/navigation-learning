@@ -46,7 +46,7 @@ namespace rs {
                                 iter->last_track.name = "bicycle";
                                 //item.name = "bicycle";
                                 break;
-                            }else if (car_truck_bus.count(item.name) && car_truck_bus.count(tmp_track_data.name)){
+                            } else if (car_truck_bus.count(item.name) && car_truck_bus.count(tmp_track_data.name)) {
                                 flag = false;
                                 break;
                             }
@@ -121,7 +121,7 @@ namespace rs {
         }
 
         cv::Rect2f KFilter::GetRect(const DetectObject &object) {
-            return cv::Rect2f(object.x(),object.y(), object.width(), object.height());
+            return cv::Rect2f(object.x(), object.y(), object.width(), object.height());
             return cv::Rect2f((object.x() - object.width() / 2) * kf_config.width(),
                               (object.y() - object.height() / 2) * kf_config.height(),
                               object.width() * kf_config.width(), object.height() * kf_config.height());
@@ -303,7 +303,8 @@ namespace rs {
                 float overlap_ratio = common::CalculateRectOverlapRatio(last_track.bbox, _detect_data[i].bbox);
 
                 if (overlap_ratio > overlap_threshold) {
-                    if (_detect_data[i].name == last_track.name || ((car_truck_bus.count(last_track.name)) && car_truck_bus.count(_detect_data[i].name)))
+                    if (_detect_data[i].name == last_track.name ||
+                        ((car_truck_bus.count(last_track.name)) && car_truck_bus.count(_detect_data[i].name)))
                         now_index.emplace_back(std::pair<float, int>(overlap_ratio, i));
                     else if (peron_bicycle_motor.count(_detect_data[i].name) &&
                              peron_bicycle_motor.count(last_track.name)) {

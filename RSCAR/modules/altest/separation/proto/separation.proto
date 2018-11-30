@@ -1,7 +1,7 @@
 syntax = "proto2";
 package rs.vp;
 
-message SeparationConfig{
+message SeparationConfig {
     optional int32 threshold = 1 [default = 10];
     optional float learning_rate = 2 [default = -1];
     optional int32 open_radius = 3 [default = 2];

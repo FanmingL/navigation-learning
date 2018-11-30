@@ -1,6 +1,6 @@
 syntax = "proto2";
 package rs.vp;
-message InformationConfig{
+message InformationConfig {
     optional string input_data_path = 1 [default = "data/relocate_out_data.bin"];
     optional float max_distance = 2 [default = 2000];
     optional string output_data_path = 3 [default = "data/trajectories_out_data.bin"];
@@ -15,7 +15,7 @@ message InformationConfig{
     optional bool if_save_debug = 12 [default = false];
 }
 
-enum ObjectType{
+enum ObjectType {
     OBSTACLE = 0;
     PERSON = 1;
     BICYCLE = 2;
@@ -24,13 +24,13 @@ enum ObjectType{
     NOTHING = 5;
 }
 
-message AngleObject{
+message AngleObject {
     optional float distance = 1;
     optional ObjectType type = 2;
     optional float angle = 3;
 }
 
-message DescriptionObject{
+message DescriptionObject {
     optional float image_bbox_x = 1;
     optional float image_bbox_y = 2;
     optional float image_bbox_width = 3;
@@ -48,10 +48,10 @@ message DescriptionObject{
     optional int32 frame_index = 13;
 }
 
-message DescriptionTrajectory{
+message DescriptionTrajectory {
     repeated DescriptionObject trajectory_point = 1;
 }
 
-message AllTrajectory{
+message AllTrajectory {
     repeated DescriptionTrajectory trajectory = 1;
 }

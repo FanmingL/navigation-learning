@@ -17,12 +17,13 @@ namespace rs {
     namespace vp {
         class draw_area {
         public:
-            enum DRAW_USAGE{
+            enum DRAW_USAGE {
                 DRAW_MASK = 0,
                 DRAW_POINT = 1
             };
-            draw_area(const cv::Mat &src, const std::string &path, int width = 1080, int height = 1080
-                    , DRAW_USAGE usage = DRAW_MASK, const cv::Mat &homograph_matrix = cv::Mat());
+
+            draw_area(const cv::Mat &src, const std::string &path, int width = 1080, int height = 1080,
+                      DRAW_USAGE usage = DRAW_MASK, const cv::Mat &homograph_matrix = cv::Mat());
 
             cv::Mat first_image, canvas, mask, mask_cant_reach;
 

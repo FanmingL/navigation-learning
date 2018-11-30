@@ -1,7 +1,7 @@
 syntax = "proto2";
 package rs.vp;
 
-message RelocateConfig{
+message RelocateConfig {
     optional string input_video_path = 1 [default = "data/in_video.mp4"];
     optional string input_data_path = 2 [default = "data/track_out_data.bin"];
     optional bool if_show_video = 3 [default = true];
@@ -19,18 +19,18 @@ message RelocateConfig{
 
 }
 
-message PointPair{
+message PointPair {
     required int32 x_pixel = 1;
     required int32 y_pixel = 2;
     required int32 x_world = 3;
     required int32 y_world = 4;
 }
 
-message PointPairSet{
+message PointPairSet {
     repeated PointPair points = 1;
 }
 
-message TrackObject{
+message TrackObject {
     optional int32 object_index = 1;
     optional float probility = 2;
     optional float image_bbox_x = 3;
@@ -42,10 +42,10 @@ message TrackObject{
     optional string name = 9;
 }
 
-message TrackFrame{
+message TrackFrame {
     repeated TrackObject object = 1;
 }
 
-message TrackVideo{
+message TrackVideo {
     repeated TrackFrame frame = 1;
 }

@@ -28,28 +28,39 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace rs{
-    namespace vp{
-        class tracker_filter :public common::rs{
+namespace rs {
+    namespace vp {
+        class tracker_filter : public common::rs {
         public:
             explicit tracker_filter(const std::string &name);
+
             ~tracker_filter() override = default;
+
             void Run() override;
+
             void ReadConfig();
+
             void AddCount();
+
             void ReadData();
+
             void DrawRect(cv::Mat &src, const DetectFrame &data);
-            void NewData(const DetectFrame &in_data, DetectFrame* out_data, const DetectFrame &raw_data);
+
+            void NewData(const DetectFrame &in_data, DetectFrame *out_data, const DetectFrame &raw_data);
+
             void InitLength();
+
             void InitAreaRange();
+
         private:
             void InitColorMap();
+
             FilterTrackerConfig filter_tracker_config;
             cv::VideoCapture video_capture, mask_capture;
             cv::VideoWriter video_writer;
             cv::Mat frame, frame_mask;
 
-            int count ;
+            int count;
             DetectVideo in_video_data, out_video_data, raw_data;
             cv::Rect max_rect;
             cv::Rect2f max_rect_2f;

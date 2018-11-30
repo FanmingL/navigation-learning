@@ -38,9 +38,9 @@ namespace rs {
                 mask.copyTo(frame_mask);
                 std::cout << frame_index << std::endl;
                 if (frame_index > information_config.max_frame_count())break;
-                if ( information_config.if_save_debug()  && frame_index % 100 == 99 ) {
+                if (information_config.if_save_debug() && frame_index % 100 == 99) {
                     std::ofstream of(common::GetAbsolutePath("data/debug.txt"), std::ios::trunc);
-                    of << all_trajectories.trajectory(all_trajectories.trajectory_size()/2).DebugString();
+                    of << all_trajectories.trajectory(all_trajectories.trajectory_size() / 2).DebugString();
                 }
                 for (auto &item :frame.object()) {
                     cv::Rect rect_fill_color_tmp(GetBoundingBox(item));
@@ -350,14 +350,15 @@ namespace rs {
 
         cv::Rect2f information::GetBoundingBox(const TrackObject &object) {
             cv::Rect2f rect;
-            if (object.name() == "car"){
+            if (object.name() == "car") {
                 rect = cv::Rect2f(object.image_bbox_x(), object.image_bbox_y(),
-                        object.image_bbox_width(), object.image_bbox_height());
-            } else{
+                                  object.image_bbox_width(), object.image_bbox_height());
+            } else {
                 cv::Rect2f(object.image_bbox_x(), object.image_bbox_y() + object.image_bbox_height() *
-                (information_config.den()-1)/information_config.den()
-                                      , object.image_bbox_width(),
-                                         1/information_config.den() * object.image_bbox_height());
+                                                                          (information_config.den() - 1) /
+                                                                          information_config.den(),
+                           object.image_bbox_width(),
+                           1 / information_config.den() * object.image_bbox_height());
                 rect = cv::Rect2f(object.image_bbox_x(), object.image_bbox_y(),
                                   object.image_bbox_width(), object.image_bbox_height());
             }

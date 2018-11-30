@@ -25,24 +25,45 @@
 
 #include "modules/detect/detect.pb.h"
 
-namespace rs{
-    namespace vp{
-        class static_stabling : public AltestAlgorithmBase{
+namespace rs {
+    namespace vp {
+        class static_stabling : public AltestAlgorithmBase {
         public:
             static_stabling();
+
             ~static_stabling() override;
-            void PerformAlgorithm(const cv::Mat &src, cv::Mat &dst)override;
+
+            void PerformAlgorithm(const cv::Mat &src, cv::Mat &dst) override;
+
             void ReadConfig();
+
             void init(const cv::Mat &src);
+
             bool if_need_init();
-            void MyRefine(cv::Mat &mask, int radius, std::vector<cv::Rect2f> &bboxs, std::vector<cv::Point2f> &mass_center, std::vector<float> &area);
+
+            void
+            MyRefine(cv::Mat &mask, int radius, std::vector<cv::Rect2f> &bboxs, std::vector<cv::Point2f> &mass_center,
+                     std::vector<float> &area);
+
             /// P,theta
-            void MyHoughLine(const std::vector<cv::Point2f> &points, const int &threshold, std::vector<cv::Vec2f>& lines);
-            void GetPointsPair(std::vector<std::vector<cv::Point2f> > &points, const cv::Mat &gray, const cv::Rect2f &roi, const cv::Mat& mask = cv::Mat());
+            void
+            MyHoughLine(const std::vector<cv::Point2f> &points, const int &threshold, std::vector<cv::Vec2f> &lines);
+
+            void
+            GetPointsPair(std::vector<std::vector<cv::Point2f> > &points, const cv::Mat &gray, const cv::Rect2f &roi,
+                          const cv::Mat &mask = cv::Mat());
+
             void Match(const std::vector<std::vector<cv::Point2f> > &points);
+
             cv::Point2f GetMassCenter(const std::vector<cv::Point> &points);
-            void AllocIndex(const std::vector<cv::Point2f> &mass_center, const std::vector<cv::Rect2f>&bbox, std::vector<int>&index);
-            void AddFrame(DetectFrame *frame, const std::vector<int>& index, const std::vector<cv::Point2f>& mass_center, const std::vector<cv::Rect2f>&bbox );
+
+            void AllocIndex(const std::vector<cv::Point2f> &mass_center, const std::vector<cv::Rect2f> &bbox,
+                            std::vector<int> &index);
+
+            void
+            AddFrame(DetectFrame *frame, const std::vector<int> &index, const std::vector<cv::Point2f> &mass_center,
+                     const std::vector<cv::Rect2f> &bbox);
+
         private:
             StaticStablingConfig config;
             cv::Rect max_rect, roi, show_roi;
@@ -67,6 +88,7 @@ namespace rs{
             std::vector<int> index_last;
             int index_counter;
         };
+
         common::REGISTER_ALGORITHM(AltestAlgorithmBase, "stabling", static_stabling);
     }
 }

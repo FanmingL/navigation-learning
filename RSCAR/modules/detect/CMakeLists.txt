@@ -17,6 +17,6 @@ add_executable(${PROJECT_NAME} detect.cpp ${PROTO_${PROJECT_NAME}_SRC})
 add_dependencies(${PROJECT_NAME} BFSeparation)
 add_dependencies(${PROJECT_NAME} Yolo)
 
-target_link_libraries(${PROJECT_NAME} BFSeparation Yolo  rs ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} BFSeparation Yolo rs ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
 
 

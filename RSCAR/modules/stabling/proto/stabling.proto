@@ -1,6 +1,6 @@
 syntax = "proto2";
 package rs.vp;
-message StablingConfig{
+message StablingConfig {
     optional string in_video_path = 1 [default = "data/in_video.mp4"];
     optional bool if_show = 2 [default = true];
     optional bool if_write_video = 3 [default = false];
@@ -16,12 +16,12 @@ message StablingConfig{
     optional float min_distance = 13 [default = 5];
     optional int32 padding_length = 14 [default = 10];
     optional float ratio_threshold = 15 [default = 0.4];
-    optional int32 step_count = 16[ default = 4];
+    optional int32 step_count = 16 [default = 4];
     optional string out_data_path = 17 [default = "data/stabling_matrix.bin"];
     optional string new_data_path = 18 [default = "data/yolo_out_data.new.bin"];
 }
 
-message HomographMatrix{
+message HomographMatrix {
     required int32 frame_index = 1;
     required float h11 = 2;
     required float h12 = 3;
@@ -34,6 +34,6 @@ message HomographMatrix{
     required float h33 = 10;
 }
 
-message HomographVideo{
-    repeated HomographMatrix matrix= 1;
+message HomographVideo {
+    repeated HomographMatrix matrix = 1;
 }

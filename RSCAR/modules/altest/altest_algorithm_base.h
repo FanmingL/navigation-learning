@@ -7,16 +7,19 @@
 
 #include <string>
 #include "opencv2/core.hpp"
-namespace rs{
-    namespace vp{
-        class AltestAlgorithmBase{
+
+namespace rs {
+    namespace vp {
+        class AltestAlgorithmBase {
         public:
-            AltestAlgorithmBase(){
+            AltestAlgorithmBase() {
 
             }
 
             virtual ~AltestAlgorithmBase() {}
+
             virtual void PerformAlgorithm(const cv::Mat &src, cv::Mat &dst) = 0;
+
         private:
             std::string name;
         };

@@ -1,6 +1,6 @@
 syntax = "proto2";
 package rs.vp;
-message AltestConfig{
+message AltestConfig {
     optional string algorithm_name = 1 [default = "lkopticalflow"];
     optional string input_video_path = 2 [default = "data/in_video.mp4"];
     optional bool if_show_video = 3 [default = true];

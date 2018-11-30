@@ -12,8 +12,8 @@
 #include "separation.h"
 
 
-namespace rs{
-    namespace vp{
+namespace rs {
+    namespace vp {
 
         separation::separation() {
             ReadConfig();
@@ -49,15 +49,15 @@ namespace rs{
 
             cv::Mat temp;
 
-            dilate(mask, temp, cv::Mat(), cv::Point(-1,-1), niters);
-            erode(temp, temp, cv::Mat(), cv::Point(-1,-1), niters*2);
-            dilate(temp, temp, cv::Mat(), cv::Point(-1,-1), niters);
+            dilate(mask, temp, cv::Mat(), cv::Point(-1, -1), niters);
+            erode(temp, temp, cv::Mat(), cv::Point(-1, -1), niters * 2);
+            dilate(temp, temp, cv::Mat(), cv::Point(-1, -1), niters);
 
-            findContours( temp, contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE );
+            findContours(temp, contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
 
             dst = cv::Mat::zeros(src.size(), CV_8UC1);
 
-            if( contours.size() == 0 )
+            if (contours.size() == 0)
                 return;
 
             // iterate through all the top-level contours,
@@ -65,23 +65,21 @@ namespace rs{
             int idx = 0, largestComp = 0;
             double maxArea = 0;
 
-            for( ; idx >= 0; idx = hierarchy[idx][0] )
-            {
-                const std::vector<cv::Point>& c = contours[idx];
+            for (; idx >= 0; idx = hierarchy[idx][0]) {
+                const std::vector<cv::Point> &c = contours[idx];
                 double area = fabs(contourArea(cv::Mat(c)));
-                if( area > maxArea )
-                {
+                if (area > maxArea) {
                     maxArea = area;
                     largestComp = idx;
                 }
             }
-            cv::Scalar color(255 );
-            drawContours( dst, contours, largestComp, color, cv::FILLED, cv::LINE_8, hierarchy );
+            cv::Scalar color(255);
+            drawContours(dst, contours, largestComp, color, cv::FILLED, cv::LINE_8, hierarchy);
         }
 
         void separation::MyRefine(cv::Mat &mask, int radius) {
-            cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE,cv::Size(radius, radius));
-            cv::morphologyEx(mask,mask,cv::MORPH_OPEN, element);
+            cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(radius, radius));
+            cv::morphologyEx(mask, mask, cv::MORPH_OPEN, element);
             cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, element);
             mask = (mask > 130);
 

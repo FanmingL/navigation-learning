@@ -1,5 +1,5 @@
 syntax = "proto2";
 package rs.vp;
-message StaticStablingConfig{
+message StaticStablingConfig {
     optional bool if_show_debug_image = 1 [default = false];
 }

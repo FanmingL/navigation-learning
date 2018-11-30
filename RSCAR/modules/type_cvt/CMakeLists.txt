@@ -11,6 +11,6 @@ target_link_libraries(${PROJECT_NAME}_proto ${PROTOBUF_LIBRARIES})
 
 add_executable(${PROJECT_NAME} ${PROJECT_NAME}.cpp ${PROTO_${PROJECT_NAME}_SRC})
 
-target_link_libraries(${PROJECT_NAME} rs detect_proto  ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} rs detect_proto ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
 
 

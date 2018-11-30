@@ -1,6 +1,6 @@
 syntax = "proto2";
 package rs.vp;
-message DetectObject{
+message DetectObject {
     required float x = 1;
     required float y = 2;
     required float width = 3;
@@ -10,15 +10,15 @@ message DetectObject{
     optional int32 car_index = 7;
 }
 
-message DetectFrame{
+message DetectFrame {
     repeated DetectObject object = 1;
 }
 
-message DetectVideo{
+message DetectVideo {
     repeated DetectFrame frame = 1;
 }
 
-message DetectConfig{
+message DetectConfig {
     required string algorithm_name = 1;
     required string video_input_path = 2;
     required bool if_show_directly = 3;

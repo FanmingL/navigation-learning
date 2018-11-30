@@ -1,20 +1,20 @@
 syntax = "proto2";
 package rs.vp;
 
-message PreprocessConfig{
-// config
+message PreprocessConfig {
+    // config
     optional bool if_show_video = 9 [default = false];
-    optional bool if_write_video = 10 [default = false]; 
-// path
+    optional bool if_write_video = 10 [default = false];
+    // path
     required string video_input_path = 7;
     required string video_output_path = 8;
-// cut
+    // cut
     required uint32 width_cut = 1;
     required uint32 height_cut = 2;
     required uint32 x_start = 3;
     required uint32 y_start = 4;
     required uint32 fps = 11;
-// resize
+    // resize
     required uint32 width_final = 5;
     required uint32 height_final = 6;
 }

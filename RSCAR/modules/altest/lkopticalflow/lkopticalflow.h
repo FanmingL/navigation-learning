@@ -21,13 +21,17 @@
 #include "modules/altest/lkopticalflow/lkopticalflow.pb.h"
 #include "common/io.h"
 #include "opencv2/optflow.hpp"
-namespace rs{
-    namespace vp{
-        class LkOpticalFlow : public AltestAlgorithmBase{
+
+namespace rs {
+    namespace vp {
+        class LkOpticalFlow : public AltestAlgorithmBase {
         public:
             explicit LkOpticalFlow();
+
             ~LkOpticalFlow() override = default;
+
             void PerformAlgorithm(const cv::Mat &src, cv::Mat &dst) override;
+
             void ReadConfig();
 
         private:
@@ -36,7 +40,7 @@ namespace rs{
             cv::Mat last;
         };
 
-       common::REGISTER_ALGORITHM(AltestAlgorithmBase, "lkopticalflow", LkOpticalFlow);
+        common::REGISTER_ALGORITHM(AltestAlgorithmBase, "lkopticalflow", LkOpticalFlow);
     }
 }
 

@@ -1,7 +1,7 @@
 syntax = "proto2";
 package rs.vp;
 
-message FilterTrackerConfig{
+message FilterTrackerConfig {
     optional string mask_video_path = 1 [default = "data/mask_video.mp4"];
     optional string in_data_path = 2 [default = "data/track_out_data.bin"];
     optional string out_data_path = 3 [default = "data/track_out_data_new.bin"];

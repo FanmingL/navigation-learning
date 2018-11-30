@@ -23,13 +23,20 @@ namespace rs {
         class stable_data : public common::rs {
         public:
             explicit stable_data(const std::string &name);
+
             ~stable_data() override = default;
+
             void Run() override;
+
             void ReadData();
+
             void AddCount();
+
             void init();
-            cv::Mat GetFloatMatrix(const HomographMatrix & data);
-            cv::Mat GetdoubleMatrix(const HomographMatrix & data);
+
+            cv::Mat GetFloatMatrix(const HomographMatrix &data);
+
+            cv::Mat GetdoubleMatrix(const HomographMatrix &data);
 
         private:
             StablingConfig stabling_config;

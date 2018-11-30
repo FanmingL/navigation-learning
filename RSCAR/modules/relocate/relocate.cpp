@@ -29,15 +29,15 @@ namespace rs {
             if (relocate_config.if_draw_mask()) {
                 cv::Mat first_image;
                 video_capture >> first_image;
-                if (relocate_config.if_point()){
+                if (relocate_config.if_point()) {
                     draw_area da(first_image, common::GetAbsolutePath(relocate_config.point_image_out_path()),
                                  first_image.cols, first_image.rows, draw_area::DRAW_POINT, homograph_matrix);
-                }else {
+                } else {
                     draw_area da(first_image, common::GetAbsolutePath(relocate_config.mask_save_path()),
                                  first_image.cols, first_image.rows);
                 }
             }
-            max_rect = cv::Rect(0,0,relocate_config.width(), relocate_config.height());
+            max_rect = cv::Rect(0, 0, relocate_config.width(), relocate_config.height());
         }
 
         bool relocate::ReadConfig() {
@@ -63,7 +63,7 @@ namespace rs {
                         position_image = cv::Point2f(item.x() + item.width() / 2, item.y() + item.height() / 2);
                     }
                     if (!(max_rect.contains(cv::Point2f(item.x(), item.y())) &&
-                    max_rect.contains(cv::Point2f(item.x() + item.width(), item.y() + item.height()))))
+                          max_rect.contains(cv::Point2f(item.x() + item.width(), item.y() + item.height()))))
                         continue;
                     common::CalculateTransform(homograph_matrix, position_image, position_world);
                     auto object_iter = frame_iter->add_object();
@@ -141,9 +141,9 @@ namespace rs {
 
         void relocate::DrawOnImage(cv::Mat &inout_image, TrackObject *data) {
             cv::rectangle(inout_image,
-                              cv::Rect2f(data->image_bbox_x(), data->image_bbox_y(), data->image_bbox_width(),
-                                         data->image_bbox_height()),
-                              cv::Scalar(255, 0, 0), 2);
+                          cv::Rect2f(data->image_bbox_x(), data->image_bbox_y(), data->image_bbox_width(),
+                                     data->image_bbox_height()),
+                          cv::Scalar(255, 0, 0), 2);
             cv::putText(inout_image, common::to_string_with_precision(data->world_position_x(), 5),
                         cv::Point2f(data->image_bbox_x(), data->image_bbox_y()), cv::FONT_ITALIC, 0.4,
                         cv::Scalar(0, 0, 255), 2);

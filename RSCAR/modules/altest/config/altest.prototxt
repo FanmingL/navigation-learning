@@ -1,3 +1,4 @@
 algorithm_name: "stabling"
 if_show_video: true
-if_write_video: true
+if_write_video: false
+input_video_path: "data/DJI_0007.MOV"

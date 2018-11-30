@@ -9,7 +9,7 @@
 namespace rs {
     namespace vp {
         draw_area::draw_area(const cv::Mat &src, const std::string &path, int width, int height, DRAW_USAGE usage,
-                const cv::Mat &_homograph_matrix) :
+                             const cv::Mat &_homograph_matrix) :
                 mask(width, height, CV_8UC1, cv::Scalar(255)), click_step(0) {
             first_image = src.clone();
             if (usage == DRAW_MASK) {
@@ -18,7 +18,7 @@ namespace rs {
                 DrawPosition();
                 std::vector<int> parameter = {cv::IMWRITE_PNG_COMPRESSION, 0};
                 cv::imwrite(path, mask, parameter);
-            }else if (usage == DRAW_POINT){
+            } else if (usage == DRAW_POINT) {
                 homograph_matrix = _homograph_matrix.clone();
                 mask = src.clone();
                 DrawPoint();
@@ -103,7 +103,6 @@ namespace rs {
         }
 
 
-
         void draw_area::ReadPosition() {
             mask_cant_reach = cv::imread(base_path + "/data/cant_touch_place_mask.png", cv::IMREAD_GRAYSCALE);
 
@@ -114,24 +113,26 @@ namespace rs {
         void draw_area::DrawPoint() {
             cv::imshow("draw_point", mask);
             cv::setMouseCallback("draw_point", draw_area::onMouse, this);
-            while (true){
+            while (true) {
 
                 canvas = mask.clone();
-                for (auto & item : click_buffer){
-                    cv::circle(canvas,item,2,cv::Scalar(0,0,255),-1);
+                for (auto &item : click_buffer) {
+                    cv::circle(canvas, item, 2, cv::Scalar(0, 0, 255), -1);
                     cv::Point2f dst;
-                    common::CalculateTransform(homograph_matrix,item,dst);
-                    cv::putText(canvas,common::to_string_with_precision(dst.x,4),item,cv::FONT_ITALIC,0.5,cv::Scalar(128,0,0),2);
-                    cv::putText(canvas,common::to_string_with_precision(dst.y,4),item + cv::Point(0, 15),cv::FONT_ITALIC,0.5,cv::Scalar(128,0,0),2);
+                    common::CalculateTransform(homograph_matrix, item, dst);
+                    cv::putText(canvas, common::to_string_with_precision(dst.x, 4), item, cv::FONT_ITALIC, 0.5,
+                                cv::Scalar(128, 0, 0), 2);
+                    cv::putText(canvas, common::to_string_with_precision(dst.y, 4), item + cv::Point(0, 15),
+                                cv::FONT_ITALIC, 0.5, cv::Scalar(128, 0, 0), 2);
                 }
                 cv::imshow("draw_point", canvas);
 
 
                 auto key = cv::waitKey(30);
                 if (key == 'q')break;
-                switch (key){
+                switch (key) {
                     case 'a':
-                        if (!click_buffer.empty()){
+                        if (!click_buffer.empty()) {
                             click_buffer.pop_back();
                         }
                         break;

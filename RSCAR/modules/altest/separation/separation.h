@@ -20,23 +20,31 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/video/background_segm.hpp"
-namespace rs{
-    namespace vp{
-        class separation : public AltestAlgorithmBase{
+
+namespace rs {
+    namespace vp {
+        class separation : public AltestAlgorithmBase {
         public:
             separation();
+
             ~separation() override = default;
+
             void PerformAlgorithm(const cv::Mat &src, cv::Mat &dst) override;
+
             void ReadConfig();
+
             void RefineSegments(const cv::Mat &src, cv::Mat &mask, cv::Mat &dst);
+
             void MyRefine(cv::Mat &mask, int se_radius);
+
         private:
             SeparationConfig separation_config;
             cv::Mat bgmask;
             cv::Ptr<cv::BackgroundSubtractorMOG2> bgsubtractor;
 
         };
-        common::REGISTER_ALGORITHM(AltestAlgorithmBase,"separation",separation);
+
+        common::REGISTER_ALGORITHM(AltestAlgorithmBase, "separation", separation);
     }
 }
 #endif //SEPARATION_H

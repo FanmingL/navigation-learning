@@ -16,6 +16,6 @@ add_executable(${PROJECT_NAME} track.cpp ${PROTO_${PROJECT_NAME}_SRC})
 add_dependencies(${PROJECT_NAME} KFilter)
 add_dependencies(${PROJECT_NAME} detect_proto)
 
-target_link_libraries(${PROJECT_NAME} rs KFilter detect_proto  ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} rs KFilter detect_proto ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
 
 
