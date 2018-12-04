@@ -10,4 +10,4 @@
 #
 #================================================================
 
-( find . -name *.cpp && find . -name *.h && find . -name *.prototxt && find . -name *.proto && find . -name *.txt  )| xargs wc -l| sort -n
+( find . -name "*.cpp" && find . -name "*.h" && find . -name "*.prototxt" && find . -name "*.proto" && find . -name "*.txt"  )| xargs wc -l| sort -n
