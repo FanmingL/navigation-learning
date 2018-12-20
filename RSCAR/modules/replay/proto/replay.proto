@@ -1,0 +1,49 @@
+syntax = "proto2";
+package rs.vp;
+
+message ReplayConfig {
+    // config
+    optional bool if_show_video = 1 [default = false];
+    optional bool if_write_video = 2 [default = false];
+    optional string data_path = 3 [default = "data/bin-new/"];
+    optional int32 max_count = 4 [default = 1237];
+    optional int32 max_frame_count = 5 [default = 16000];
+    optional float ratio = 6 [default = 2];
+    optional float double_ratio = 7 [default = 3];
+    optional bool if_draw_target = 8 [default = false];
+    optional int32 xlim = 9 [default = 5];
+    optional int32 ylim = 10 [default = 5];
+    optional float xinterval = 11 [default = 1];
+    optional float yinterval = 12[default = 1];
+    optional bool if_write_data = 13[default = false];
+    optional int32 frame_per_file = 14 [default = 1500];
+    optional bool if_test = 15 [default = false];
+    optional bool if_draw_area = 16 [default = false];
+    optional float angle_calc_ratio = 17 [default = 1];
+    optional float velocity_calc_ratio = 18 [default = 1];
+}
+
+message FrameDataProto{
+    optional int32 id = 1;
+    optional float x = 2;
+    optional float y = 3;
+    optional float vx = 4;
+    optional float vy = 5;
+    optional float vx_next = 6;
+    optional float vy_next = 7;
+    optional float target_x = 8;
+    optional float target_y = 9;
+}
+
+message FrameProto{
+    repeated FrameDataProto data = 1;
+    optional int32 frame_id = 2;
+}
+
+message AllFrameProto{
+    repeated FrameProto data = 1;
+}
+
+message DataArray{
+    repeated double data = 1;
+}

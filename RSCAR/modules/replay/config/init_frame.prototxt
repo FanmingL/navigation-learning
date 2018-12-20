@@ -1,0 +1,110 @@
+data:{
+	id: 0
+	x: 8
+	y: 70
+	vx: 0
+	vy: -0.3
+	target_x: 13
+	target_y: 0
+}
+
+data:{
+	id: 1
+	x: 8
+	y: 50
+	vx: 0
+	vy: -0.1
+	target_x: 10
+	target_y: 0
+}
+
+
+data:{
+	id: 2
+	x: 5
+	y: 40
+	vx: 0.04
+	vy: -0.3
+	target_x: 13
+	target_y: 0
+}
+
+data:{
+	id: 3
+	x: 20
+	y: 50
+	vx: 0.03
+	vy: -0.3
+	target_x: 4
+	target_y: 0
+}
+
+data:{
+	id: 4
+	x: 20
+	y: 70
+	vx: 0.0
+	vy: -0.001
+	target_x: 20
+	target_y: 0
+}
+
+data:{
+	id: 5
+	x: 12
+	y: 30
+	vx: 0.0
+	vy: -0.002
+	target_x: 20
+	target_y: 0
+}
+
+data:{
+	id: 6
+	x: 20
+	y: 55
+	vx: 0.0
+	vy: -0.002
+	target_x: 8
+	target_y: 0
+}
+
+data:{
+	id: 7
+	x: 37
+	y: 20
+	vx: 0.0
+	vy: 0.002
+	target_x: 46
+	target_y: 80
+}
+
+data:{
+	id: 8
+	x: 45
+	y: 7
+	vx: 0
+	vy: 0.1
+	target_x: 36
+	target_y: 80
+}
+
+data:{
+	id: 9
+	x: 37
+	y: 10
+	vx: 0.01
+	vy: 0.04
+	target_x: 30
+	target_y: 80
+}
+
+data:{
+	id: 10
+	x: 37
+	y: 6
+	vx: 0.0
+	vy: 0.04
+	target_x: 28
+	target_y: 80
+}

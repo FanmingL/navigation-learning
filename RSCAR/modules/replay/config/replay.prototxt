@@ -1,0 +1,21 @@
+if_write_data: false
+
+if_test: true
+if_show_video : true
+if_draw_target: true
+if_draw_area: true
+
+if_write_video : false
+
+max_count: 1237
+data_path: "data/bin-new/"
+max_frame_count: 15000
+ratio: 4
+double_ratio: 2
+xlim: 7
+ylim: 7
+xinterval: 1.1
+yinterval: 1.1
+frame_per_file: 16000
+angle_calc_ratio: 1
+velocity_calc_ratio: 1
