@@ -12,6 +12,6 @@ add_executable(${PROJECT_NAME} replay.cpp ${PROTO_${PROJECT_NAME}_SRC})
 
 add_dependencies(${PROJECT_NAME} relocate_proto information_proto)
 
-target_link_libraries(${PROJECT_NAME} "${TORCH_LIBRARIES}" relocate_proto information_proto rs ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} relocate_proto information_proto rs ${OpenCV_LIBS} ${PROTOBUF_LIBRARIES})
 
 

@@ -11,7 +11,7 @@
 #================================================================
 
 import torch
-file_index = 0
+file_index = 4
 class Net(torch.nn.Module):  # 继承 torch 的 Module
     def __init__(self):
         super(Net, self).__init__()     # 继承 __init__ 功能
@@ -20,20 +20,20 @@ class Net(torch.nn.Module):  # 继承 torch 的 Module
             (torch.nn.Linear(980, 100)),
             # (torch.nn.Dropout(0.4)),
             (torch.nn.ReLU()),
-            (torch.nn.Linear(100, 10)),
+            (torch.nn.Linear(100, 50)),
             # (torch.nn.Dropout(0.4)),
             (torch.nn.ReLU()),
-            (torch.nn.Linear(10, 2))
+            (torch.nn.Linear(50, 10))
             )  
 
         self.sub_net = torch.nn.Sequential(
-            (torch.nn.Linear(3, 10)),
+            (torch.nn.Linear(3, 20)),
             # (torch.nn.Dropout(0.4)),
             (torch.nn.ReLU()),
-            (torch.nn.Linear(10, 3))
+            (torch.nn.Linear(20, 10))
             )
 
-        self.subsub_net = torch.nn.Linear(4,2)
+        self.subsub_net = torch.nn.Linear(20,2)
 
 
     def forward(self, x):   # 这同时也是 Module 中的 forward 功能

@@ -29,7 +29,7 @@ namespace rs {
         void replay::Run() {
             cv::Mat H;
             GetHomography(H);
-            std::cout<<"["<<H<<"];"<<std::endl;
+            std::cout<<H<<std::endl;
             int feature_length = 0;
             cv::Mat canvas((int) (HEIGHT_BASE * ratio), (int) (WIDTH_BASE * ratio), CV_8UC1, cv::Scalar(0));
             ca_show = canvas.clone();

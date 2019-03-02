@@ -35,121 +35,121 @@
 
 
 namespace rs {
-    namespace vp {
-        class FrameData {
-            friend std::ostream & operator<<(std::ostream &out, FrameData &obj);
-        public:
-            FrameData(const int &id_, const float &x_, const float &y_, const float &v_x_, const float &v_y_,
-                      const float &target_x_ = 0, const float &target_y_ = 0, const float &vx_next_ = 0,
-                      const float &vy_next_ = 0
-            ) :
-                    id(id_), x(x_), y(y_), v_x(v_x_), v_y(v_y_), vx_next(vx_next_), vy_next(vy_next_),
-                    target_x(target_x_), target_y(target_y_) {}
+namespace vp {
+    class FrameData {
+        friend std::ostream & operator<<(std::ostream &out, FrameData &obj);
+    public:
+        FrameData(const int &id_, const float &x_, const float &y_, const float &v_x_, const float &v_y_,
+                  const float &target_x_ = 0, const float &target_y_ = 0, const float &vx_next_ = 0,
+                  const float &vy_next_ = 0
+        ) :
+                id(id_), x(x_), y(y_), v_x(v_x_), v_y(v_y_), vx_next(vx_next_), vy_next(vy_next_),
+                target_x(target_x_), target_y(target_y_) {}
 
-            int id;
-            float x;
-            float y;
-            float v_x;
-            float v_y;
-            float vx_next;
-            float vy_next;
-            float target_x;
-            float target_y;
-        };
+        int id;
+        float x;
+        float y;
+        float v_x;
+        float v_y;
+        float vx_next;
+        float vy_next;
+        float target_x;
+        float target_y;
+    };
 
 
-        class Frame {
-            friend std::ostream & operator<<(std::ostream &out, Frame &obj);
-        public:
-            std::vector<FrameData> data;
-        };
+    class Frame {
+        friend std::ostream & operator<<(std::ostream &out, Frame &obj);
+    public:
+        std::vector<FrameData> data;
+    };
 
-        class AllFrame {
-        public:
-            AllFrame(int max_count = 15000) : data(15000) {}
+    class AllFrame {
+    public:
+        AllFrame(int max_count = 15000) : data(15000) {}
 
-            std::vector<Frame> data;
-        };
+        std::vector<Frame> data;
+    };
 
-        class replay : public rs::common::rs {
-        public:
-            explicit replay(const std::string &name);
+    class replay : public rs::common::rs {
+    public:
+        explicit replay(const std::string &name);
 
-            ~replay() override = default;
+        ~replay() override = default;
 
-            void Run() override;
+        void Run() override;
 
-            void ReadConfig();
+        void ReadConfig();
 
-            void ReadData();
+        void ReadData();
 
-            void GetHomography(cv::Mat &homography_matrix);
+        void GetHomography(cv::Mat &homography_matrix);
 
-            void GetFeatureWithLabel(cv::Mat &canvas, const cv::Mat &velocity_x,
-                                     const cv::Mat &velocity_y, const FrameData &data,
-                                     std::vector<float> &feature_with_label);
+        void GetFeatureWithLabel(cv::Mat &canvas, const cv::Mat &velocity_x,
+                                 const cv::Mat &velocity_y, const FrameData &data,
+                                 std::vector<float> &feature_with_label);
 
-            void GetFeatureOnly(const cv::Mat &canvas, const cv::Mat &velocity_x,
-                                const cv::Mat &velocity_y, const FrameData &data, std::vector<float> &feature);
+        void GetFeatureOnly(const cv::Mat &canvas, const cv::Mat &velocity_x,
+                            const cv::Mat &velocity_y, const FrameData &data, std::vector<float> &feature);
 
-            void InitBackground(const cv::Mat &original, const cv::Mat &H, cv::Mat &out);
+        void InitBackground(const cv::Mat &original, const cv::Mat &H, cv::Mat &out);
 
-            void DrawCanvas(cv::Mat &canvas_, cv::Mat &vx_mask, cv::Mat &vy_mask, const Frame &frame);
+        void DrawCanvas(cv::Mat &canvas_, cv::Mat &vx_mask, cv::Mat &vy_mask, const Frame &frame);
 
-            bool ShowAndSave(const cv::Mat &canvas, int time = 3);
+        bool ShowAndSave(const cv::Mat &canvas, int time = 3);
 
-            void ExtractFeature(std::vector<float> &features, const cv::Mat &canvas_,
-                                const cv::Mat &velocity_x, const cv::Mat &velocity_y, const cv::Point &pit,
-                                const float &cfa, const float &sfa, const float &abs_velocity, const cv::Rect &rect_
-            );
+        void ExtractFeature(std::vector<float> &features, const cv::Mat &canvas_,
+                            const cv::Mat &velocity_x, const cv::Mat &velocity_y, const cv::Point &pit,
+                            const float &cfa, const float &sfa, const float &abs_velocity, const cv::Rect &rect_
+        );
 
-            void SaveOrNew(std::ofstream &of);
+        void SaveOrNew(std::ofstream &of);
 
-            void InitFrame(Frame &data);
+        void InitFrame(Frame &data);
 
-            void SetNextFrame(Frame &inout_data, const cv::Mat &canvas, const cv::Mat &velocity_x,
-                              const cv::Mat &velocity_y);
+        void SetNextFrame(Frame &inout_data, const cv::Mat &canvas, const cv::Mat &velocity_x,
+                          const cv::Mat &velocity_y);
 
-            void CalculateOut(const std::vector<float> &feature, std::vector<float> &out);
+        void CalculateOut(const std::vector<float> &feature, std::vector<float> &out);
 
-            void SetNextVelocity(const std::vector<float> &out, FrameData &car);
+        void SetNextVelocity(const std::vector<float> &out, FrameData &car);
 
-        private:
+    private:
 
-            ReplayConfig config;
+        ReplayConfig config;
 
-            AllTrajectory all_trajectories;
+        AllTrajectory all_trajectories;
 
-            AllFrame all_frame;
+        AllFrame all_frame;
 
-            PointPairSet point_pair;
+        PointPairSet point_pair;
 
-            cv::Mat background_mask, bg_image;
+        cv::Mat background_mask, bg_image;
 
-            cv::VideoWriter video_writer;
+        cv::VideoWriter video_writer;
 
-            const int HEIGHT_BASE = 80, WIDTH_BASE = 50, CAR_WIDTH = 2, CAR_HEIGHT = 3;
-            const int CAR_INT = 1, NOTHING_INT = 0, OBSTACLE_INT = -1;
+        const int HEIGHT_BASE = 80, WIDTH_BASE = 50, CAR_WIDTH = 2, CAR_HEIGHT = 3;
+        const int CAR_INT = 1, NOTHING_INT = 0, OBSTACLE_INT = -1;
 
-            std::ofstream of;
+        std::ofstream of;
 
-            int xlim, ylim;
+        int xlim, ylim;
 
-            float xinterval, yinterval, ratio;
+        float xinterval, yinterval, ratio;
 
-            cv::Rect max_rect;
-            cv::Mat show;
-            int frame_count;
+        cv::Rect max_rect;
+        cv::Mat show;
+        int frame_count;
 
-            DataArray data_array;
-            std::vector<float> w_angle, w_velocity;
-            cv::Mat ca_show;
+        DataArray data_array;
+        std::vector<float> w_angle, w_velocity;
+        cv::Mat ca_show;
 
-            cv::dnn::Net pre_trained_net;
+        cv::dnn::Net pre_trained_net;
 
-            std::shared_ptr<torch::jit::script::Module> torch_model;
-        };
-    }
+        std::shared_ptr<torch::jit::script::Module> torch_model;
+    };
+};
 };
 
 #endif //REPLAY_H
